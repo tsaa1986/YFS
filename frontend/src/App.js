@@ -1,30 +1,29 @@
+import React from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
 import './App.css';
-import logo from './logo.svg';
-import { BrowserRouter, NavLink, Route } from "react-router-dom";
-import Test from './component/Test';
+import Header from './component/Header/Header';
+import Footer from './component/Footer/Footer';
+import SignIn from './component/Navbar/SignIn/SignIn';
 
-const App = (_props) => {
+const App = (props) => {
 	return (
-		<div className="App">
-			<header className="App-header">
-				<img src={logo} className="App-logo" alt="logo" />
-				<p>
-					Edit <code>src/App.js</code> YFS.
-				</p>
-				<BrowserRouter>
-					<div>
-						<Route path="/Test" component={Test} />
-					</div>
-					<nav className="nav">
-						<div className="test">
-							<NavLink to="/Test">Test</NavLink>
-						</div>
-					</nav>
-				</BrowserRouter >
+		<BrowserRouter>
+			<div className='app_wrapper'>
+				<div className='ground'>
+				<Header />
+				<Route path='/Home' render={ ()=> <App />} />
+				{/* <Route path='/About' render={ ()=> <About />} />
+				<Route path='/Contact' render={ ()=> <Contact />} /> */}
+				<Route path='/SignIn' render={ ()=> <SignIn />} />
+				{/* <Route path='/CreateAccount' render={ ()=> <CreateAccount />} /> */}
+				<main className="main">
+					<h1>Financial Fitness Journey</h1>
+				</main>
+				</div>
+				<Footer />
+			</div>
 
-			</header>
-		</div>
-
+		</BrowserRouter>
 	);
 }
 
