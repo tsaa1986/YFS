@@ -1,16 +1,13 @@
-using DbUp;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using YFS.Data;
+using Microsoft.EntityFrameworkCore;
 using YFS.Data.Models;
+using YFS.Data.Repository;
+using YFS.Extension;
 
 namespace YFS
 {
@@ -29,38 +26,26 @@ namespace YFS
             var connectionString =
                 Configuration.GetConnectionString("DefaultConnection");
 
-            // TODO - Create and configure an instance of the
-            EnsureDatabase.For.SqlDatabase(connectionString);
+            services.AddDbContext<RepositoryContext>(options => options.UseSqlServer(connectionString));
+            ServiceExtension.ConfigureRepositoryManager(services);
 
-            // DbUp upgrader
-            var upgrader = DeployChanges.To
-                 .SqlDatabase(connectionString, null)
-                 .WithScriptsEmbeddedInAssembly(
-                 System.Reflection.Assembly.GetExecutingAssembly()
-                 )
-                 .WithTransaction()
-                 .Build();
-
-            // TODO - Do a database migration if there are any 
-            if (upgrader.IsUpgradeRequired())
-            {
-                upgrader.PerformUpgrade();
-            }
+            ServiceExtension.RegisterDependencies(services);
+            services.AddAuthentication();
+            ServiceExtension.ConfigureIdentity(services);
+            ServiceExtension.ConfigureMapping(services);
+            ServiceExtension.ConfigureJWT(services, Configuration);
+            
+            //services.AddControllersWithViews();
 
             //swagger api
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo {Title="My Api",Version="v1" }));
 
-
-            // pending SQL 
-            //Scripts
-
-            services.AddRazorPages();
+            //services.AddRazorPages();
 
             //make the data repository available for dependency injection
             //The AddScoped method means that only one instance of the DataRepository class is created in a given HTTP request.This means
             //the lifetime of the class that is created lasts for the whole HTTP request
-            services.AddControllers();
-            services.AddScoped<IAccountGroupRepository, AccountGroupRepository>();
+            services.AddControllers();            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -89,6 +74,7 @@ namespace YFS
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

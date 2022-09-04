@@ -1,0 +1,25 @@
+Инструментарий командной строки включается через NuGet посредством добавления зависимости для пакета Microsoft.
+EntityFrameworkCore.Tools и выполнением команды #dotnet ef
+
+Tools -> NuGet Package Manager -> Package Manager Console
+	
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+
+Reverse Engineering, которая позволяет автоматически создать все необходимые классы по базе данных. 
+Чтобы воспользоваться этой функцией перейдем в Visual Studio к окну Package Manager Console. Его открыть можно, перейдя в меню Tools –> NuGet Package Manager –> Package Manager Console
+
+Scaffold-DbContext "Server=localhost;Database=helloappdb;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer
+
+
+
+#dotnet ef database update
+
+
+Добавление миграций
+Enable-migrations
+Enable-Migrations -StartUpProjectName YFS -ContextProjectName ApplicationContext -verbose
+Add-Migration Initial
+update-database -Context RepositoryContext
+
+dotnet ef database update --project "C:\Users\Admin\Google Drive\PROJECTS\NET\YFS\backend"

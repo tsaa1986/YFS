@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Identity;
+using System;
 
 namespace YFS.Data.Models
 {
-    public class User
+    public class User : IdentityUser
     {
-        public int UserId { get; set; }
-        public string UserName { get; set; }
-        public string UserEmail { get; set; }
-        public DateTime Created { get; }
+        //public DateTime Created { get; set; }
+        public string? FirstName { get; set; }
+        public string? LastName { get; set; }
     }
 }
