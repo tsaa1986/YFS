@@ -17,21 +17,51 @@ namespace YFS.Services
     internal sealed class UserAuthenticationRepository : IUserAuthenticationRepository
     {
         private readonly UserManager<User> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private User? _user;
 
-        public UserAuthenticationRepository(UserManager<User> userManager, IConfiguration configuration, IMapper mapper)
+        public UserAuthenticationRepository(
+            UserManager<User> userManager,
+            RoleManager<IdentityRole> roleManager,
+            IConfiguration configuration, 
+            IMapper mapper)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _configuration = configuration;
             _mapper = mapper;
         }
 
+        /// <summary>
+        /// create new user
+        /// always create user admin role
+        /// change it when build authorization roles
+        /// </summary>
+        /// <param name="userRegistration"></param>
+        /// <returns></returns>
         public async Task<IdentityResult> RegisterUserAsync(UserRegistrationDto userRegistration)
         {
             var user = _mapper.Map<User>(userRegistration);
             var result = await _userManager.CreateAsync(user, userRegistration.Password);
+
+            if (result.Succeeded)
+            {
+                if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                if (!await _roleManager.RoleExistsAsync(UserRoles.User))
+                    await _roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+
+                if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.Admin);
+                }
+               /* if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
+                {
+                    await _userManager.AddToRoleAsync(user, UserRoles.User);
+                }*/
+            }
             return result;
         }
 

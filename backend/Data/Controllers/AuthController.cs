@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Controllers;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using YFS.Data.Dtos;
@@ -12,7 +13,8 @@ namespace YFS.Data.Controllers
     [ApiController]
     public class AuthController : BaseApiController
     {
-        public AuthController(IRepositoryManager repository, IMapper mapper) 
+        public AuthController(IRepositoryManager repository, 
+            IMapper mapper) 
             : base(repository, mapper)
         {
         }
@@ -21,9 +23,8 @@ namespace YFS.Data.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
         {
-
             var userResult = await _repository.UserAuthentication.RegisterUserAsync(userRegistration);
-            return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
+            return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);                       
         }
 
         [HttpPost("sign-in")]
