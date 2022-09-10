@@ -155,6 +155,49 @@ namespace YFS.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("YFS.Data.Models.AccountGroup", b =>
+                {
+                    b.Property<int>("AccountGroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountGroupId"), 1L, 1);
+
+                    b.Property<string>("AccountGroupNameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("AccountGroupNameRu")
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("AccountGroupNameUa")
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<int>("GroupOrederBy")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AccountGroupId");
+
+                    b.HasIndex("UserId", "AccountGroupNameEn")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "AccountGroupNameRu")
+                        .IsUnique()
+                        .HasFilter("[AccountGroupNameRu] IS NOT NULL");
+
+                    b.HasIndex("UserId", "AccountGroupNameUa")
+                        .IsUnique()
+                        .HasFilter("[AccountGroupNameUa] IS NOT NULL");
+
+                    b.ToTable("AccountGroups");
+                });
+
             modelBuilder.Entity("YFS.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -166,6 +209,11 @@ namespace YFS.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)

@@ -1,11 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using System.Reflection.Metadata;
+using System.Security.Principal;
 using YFS.Data.Models;
 
 namespace YFS.Data.Repository
 {
     public class RepositoryContext : IdentityDbContext<User>
     {
+        public DbSet<AccountGroup> AccountGroups { get; set; } = null!;
+
         public RepositoryContext(DbContextOptions options) : base(options)
         {
         }
@@ -14,7 +18,20 @@ namespace YFS.Data.Repository
         {
             base.OnModelCreating(modelBuilder);
 
-            //modelBuilder.ApplyConfiguration(new User());
+            modelBuilder.Entity<User>()
+            .Property(b => b.CreatedOn)
+            .HasDefaultValueSql("getdate()");
+
+            modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
+            modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameRu }).IsUnique();
+            modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();
+
+
+            /*modelBuilder.Entity<User>().HasData(
+                    new User { Name = "Tom", Age = 37 },
+                    new User { Id = 2, Name = "Bob", Age = 41 }
+            );*/
         }
+        //modelBuilder.ApplyConfiguration(new User());
     }
 }

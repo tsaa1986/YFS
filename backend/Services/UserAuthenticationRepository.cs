@@ -21,7 +21,6 @@ namespace YFS.Services
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
         private User? _user;
-
         public UserAuthenticationRepository(
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
