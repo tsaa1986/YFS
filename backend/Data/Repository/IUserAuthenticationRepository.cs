@@ -10,5 +10,6 @@ namespace YFS.Data.Repository
         Task<IdentityResult> RegisterUserAsync(UserRegistrationDto userForRegistration);
         Task<bool> ValidateUserAsync(UserLoginDto loginDto);
         Task<string> CreateTokenAsync();
+        Task<string> GetUserId(UserLoginDto loginDto);
     }
 }

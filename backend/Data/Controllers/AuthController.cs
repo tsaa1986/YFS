@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using YFS.Data.Dtos;
+using YFS.Data.Models;
 using YFS.Data.Repository;
 using YFS.Filters.ActionFilters;
 
@@ -17,14 +18,53 @@ namespace YFS.Data.Controllers
             IMapper mapper) 
             : base(repository, mapper)
         {
+
         }
+
+        /*
+        private async Task<IActionResult> CreateAdminAccount()
+        {
+            const string adminUser = "Admin";
+            const string adminPassword = "Secret123$";
+
+            UserRegistrationDto user = new UserRegistrationDto {
+                FirstName = "Administrator",
+                LastName = "",
+                UserName = adminUser,
+                Password = adminPassword,
+                Email = "admin@admin.com",
+                PhoneNumber = ""};
+            /*UserLoginDto user = new UserLoginDto
+            {
+                UserName = adminUser,
+                Password = adminPassword
+            };*/
+
+          /*  var userResult = await _repository.UserAuthentication.RegisterUserAsync(user);
+            return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
+
+        }*/
 
         [HttpPost("sign-up")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
         {
             var userResult = await _repository.UserAuthentication.RegisterUserAsync(userRegistration);
-            return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);                       
+
+            if (userResult.Succeeded)
+            {
+                UserLoginDto user = new UserLoginDto { UserName = userRegistration.UserName, Password = userRegistration.Password };
+
+                var Token = await _repository.UserAuthentication.ValidateUserAsync(user);
+                string user_id = _repository.UserAuthentication.GetUserId(user).Result;
+
+
+                await _repository.AccountGroup.CreateAccountGroupsDefaultForUser(user_id);
+                await _repository.SaveAsync();
+            }
+
+
+            return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);          
         }
 
         [HttpPost("sign-in")]

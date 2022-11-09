@@ -8,7 +8,7 @@ namespace YFS.Data.Repository
 {
     public class RepositoryContext : IdentityDbContext<User>
     {
-        public DbSet<AccountGroup> AccountGroups { get; set; } = null!;
+        public DbSet<AccountGroup> AccountGroups { get; set; } //= null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
@@ -31,7 +31,6 @@ namespace YFS.Data.Repository
                     new User { Name = "Tom", Age = 37 },
                     new User { Id = 2, Name = "Bob", Age = 41 }
             );*/
-        }
-        //modelBuilder.ApplyConfiguration(new User());
+        } 
     }
 }
