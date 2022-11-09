@@ -179,21 +179,22 @@ namespace YFS.Migrations
                     b.Property<int>("GroupOrederBy")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AccountGroupId");
 
                     b.HasIndex("UserId", "AccountGroupNameEn")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.HasIndex("UserId", "AccountGroupNameRu")
                         .IsUnique()
-                        .HasFilter("[AccountGroupNameRu] IS NOT NULL");
+                        .HasFilter("[UserId] IS NOT NULL AND [AccountGroupNameRu] IS NOT NULL");
 
                     b.HasIndex("UserId", "AccountGroupNameUa")
                         .IsUnique()
-                        .HasFilter("[AccountGroupNameUa] IS NOT NULL");
+                        .HasFilter("[UserId] IS NOT NULL AND [AccountGroupNameUa] IS NOT NULL");
 
                     b.ToTable("AccountGroups");
                 });
@@ -323,6 +324,18 @@ namespace YFS.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("YFS.Data.Models.AccountGroup", b =>
+                {
+                    b.HasOne("YFS.Data.Models.User", null)
+                        .WithMany("AccountsGroup")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("YFS.Data.Models.User", b =>
+                {
+                    b.Navigation("AccountsGroup");
                 });
 #pragma warning restore 612, 618
         }

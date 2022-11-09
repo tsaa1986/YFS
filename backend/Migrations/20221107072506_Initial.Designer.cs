@@ -12,8 +12,8 @@ using YFS.Data.Repository;
 namespace YFS.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20220905050806_User-Role")]
-    partial class UserRole
+    [Migration("20221107072506_Initial")]
+    partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -157,6 +157,50 @@ namespace YFS.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("YFS.Data.Models.AccountGroup", b =>
+                {
+                    b.Property<int>("AccountGroupId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountGroupId"), 1L, 1);
+
+                    b.Property<string>("AccountGroupNameEn")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("AccountGroupNameRu")
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("AccountGroupNameUa")
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<int>("GroupOrederBy")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("AccountGroupId");
+
+                    b.HasIndex("UserId", "AccountGroupNameEn")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
+                    b.HasIndex("UserId", "AccountGroupNameRu")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL AND [AccountGroupNameRu] IS NOT NULL");
+
+                    b.HasIndex("UserId", "AccountGroupNameUa")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL AND [AccountGroupNameUa] IS NOT NULL");
+
+                    b.ToTable("AccountGroups");
+                });
+
             modelBuilder.Entity("YFS.Data.Models.User", b =>
                 {
                     b.Property<string>("Id")
@@ -168,6 +212,11 @@ namespace YFS.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -277,6 +326,18 @@ namespace YFS.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("YFS.Data.Models.AccountGroup", b =>
+                {
+                    b.HasOne("YFS.Data.Models.User", null)
+                        .WithMany("AccountsGroup")
+                        .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("YFS.Data.Models.User", b =>
+                {
+                    b.Navigation("AccountsGroup");
                 });
 #pragma warning restore 612, 618
         }

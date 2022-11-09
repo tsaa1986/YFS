@@ -28,6 +28,7 @@ namespace YFS.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -69,6 +70,28 @@ namespace YFS.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccountGroups",
+                columns: table => new
+                {
+                    AccountGroupId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    AccountGroupNameRu = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true),
+                    AccountGroupNameEn = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
+                    AccountGroupNameUa = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true),
+                    GroupOrederBy = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountGroups", x => x.AccountGroupId);
+                    table.ForeignKey(
+                        name: "FK_AccountGroups_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -157,6 +180,27 @@ namespace YFS.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccountGroups_UserId_AccountGroupNameEn",
+                table: "AccountGroups",
+                columns: new[] { "UserId", "AccountGroupNameEn" },
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountGroups_UserId_AccountGroupNameRu",
+                table: "AccountGroups",
+                columns: new[] { "UserId", "AccountGroupNameRu" },
+                unique: true,
+                filter: "[UserId] IS NOT NULL AND [AccountGroupNameRu] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountGroups_UserId_AccountGroupNameUa",
+                table: "AccountGroups",
+                columns: new[] { "UserId", "AccountGroupNameUa" },
+                unique: true,
+                filter: "[UserId] IS NOT NULL AND [AccountGroupNameUa] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -198,6 +242,9 @@ namespace YFS.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AccountGroups");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
