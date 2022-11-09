@@ -12,14 +12,13 @@ Reverse Engineering, которая позволяет автоматическ�
 Scaffold-DbContext "Server=localhost;Database=helloappdb;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer
 
 
-
-#dotnet ef database update
+$dotnet ef database update
 
 
 Добавление миграций
-Enable-migrations
-Enable-Migrations -StartUpProjectName YFS -ContextProjectName ApplicationContext -verbose
-Add-Migration Initial
+$Enable-migrations
+$Enable-Migrations -StartUpProjectName YFS -ContextProjectName ApplicationContext -verbose
+$Add-Migration Initial
 update-database -Context RepositoryContext
 
 dotnet ef database update --project "C:\Users\Admin\Google Drive\PROJECTS\NET\YFS\backend"
