@@ -7,14 +7,13 @@ using System.Threading.Tasks;
 
 namespace YFS.Data.Models
 {
-    //[Table("AccountGroups")]
     public class AccountGroup
     {
         [Key]
         public int AccountGroupId { get; set; }
 
-        //[ForeignKey("AspNetUser")]
-        public int UserId { get; set; }
+        [ForeignKey("AspNetUser")]
+        public string UserId { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [StringLength(100)]
@@ -30,6 +29,7 @@ namespace YFS.Data.Models
         public string AccountGroupNameUa { get; set; }
 
         [Required]
-        public int GroupOrederBy { get; set; }        
+        public int GroupOrederBy { get; set; }     
+        
     }
 }
