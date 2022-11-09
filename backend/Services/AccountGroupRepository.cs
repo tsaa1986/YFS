@@ -16,10 +16,8 @@ namespace YFS.Services
 
         public async Task CreateAccountGroupsDefaultForUser(string userid) 
         {
-            //impleement here
             AccountGroup ac = new AccountGroup
             {
-                //AccountGroupId = 1,
                 UserId = userid,
                 AccountGroupNameEn = "Cash",
                 AccountGroupNameRu = "Наличные",
@@ -27,7 +25,6 @@ namespace YFS.Services
             };
             
             await CreateAccountGroup(ac);
-            //return await ac;
         }
       }
 }

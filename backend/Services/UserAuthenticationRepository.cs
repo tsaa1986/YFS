@@ -20,7 +20,7 @@ namespace YFS.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
         private readonly IMapper _mapper;
-        private User? _user;
+        private User ? _user;
         public UserAuthenticationRepository(
             UserManager<User> userManager,
             RoleManager<IdentityRole> roleManager,
@@ -56,10 +56,6 @@ namespace YFS.Services
                 {
                     await _userManager.AddToRoleAsync(user, UserRoles.Admin);
                 }
-               /* if (await _roleManager.RoleExistsAsync(UserRoles.Admin))
-                {
-                    await _userManager.AddToRoleAsync(user, UserRoles.User);
-                }*/
             }
             return result;
         }
@@ -115,7 +111,17 @@ namespace YFS.Services
             return tokenOptions;
         }
 
+        public async Task<string> GetUserId(UserLoginDto loginDto)
+        {
+            _user = await _userManager.FindByNameAsync(loginDto.UserName);
 
+            var result = _user != null && await _userManager.CheckPasswordAsync(_user, loginDto.Password);
 
+            if (result != null)
+            {
+                return _user.Id;
+            }
+            return null;
+        }
     }
 }

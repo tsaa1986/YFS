@@ -10,9 +10,13 @@ namespace YFS.Services
     public class RepositoryManager : IRepositoryManager
     {
         private RepositoryContext _repositoryContext;
+
         private IUserAuthenticationRepository _userAuthenticationRepository;
+        private IAccountGroupRepository _accountGroupRepository;
+
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
+
         private IMapper _mapper;
         private IConfiguration _configuration;
 
@@ -39,6 +43,16 @@ namespace YFS.Services
                 return _userAuthenticationRepository;
             }
         }
+        public IAccountGroupRepository AccountGroup
+        {
+            get
+            {
+                if (_accountGroupRepository is null)
+                    _accountGroupRepository = new AccountGroupRepository(_repositoryContext);
+                return _accountGroupRepository;
+            }
+        }
+        
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
     }
 }
