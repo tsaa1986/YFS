@@ -25,13 +25,13 @@ namespace YFS
         {
             var connectionString =
                 Configuration.GetConnectionString("DefaultConnection");
-
+           
             services.AddDbContext<RepositoryContext>(options => options.UseSqlServer(connectionString));
             ServiceExtension.ConfigureRepositoryManager(services);
-
+            ServiceExtension.ConfigureIdentity(services);
             ServiceExtension.RegisterDependencies(services);
             services.AddAuthentication();
-            ServiceExtension.ConfigureIdentity(services);
+            
             ServiceExtension.ConfigureMapping(services);
             ServiceExtension.ConfigureJWT(services, Configuration);
             
@@ -69,9 +69,7 @@ namespace YFS
                 app.UseHttpsRedirection();
             }
 
-            //app.UseHttpsRedirection();
             app.UseStaticFiles();
-
             app.UseRouting();
 
             app.UseAuthentication();
@@ -82,6 +80,10 @@ namespace YFS
                 //endpoints.MapRazorPages();
                 endpoints.MapControllers();
             });
+
+            //SeedData.EnsurePopulated(app);
+            //IdentitySeedData.EnsurePopulated(app);
         }
+
     }
 }
