@@ -21,4 +21,4 @@ $Enable-Migrations -StartUpProjectName YFS -ContextProjectName ApplicationContex
 $Add-Migration Initial
 update-database -Context RepositoryContext
 
-dotnet ef database update --project "C:\Users\Admin\Google Drive\PROJECTS\NET\YFS\backend"
+$dotnet ef database update --project "C:\Users\Admin\Google Drive\PROJECTS\NET\YFS\backend"

@@ -2,11 +2,8 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using YFS.Data.Repository;
+using YFS.Repo.Data;
 
-#nullable disable
 
 namespace YFS.Migrations
 {

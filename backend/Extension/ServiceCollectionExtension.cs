@@ -5,12 +5,13 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using YFS.Data.Mappings;
-using YFS.Data.Models;
-using YFS.Data.Repository;
 using System.Text;
-using YFS.Services;
-using YFS.Filters.ActionFilters;
+using YFS.Core.Mappings;
+using YFS.Core.Models;
+using YFS.Service.Interfaces;
+using YFS.Service.Services;
+using YFS.Repo.Data;
+using YFS.Service.Filters.ActionFilters;
 
 namespace YFS.Extension
 {
