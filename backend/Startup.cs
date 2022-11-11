@@ -5,9 +5,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using YFS.Data.Models;
-using YFS.Data.Repository;
 using YFS.Extension;
+using YFS.Repo.Data;
 
 namespace YFS
 {
