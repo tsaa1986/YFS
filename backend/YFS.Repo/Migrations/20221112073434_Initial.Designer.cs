@@ -2,15 +2,20 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YFS.Repo.Data;
 
+#nullable disable
 
-namespace YFS.Migrations
+namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20221112073434_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -152,7 +157,31 @@ namespace YFS.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("YFS.Data.Models.AccountGroup", b =>
+            modelBuilder.Entity("YFS.Core.Models.Account", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("AccountId");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccountGroupId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountGroupId");
+
+                    b.ToTable("Account");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
                 {
                     b.Property<int>("AccountGroupId")
                         .ValueGeneratedOnAdd()
@@ -166,10 +195,12 @@ namespace YFS.Migrations
                         .HasColumnType("VARCHAR(100)");
 
                     b.Property<string>("AccountGroupNameRu")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR(100)");
 
                     b.Property<string>("AccountGroupNameUa")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR(100)");
 
@@ -177,26 +208,24 @@ namespace YFS.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("AccountGroupId");
 
                     b.HasIndex("UserId", "AccountGroupNameEn")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("UserId", "AccountGroupNameRu")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL AND [AccountGroupNameRu] IS NOT NULL");
+                        .IsUnique();
 
                     b.HasIndex("UserId", "AccountGroupNameUa")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL AND [AccountGroupNameUa] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("AccountGroups");
                 });
 
-            modelBuilder.Entity("YFS.Data.Models.User", b =>
+            modelBuilder.Entity("YFS.Core.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -283,7 +312,7 @@ namespace YFS.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("YFS.Data.Models.User", null)
+                    b.HasOne("YFS.Core.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -292,7 +321,7 @@ namespace YFS.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("YFS.Data.Models.User", null)
+                    b.HasOne("YFS.Core.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -307,7 +336,7 @@ namespace YFS.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("YFS.Data.Models.User", null)
+                    b.HasOne("YFS.Core.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -316,21 +345,37 @@ namespace YFS.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("YFS.Data.Models.User", null)
+                    b.HasOne("YFS.Core.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("YFS.Data.Models.AccountGroup", b =>
+            modelBuilder.Entity("YFS.Core.Models.Account", b =>
                 {
-                    b.HasOne("YFS.Data.Models.User", null)
-                        .WithMany("AccountsGroup")
-                        .HasForeignKey("UserId");
+                    b.HasOne("YFS.Core.Models.AccountGroup", null)
+                        .WithMany("Accounts")
+                        .HasForeignKey("AccountGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
-            modelBuilder.Entity("YFS.Data.Models.User", b =>
+            modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
+                {
+                    b.HasOne("YFS.Core.Models.User", null)
+                        .WithMany("AccountsGroup")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
+                {
+                    b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.User", b =>
                 {
                     b.Navigation("AccountsGroup");
                 });

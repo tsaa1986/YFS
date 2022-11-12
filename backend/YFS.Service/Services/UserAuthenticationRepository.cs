@@ -118,6 +118,7 @@ namespace YFS.Service.Services
             {
                 return _user.Id;
             }
+
             return null;
         }
     }
