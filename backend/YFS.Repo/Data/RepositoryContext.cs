@@ -7,6 +7,7 @@ namespace YFS.Repo.Data
     public class RepositoryContext : IdentityDbContext<User>
     {
         public DbSet<AccountGroup> AccountGroups { get; set; } //= null!;
+        public DbSet<Currency> Currencies { get; set; } //= null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
