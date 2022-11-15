@@ -1,0 +1,14 @@
+
+
+add user
+
+{
+  "firstName": "Anton",
+  "lastName": "Testovich",
+  "userName": "tsaa2",
+  "password": "123$qweR",
+  "email": "tsaa2@gmail.com",
+  "phoneNumber": "010203045"
+}
+
+
