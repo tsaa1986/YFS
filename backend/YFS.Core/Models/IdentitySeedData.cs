@@ -6,7 +6,7 @@ namespace YFS.Core.Models
     {
         private const string adminUser = "Admin";
         private const string adminPassword = "Secret123$";
-
+        /*
         public static async void EnsurePopulated(IApplicationBuilder app)
         {
             /*UserManager<User> userManager = app.ApplicationServices
@@ -16,7 +16,7 @@ namespace YFS.Core.Models
             {
                // user = new User("Admin");
                // await userManager.CreateAsync(user, adminPassword);
-            }*/
-        }
+            }
+        }*/
     }
 }

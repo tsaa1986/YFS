@@ -28,6 +28,7 @@ namespace YFS.Extension
                 //map.AddProfile<TeacherMappingProfile>();
                 //map.AddProfile<StudentMappingProfile>();
                 map.AddProfile<UserMappingProfile>();
+                map.AddProfile<AccountGroupMappingProfile>();
             });
             services.AddSingleton(mapperConfig.CreateMapper());
         }

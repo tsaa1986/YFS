@@ -44,7 +44,7 @@ namespace YFS
             //make the data repository available for dependency injection
             //The AddScoped method means that only one instance of the DataRepository class is created in a given HTTP request.This means
             //the lifetime of the class that is created lasts for the whole HTTP request
-            services.AddControllers();            
+            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,19 +1,21 @@
-﻿using YFS.Core.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
+using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
 using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
 {
-    public class AccountGroupRepository : RepositoryBase<AccountGroup>, IAccountGroupRepository
+    internal sealed class AccountGroupRepository : RepositoryBase<AccountGroup>, IAccountGroupRepository
     {
         public AccountGroupRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
            
         }
 
-        public async Task CreateAccountGroup(AccountGroup ac) => await CreateAsync(ac);
-
+        public async Task CreateAccountGroupForUser(AccountGroup accountGroup) =>
+            await CreateAsync(accountGroup);
         public async Task CreateAccountGroupsDefaultForUser(string userid) 
         {
             AccountGroup ac = new AccountGroup
@@ -23,8 +25,16 @@ namespace YFS.Service.Services
                 AccountGroupNameRu = "Наличные",
                 AccountGroupNameUa = "Готівка"
             };
-            
-            await CreateAccountGroup(ac);
+
+            await CreateAsync(ac);// CreateAccountGroup(ac);
         }
-      }
+        public Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, bool trackChanges)
+            => await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges).Result.OrderBy(c => c.GroupOrederBy).ToListAsync();
+        public async Task UpdateAccountGroupForUser(AccountGroup accountGroup) => 
+            await UpdateAsync(accountGroup);
+    }
 }
