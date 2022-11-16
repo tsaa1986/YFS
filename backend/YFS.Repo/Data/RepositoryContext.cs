@@ -17,14 +17,18 @@ namespace YFS.Repo.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<User>()
-            .Property(b => b.CreatedOn)
-            .HasDefaultValueSql("getdate()");
-
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameRu }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();
 
+            modelBuilder.Entity<Currency>().Property(p => p.Id).ValueGeneratedNever();
+
+            modelBuilder.Entity<User>()
+            .Property(b => b.CreatedOn)
+            .HasDefaultValueSql("getdate()");
+
+
+            modelBuilder.ApplyConfiguration(new CurrencyData());
 
             /*modelBuilder.Entity<User>().HasData(
                     new User { Name = "Tom", Age = 37 },
