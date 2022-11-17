@@ -12,7 +12,7 @@ namespace YFS.Service.Services
         private RepositoryContext _repositoryContext;
 
         private IUserAuthenticationRepository _userAuthenticationRepository;
-        private IAccountGroupRepository _accountGroupRepository;
+        private IAccountGroupRepository _accountGroupRepository;        
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
