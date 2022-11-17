@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Runtime.InteropServices;
 using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
@@ -7,7 +6,7 @@ using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
 {
-    internal sealed class AccountGroupRepository : RepositoryBase<AccountGroup>, IAccountGroupRepository
+    public class AccountGroupRepository : RepositoryBase<AccountGroup>, IAccountGroupRepository
     {
         public AccountGroupRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {

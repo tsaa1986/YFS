@@ -10,6 +10,8 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
 {
     protected RepositoryContext RepositoryContext;
 
+    public async Task<IQueryable<T>> FindAllAsync(bool trackChanges) =>
+    !trackChanges ? await Task.Run(() => RepositoryContext.Set<T>().AsNoTracking()) : await Task.Run(() => RepositoryContext.Set<T>());
     public RepositoryBase(RepositoryContext repositoryContext) =>   
         RepositoryContext = repositoryContext;
     public async Task CreateAsync(T entity) => await Task.Run(() => RepositoryContext.Set<T>().Add(entity));

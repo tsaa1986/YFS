@@ -25,10 +25,9 @@ namespace YFS.Extension
             services.Configure<ApiBehaviorOptions>(options => { options.SuppressModelStateInvalidFilter = true; });
             var mapperConfig = new MapperConfiguration(map =>
             {
-                //map.AddProfile<TeacherMappingProfile>();
-                //map.AddProfile<StudentMappingProfile>();
                 map.AddProfile<UserMappingProfile>();
                 map.AddProfile<AccountGroupMappingProfile>();
+                map.AddProfile<AccountTypeMappingProfile>();
             });
             services.AddSingleton(mapperConfig.CreateMapper());
         }

@@ -1,6 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-
-namespace YFS.Core.Dtos
+﻿namespace YFS.Core.Dtos
 {
     public class AccountGroupDto
     {
@@ -14,11 +12,4 @@ namespace YFS.Core.Dtos
 
         public int GroupOrederBy { get; set; }
     }
-
-    /*
-    public abstract class AccountGroupUpdateDto
-    {
-        [Required(ErrorMessage = "AccountGroupNameEn is a required field.")]
-        public string? AccountGroupNameEn { get; set; }
-    }*/
 }

@@ -8,7 +8,7 @@ namespace YFS.Repo.Data
     {
         public DbSet<AccountGroup> AccountGroups { get; set; } //= null!;
         public DbSet<Account> Accounts { get; set; }
-        public DbSet<AccountType> AccountsType { get; set; }
+        public DbSet<AccountType> AccountTypes { get; set; }
         public DbSet<Currency> Currencies { get; set; } //= null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
@@ -32,12 +32,6 @@ namespace YFS.Repo.Data
 
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CurrencyData());
-
-
-            /*modelBuilder.Entity<User>().HasData(
-                    new User { Name = "Tom", Age = 37 },
-                    new User { Id = 2, Name = "Bob", Age = 41 }
-            );*/
         } 
     }
 }
