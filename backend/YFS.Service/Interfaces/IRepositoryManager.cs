@@ -4,6 +4,7 @@
     {
         IAccountGroupRepository AccountGroup { get; }
         IAccountTypeRepository AccountType { get; }
+        IAccountRepository Account { get; }
         IUserAuthenticationRepository UserAuthentication { get; }
         Task SaveAsync();
     }
