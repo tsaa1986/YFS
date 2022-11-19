@@ -45,5 +45,15 @@ namespace YFS.Controllers
             }
         }
 
+        [HttpPut]
+        public async Task<IActionResult> UpdateAccount([FromBody] AccountDto account)
+        {
+            //var accountData = HttpContext.Items["account"] as Account;
+            var accountData = _mapper.Map<Account>(account);
+            _mapper.Map(account, accountData);
+            await _repository.Account.UpdateAccount(accountData);
+            await _repository.SaveAsync();
+            return NoContent();
+        }
     }
 }

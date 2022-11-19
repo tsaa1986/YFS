@@ -34,6 +34,5 @@ namespace YFS.Controllers
                 return StatusCode(500, "Internal server error");
             }
         }
-
     }
 }

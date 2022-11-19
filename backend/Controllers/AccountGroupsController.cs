@@ -51,7 +51,6 @@ namespace YFS.Data.Controllers
         {
             accountGroup.UserId = userid;
 
-            //var accountGroupData = HttpContext.Items["accountGroup"] as AccountGroup;
             var accountGroupData = _mapper.Map<AccountGroup>(accountGroup);
 
             _mapper.Map(accountGroup, accountGroupData);
