@@ -7,11 +7,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using YFS.Extension;
 using YFS.Repo.Data;
+using Microsoft.Net.Http.Headers;
 
 namespace YFS
 {
     public class Startup
     {
+        string ConfigCors = "_ConfigCors";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -24,22 +26,25 @@ namespace YFS
         {
             var connectionString =
                 Configuration.GetConnectionString("DefaultConnection");
-           
+
             services.AddDbContext<RepositoryContext>(options => options.UseSqlServer(connectionString));
             ServiceExtension.ConfigureRepositoryManager(services);
             ServiceExtension.ConfigureIdentity(services);
             ServiceExtension.RegisterDependencies(services);
             services.AddAuthentication();
-            
+            //overview securite rules for cors
+            services.AddCors(options => options
+            .AddPolicy(name: ConfigCors,
+                      policy =>
+                      {
+                          policy
+                          .WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+                      }));
             ServiceExtension.ConfigureMapping(services);
             ServiceExtension.ConfigureJWT(services, Configuration);
-            
-            //services.AddControllersWithViews();
 
             //swagger api
             services.AddSwaggerGen(c => c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo {Title="My Api",Version="v1" }));
-
-            //services.AddRazorPages();
 
             //make the data repository available for dependency injection
             //The AddScoped method means that only one instance of the DataRepository class is created in a given HTTP request.This means
@@ -73,6 +78,7 @@ namespace YFS
 
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseCors(ConfigCors);
 
             app.UseEndpoints(endpoints =>
             {
