@@ -14,14 +14,14 @@ add user
 add account
 
 {
-  "id": 0,
+  "id": 1,
   "accountGroupId": 1,
   "currencyId": 840,
   "bankId": 0,
   "name": "first account",
   "openingDate": "2022-11-18T09:26:48.878Z",
   "note": "note for account",
-  "balance": 1000.56
+  "balance": 1313
 }
 
 

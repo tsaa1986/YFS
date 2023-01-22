@@ -21,4 +21,24 @@ $Enable-Migrations -StartUpProjectName YFS -ContextProjectName ApplicationContex
 $Add-Migration Initial
 update-database -Context RepositoryContext
 
-$dotnet ef database update --project "C:\Users\Admin\Google Drive\PROJECTS\NET\YFS\backend"
+1. Open Package Manager console. Be sure the target project for nuget is set before you run the following
+
+2. enable-migrations -contexttypename Infrastructure.Database.DatabaseContext -Force
+
+   --- this will create migration folder and configuration.cs
+
+3. add-migration -ConfigurationTypeName Infrastructure.Migrations.Configuration "InitialCreate" 
+
+     --- class should be inherited from DbMigrationsConfiguration
+
+     ---this create scafolding of up/down method
+
+    ---current  snapshot of code first
+
+4. update-database -ConfigurationTypeName Infrastructure.Migrations.Configuration -script
+
+    ---This will create a sql script which can be handed down to DBA.  
+
+    --Simply remove -script if you want it to rectify immediately to database.
+
+5. Execute the following script to sql server
