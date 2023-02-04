@@ -71,7 +71,7 @@ namespace YFS.Data.Controllers
         {
             return !await _repository.UserAuthentication.ValidateUserAsync(user)
                 ? Unauthorized()
-                : Ok(new { Token = await _repository.UserAuthentication.CreateTokenAsync() });
+                : Ok(new { Token = await _repository.UserAuthentication.CreateTokenAsync(), userId = await _repository.UserAuthentication.GetUserId(user) });
         }
     }
 }
