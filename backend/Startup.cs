@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using YFS.Extension;
 using YFS.Repo.Data;
 using Microsoft.Net.Http.Headers;
+using System;
 
 namespace YFS
 {
@@ -38,7 +39,9 @@ namespace YFS
                       policy =>
                       {
                           policy
-                          .WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+                          //.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+                          //.SetIsOriginAllowed("localhost");
+                          .WithOrigins("http://localhost:3000", "http://localhost:3001").AllowAnyMethod().AllowAnyHeader().AllowCredentials();                          
                       }));
             ServiceExtension.ConfigureMapping(services);
             ServiceExtension.ConfigureJWT(services, Configuration);

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace YFS.Data.Controllers
         }
 
         [HttpGet("{userId}")]
+        [Authorize]
         public async Task<IActionResult> GetAccountGroupsForUser(string userId)
         {
             try
