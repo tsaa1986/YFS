@@ -41,5 +41,10 @@ $ eval "$(ssh-agent -s)"
 #add private key
 $ ssh-add ~/.ssh/id_ed25519
 
+WhoAmI@t-test MINGW64 /d/DATAGOOGLE/Projects/NET/YFS (develop)
+$ ssh-add C:/Users/WhoAmI/Documents/key/tsaa
+Enter passphrase for C:/Users/WhoAmI/Documents/key/tsaa:
+Identity added: C:/Users/WhoAmI/Documents/key/tsaa (tsymbal.anton@gmail.com)
+
 
 git clone git@github.com:tsaa1986/MyMoney.git
