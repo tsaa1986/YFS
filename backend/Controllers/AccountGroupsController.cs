@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
@@ -19,13 +21,21 @@ namespace YFS.Data.Controllers
         {            
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet()]
         [Authorize]
-        public async Task<IActionResult> GetAccountGroupsForUser(string userId)
+        public async Task<IActionResult> GetAccountGroupsForUser()
         {
             try
             {
-                var accountGroups = await _repository.AccountGroup.GetAccountGroupsForUser(userId, trackChanges: false);
+                //var handler = new JwtSecurityTokenHandler();
+                //string authHeader = Request.Headers["Authorization"];
+                //authHeader = authHeader.Replace("Bearer ", "");
+                //var jsonToken = handler.ReadToken(authHeader);
+                //var tokenS = handler.ReadToken(authHeader) as JwtSecurityToken;
+                //var userid = tokenS.Claims.First(claim => claim.Type == "userId").Value;
+
+                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
+                var accountGroups = await _repository.AccountGroup.GetAccountGroupsForUser(userid, trackChanges: false);
                 var accountGroupsDto = _mapper.Map<IEnumerable<AccountGroupDto>>(accountGroups);
                 return Ok(accountGroupsDto);
             }
