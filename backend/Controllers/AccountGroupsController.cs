@@ -27,13 +27,6 @@ namespace YFS.Data.Controllers
         {
             try
             {
-                //var handler = new JwtSecurityTokenHandler();
-                //string authHeader = Request.Headers["Authorization"];
-                //authHeader = authHeader.Replace("Bearer ", "");
-                //var jsonToken = handler.ReadToken(authHeader);
-                //var tokenS = handler.ReadToken(authHeader) as JwtSecurityToken;
-                //var userid = tokenS.Claims.First(claim => claim.Type == "userId").Value;
-
                 string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
                 var accountGroups = await _repository.AccountGroup.GetAccountGroupsForUser(userid, trackChanges: false);
                 var accountGroupsDto = _mapper.Map<IEnumerable<AccountGroupDto>>(accountGroups);
@@ -45,10 +38,11 @@ namespace YFS.Data.Controllers
             }
         }
 
-        [HttpPost("{userid}")]
-        public async Task<IActionResult> CreateAccountGroupForUser(string userid, [FromBody] AccountGroupDto accountGroup)
+        [HttpPost()]
+        [Authorize]
+        public async Task<IActionResult> CreateAccountGroupForUser([FromBody] AccountGroupDto accountGroup)
         {
-            accountGroup.UserId = userid;
+            accountGroup.UserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
             var accountGroupData = _mapper.Map<AccountGroup>(accountGroup);
 
             await _repository.AccountGroup.CreateAccountGroupForUser(accountGroupData);
@@ -58,10 +52,11 @@ namespace YFS.Data.Controllers
             return Ok(accountGroupReturn);
         }
 
-        [HttpPut("{userid}")]
-        public async Task<IActionResult> UpdateCreateGroupForUser(string userid, [FromBody] AccountGroupDto accountGroup)
+        [HttpPut()]
+        [Authorize]
+        public async Task<IActionResult> UpdateCreateGroupForUser([FromBody] AccountGroupDto accountGroup)
         {
-            accountGroup.UserId = userid;
+            accountGroup.UserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
 
             var accountGroupData = _mapper.Map<AccountGroup>(accountGroup);
 

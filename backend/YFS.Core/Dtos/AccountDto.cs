@@ -13,6 +13,7 @@ namespace YFS.Core.Dtos
     public class AccountDto
     {
         public int Id { get; set; }
+        //add userid
         public int AccountGroupId { get; set; }
         public int CurrencyId { get; set; }
         public int BankId { get; set; }
