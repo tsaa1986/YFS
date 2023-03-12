@@ -1,0 +1,44 @@
+Инструментарий командной строки включается через NuGet посредством добавления зависимости для пакета Microsoft.
+EntityFrameworkCore.Tools и выполнением команды #dotnet ef
+
+Tools -> NuGet Package Manager -> Package Manager Console
+	
+Install-Package Microsoft.EntityFrameworkCore.SqlServer
+Install-Package Microsoft.EntityFrameworkCore.Tools
+
+Reverse Engineering, которая позволяет автоматически создать все необходимые классы по базе данных. 
+Чтобы воспользоваться этой функцией перейдем в Visual Studio к окну Package Manager Console. Его открыть можно, перейдя в меню Tools –> NuGet Package Manager –> Package Manager Console
+
+Scaffold-DbContext "Server=localhost;Database=helloappdb;Trusted_Connection=True;" Microsoft.EntityFrameworkCore.SqlServer
+
+
+$dotnet ef database update
+
+
+Добавление миграций
+$Enable-migrations
+$Enable-Migrations -StartUpProjectName YFS -ContextProjectName ApplicationContext -verbose
+$Add-Migration Initial
+update-database -Context RepositoryContext
+
+1. Open Package Manager console. Be sure the target project for nuget is set before you run the following
+
+2. enable-migrations -contexttypename Infrastructure.Database.DatabaseContext -Force
+
+   --- this will create migration folder and configuration.cs
+
+3. add-migration -ConfigurationTypeName Infrastructure.Migrations.Configuration "InitialCreate" 
+
+     --- class should be inherited from DbMigrationsConfiguration
+
+     ---this create scafolding of up/down method
+
+    ---current  snapshot of code first
+
+4. update-database -ConfigurationTypeName Infrastructure.Migrations.Configuration -script
+
+    ---This will create a sql script which can be handed down to DBA.  
+
+    --Simply remove -script if you want it to rectify immediately to database.
+
+5. Execute the following script to sql server

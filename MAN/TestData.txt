@@ -1,0 +1,38 @@
+
+
+add user
+
+{
+  "firstName": "Anton",
+  "lastName": "Testovich",
+  "userName": "tsaa",
+  "password": "123$qweR",
+  "email": "tsaa2@gmail.com",
+  "phoneNumber": "010203045"
+}
+
+add account
+
+{
+  "id": 1,
+  "accountGroupId": 1,
+  "currencyId": 840,
+  "bankId": 0,
+  "name": "first account",
+  "openingDate": "2022-11-18T09:26:48.878Z",
+  "note": "note for account",
+  "balance": 1313
+}
+
+
+
+update group
+{
+  "accountGroupId": 3,
+  "userId": "string",
+  "accountGroupNameRu": "ru group",
+  "accountGroupNameEn": "en group",
+  "accountGroupNameUa": "ua group",
+  "groupOrederBy": 2
+}
+
