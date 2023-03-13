@@ -65,7 +65,10 @@ const App: React.FC = () => {
         </Sider>
         <Layout className="site-layout">
           <Header style={{ padding: 0, background: colorBgContainer }} />
-          <Content style={{ margin: '0 16px' }}>
+          <Content style={{ margin: "24px 16px",
+                padding: 24,
+                background: "#fff",
+                minHeight: 280 }}>
             {/*<Breadcrumb style={{ margin: '16px 0' }}>
               <Breadcrumb.Item>User</Breadcrumb.Item>
               <Breadcrumb.Item>Bill</Breadcrumb.Item>
