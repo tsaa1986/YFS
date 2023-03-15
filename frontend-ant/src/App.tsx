@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate, Routes, Route, Link, useNavigate,useLocation } from 'react-router-dom';
+import { Navigate, Routes, Route, Link, useNavigate,useLocation, NavLink } from 'react-router-dom';
 import { Login } from './components/AccountManagement/Login';
 import { Main } from './components/MainLayout/Main';
 import {
@@ -32,9 +32,14 @@ function getItem(
     } as MenuItem;
   }
 
+  const Accounts = () => {
+    return <h4> Accounts</h4>
+   }
+  
+
 const items: MenuItem[] = [
-  getItem("/", <Link to={"/"}>{'Home Page'}</Link>, '1', <PieChartOutlined />),
-  getItem("/accounts", <Link to={"/accounts"}>{'Accounts'}</Link>, '2', <DesktopOutlined />),
+  getItem("/", <NavLink to={"/"}>{'Home Page'}</NavLink>, '1', <PieChartOutlined />),
+  getItem("/accounts", <NavLink to={"/accounts"}>{<Accounts />}</NavLink>, '2', <DesktopOutlined />),
   getItem("/budget",<Link to={"/budget"}>{'Budget'}</Link>, 'sub1', <UserOutlined />, ),
   getItem("/reports",<Link to={"/reports"}>{'Reports'}</Link>, '10', <FileOutlined />),
   getItem("/deposits",<Link to={"/deposits"}>{'Deposits'}</Link>, '9', <DesktopOutlined />),
@@ -60,9 +65,27 @@ const SideMenu:React.FC = () => {
 const Budget = () => {
   return <h4> Budget </h4>
  }
-const Accounts = () => {
-  return <h4> Accounts</h4>
+
+ const HomePage = () => {
+  return <h4> HomePage </h4>
  }
+ const Reports = () => {
+  return <h4> Reports </h4>
+ }
+
+ const RouteApp = ({ component: Component, rest }: any) => {
+  return (
+    <Route
+      {...rest}
+      render={(routeProps:any) => (
+        <Layout>
+          <Component {...routeProps} />
+        </Layout>
+      )}
+    />
+  );
+};
+
 
 
 
@@ -90,6 +113,36 @@ const App: React.FC = () => {
 
 
   return (
+  <Routes>
+    <Route path="/login" element={<Login />}/>
+
+    <Route path="/" element={<MainLayout children={HomePage} />} />
+    <Route path="/accounts" element={<MainLayout children={Accounts} />} />
+    <Route path="/budget" element={<MainLayout children={Budget} />} />
+    <Route path="/reports" element={<MainLayout children={Reports} />} />
+  </Routes>
+  );
+};
+
+/*
+const RestrictedRoute = ({component: Component, authUser, ...rest}:any) =>
+    <Route
+        {...rest}
+        render={props  =>
+            authUser
+                ? <Component {...props} />
+                : <Redirect
+                    to={{
+                        pathname: '/login',
+                        state: {from: props.location}
+                    }}
+                />}
+    />
+*/
+
+const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
+
+  return(
     <Layout style={{ minHeight: '100vh' }}>
         <SideMenu />
 
@@ -99,19 +152,15 @@ const App: React.FC = () => {
               padding: 24,
               background: "#fff",
               minHeight: 280 }}>
-    <Routes>
-      <Route path="/accounts" element={<Accounts />} />
-      <Route path="/budget" element={<Budget />} />
-      <Route path="/settings/accountGroup" element={<div>accountGroups configuration</div> } />
-    </Routes>
+                <Component/>
+
         </Content>
 
         <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
         </Layout>
     </Layout>
-
-  );
-};
+  )
+}
 
 
 export default App;
