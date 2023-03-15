@@ -11,6 +11,7 @@ import {
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
+import { Register } from './components/AccountManagement/Register';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -115,6 +116,7 @@ const App: React.FC = () => {
   return (
   <Routes>
     <Route path="/login" element={<Login />}/>
+    <Route path="/register" element={<Register />}/>
 
     <Route path="/" element={<MainLayout children={HomePage} />} />
     <Route path="/accounts" element={<MainLayout children={Accounts} />} />
