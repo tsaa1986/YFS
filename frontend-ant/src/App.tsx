@@ -111,9 +111,9 @@ const App: React.FC = () => {
   useEffect(() => {
     // Checking if user is not loggedIn
     console.log('effect nav=' + isLoggedIn )
-    if (jwtAccess_token !== null)
-      { navigate("/") } 
-    else
+    //if (jwtAccess_token !== null)
+    //  { navigate("/") } 
+    //else
       if(selectedKey === '/') {
           if (isLoggedIn) {
             navigate("/");
@@ -166,7 +166,6 @@ const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
               background: "#fff",
               minHeight: 280 }}>
                 <Component/>
-
         </Content>
 
         <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>

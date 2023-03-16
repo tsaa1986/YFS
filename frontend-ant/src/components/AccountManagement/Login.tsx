@@ -11,13 +11,19 @@ export type StateTypeProps = {
     display: string | null
 }
 
+type handleFinishTypeProps = {
+    username: "string"
+    password: "string"
+}
+
 export const Login: React.FC<any> = ({setisLoggedIn}) => {
  const navigate = useNavigate();
  const [state, setState] = useState<StateTypeProps>({showError: false, errorMsg: "", display: "login"})
 
- const handleFinish = (values: any) => {        
+ const handleFinish = (values: handleFinishTypeProps) => {        
     //this.loginUser(values);
-    authAPI.login("demo","123$qweR").then(
+    console.log(values);
+    authAPI.login(values.username, values.password).then(
         res => { 
             if (res != false) {
                 console.log(res)
