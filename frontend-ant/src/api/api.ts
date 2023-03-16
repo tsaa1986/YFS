@@ -84,9 +84,13 @@ export const authAPI = {
         .then(
             response => {
                 token = response.data.token;
-                saveJwtCookie(token); 
-                console.log("function get saved token from cookie:" + CookieService.get('jwtAccess_token'));
-                return token;
+
+                if (response.status === 200){
+                    saveJwtCookie(token); 
+                    console.log("function get saved token from cookie:" + CookieService.get('jwtAccess_token'));
+                    return token;
+                    }
+                    else return false;
             }
         );     
     },

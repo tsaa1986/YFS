@@ -12,6 +12,7 @@ import {
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { Register } from './components/AccountManagement/Register';
+import CookieService from './services/CookieService';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -88,8 +89,6 @@ const Budget = () => {
 };
 
 
-
-
 const App: React.FC = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
@@ -97,12 +96,24 @@ const App: React.FC = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
+  const [jwtAccess_token, setJwtToken] = useState(CookieService.get('jwtAccess_token'));
+
   const [isLoggedIn, setisLoggedIn] = useState(false);
 
   const selectedKey = useLocation().pathname
 
+  useEffect(()=>{
+    if (jwtAccess_token !== null) {
+      setisLoggedIn(true)
+    }
+  },[jwtAccess_token])
+
   useEffect(() => {
     // Checking if user is not loggedIn
+    console.log('effect nav=' + isLoggedIn )
+    if (jwtAccess_token !== null)
+      { navigate("/") } 
+    else
       if(selectedKey === '/') {
           if (isLoggedIn) {
             navigate("/");
@@ -115,7 +126,7 @@ const App: React.FC = () => {
 
   return (
   <Routes>
-    <Route path="/login" element={<Login />}/>
+    <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
     <Route path="/register" element={<Register />}/>
 
     <Route path="/" element={<MainLayout children={HomePage} />} />

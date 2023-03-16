@@ -1,18 +1,35 @@
 import React, {useState, useEffect} from "react";
-import { NavLink } from 'react-router-dom';
+import { NavLink,redirect,useNavigate} from 'react-router-dom';
 import { Layout, Form, Button, Input, Typography, Alert, Card } from "antd";
+import { authAPI } from "../../api/api";
 
 const { Title } = Typography;
 
-export const Login = () => {
- const [state, setState] = useState({showError: false, errorMsg: "", display: "login"})
-
- const handleFinish = (values) => {        
-    //this.loginUser(values);
-    console.log('handlefinish')
+export type StateTypeProps = {
+    showError: Boolean | null
+    errorMsg: string | null
+    display: string | null
 }
 
-const handlePasswordReminder = (values) => {
+export const Login: React.FC<any> = ({setisLoggedIn}) => {
+ const navigate = useNavigate();
+ const [state, setState] = useState<StateTypeProps>({showError: false, errorMsg: "", display: "login"})
+
+ const handleFinish = (values: any) => {        
+    //this.loginUser(values);
+    authAPI.login("demo","123$qweR").then(
+        res => { 
+            if (res != false) {
+                console.log(res)
+                setisLoggedIn(true);
+                navigate("/");
+            } else console.log(res);
+        }
+    )
+    console.log('handlefinish');
+}
+
+const handlePasswordReminder = (values:any) => {
     console.log('handlePasswordReminder')
 }
 
@@ -38,7 +55,7 @@ return(
                     </Form.Item>
 
                     <div className="reset-password text-right mt-3 mb-3">
-                        <span className="pointer" onClick={() => setState({ display: "password"})}>Forgot Password</span>
+                        <span className="pointer" onClick={() => setState({ showError: null, errorMsg: "", display: "password"})}>Forgot Password</span>
                     </div>
 
                     <div className="button-row mt-2 mb-3 text-center">
@@ -75,7 +92,7 @@ return(
                 </div>
 
                 <div className="reset-password text-right mt-3">
-                    <span className="pointer" onClick={() => setState({ display: "login" })}>Back to Login</span>
+                    <span className="pointer" onClick={() => setState({ showError: null, errorMsg:"", display: "login" })}>Back to Login</span>
                 </div>
             </Form>          
         </div>
