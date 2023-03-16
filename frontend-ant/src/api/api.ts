@@ -78,7 +78,16 @@ export enum ResponseCodesEnum {
     Error = 1
 }
 
+export type UserRegistrationType = {
+    firstName: string | null,
+    lastName: string | null,
+    userName:	string,
+    password:	string,
+    email: string | null,
+    phoneNumber: string | null}
+
 export const authAPI = {
+    //me() who am i from jwt
     login (userName: string, password: string) {
         return instance.post<LoginResponseType>(`${BASE_URL}/Authentication/sign-in`, { userName, password })
         .then(
@@ -94,6 +103,23 @@ export const authAPI = {
             }
         );     
     },
+    signUp (user: UserRegistrationType) {
+        console.log('user form: ', user);
+        return (
+            instance.post<any>(`${BASE_URL}/Authentication/sign-up`, user).then(
+               response => { 
+                if (response.status === 201)
+                { 
+                    this.login(user.userName, user.password).then(
+
+                    );
+                    
+                    return response.status
+                }
+                }
+            )
+        )
+    }
     /*logout () {
         return instan.delete(`Authentication/sign-in`)
     }*/

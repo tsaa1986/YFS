@@ -1,13 +1,48 @@
 import React from 'react';
 import { Form, Button, Input, Checkbox } from 'antd';
+import { authAPI, UserRegistrationType } from '../../api/api';
+import { useNavigate } from 'react-router-dom';
 //import { userService } from 'services/UserService.js';
 //import SystemContext from 'context/SystemContext';
 //import { notify } from 'util/Notify';
 
 export const RegisterUser:React.FC = () => {
-   
+    const navigate = useNavigate();
+// submit event
+const handleOk = (values: UserRegistrationType) => {
+    authAPI.signUp(values).then(
+        res => { 
+            console.log('res ' + res)
+            if (res === 201){
+                
+                navigate("/");
+            }
+        }
+    )
+    //setState({ loading: true });
+    
+    //values.appId = this.context.appId;
+/*       userService.post(values)
+        .then(data => {
+
+            if(this.props.onSuccess) {
+                this.props.onSuccess(values);
+            }
+                
+            return;
+        })
+        .catch(err => {
+            notify.error(err);
+        })
+        .finally(() => {
+            this.setState({
+                loading: false
+            });
+        });   */                     
+}
+
     return(
-        <Form labelCol={{ span: 10 }} wrapperCol={{ span: 14 }} //onFinish={this.handleOk}
+        <Form labelCol={{ span: 10 }} wrapperCol={{ span: 14 }} onFinish={handleOk}
         >
 
         <Form.Item 
