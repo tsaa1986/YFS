@@ -2,6 +2,7 @@ import React, {useState, useEffect} from "react";
 import { NavLink,redirect,useNavigate} from 'react-router-dom';
 import { Layout, Form, Button, Input, Typography, Alert, Card } from "antd";
 import { authAPI } from "../../api/api";
+import { UserOutlined, LockOutlined } from '@ant-design/icons';
 
 const { Title } = Typography;
 
@@ -39,10 +40,9 @@ const logInDemoUser = () => {
     authAPI.login("demo", "123$qweR").then(
         res => { 
             if (res != false) {
-                console.log(res)
                 setisLoggedIn(true);
                 navigate("/");
-            } else console.log(res);
+            } 
         }
     )
 }
@@ -63,13 +63,19 @@ return(
                     <Form.Item
                         name="username"
                         rules={[{ required: true, message: 'Enter a username' }]}>
-                        <Input placeholder="username" />
+                        <Input 
+                            prefix={<UserOutlined className="site-form-item-icon" />}
+                            placeholder="username"
+                        />
                     </Form.Item> 
 
                     <Form.Item
                         name="password"
                         rules={[{ required: true, message: 'Enter a password' }]}>
-                        <Input placeholder="password" type="password" />
+                        <Input 
+                            prefix={<LockOutlined className="site-form-item-icon" />}
+                            placeholder="password" type="password" 
+                        />
                     </Form.Item>
 
                     <div className="reset-password text-right mt-3 mb-3">
