@@ -35,6 +35,18 @@ export const Login: React.FC<any> = ({setisLoggedIn}) => {
     console.log('handlefinish');
 }
 
+const logInDemoUser = () => {
+    authAPI.login("demo", "123$qweR").then(
+        res => { 
+            if (res != false) {
+                console.log(res)
+                setisLoggedIn(true);
+                navigate("/");
+            } else console.log(res);
+        }
+    )
+}
+
 const handlePasswordReminder = (values:any) => {
     console.log('handlePasswordReminder')
 }
@@ -68,6 +80,10 @@ return(
                         <Button type="primary" htmlType="submit" className="btn-login" /*loading={this.context.loading}*/>
                             Login
                         </Button>              
+                    </div>
+
+                    <div className="reset-password text-right mt-3 mb-3">
+                        <span className="pointer" onClick={logInDemoUser}>Use demo mode</span>
                     </div>
                 </Form>
 
