@@ -93,29 +93,42 @@ const Budget = () => {
 const App: React.FC = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
-  const {
-    token: { colorBgContainer },
-  } = theme.useToken();
-
-  let authUserFromCookie = authAPI.me();
-
-  const [authUser, setAuthUser] = useState(authUserFromCookie);
-
-  const [jwtAccess_token, setJwtToken] = useState(CookieService.get('jwtAccess_token'));
+  //const { token: { colorBgContainer } } = theme.useToken();
 
   const [isLoggedIn, setisLoggedIn] = useState(false);
 
+  let authUserFromCookie = authAPI.me()
+    ?.then( res => {
+      console.log(res)
+      //setisLoggedIn(true)
+    })
+  let jwtToken = CookieService.get('jwtAccess_token');
+
+  const [authUser, setAuthUser] = useState({});
+  const [jwtAccess_token, setJwtToken] = useState("");
   const selectedKey = useLocation().pathname
 
+  // forward to the landing page
+  /*
+  if (useLocation().pathname === '/') {
+      if (authUserFromCookie === null) {                
+        ( navigate('/login') );                                        
+      } else { ( navigate("/") ); }
+  }*/
 
-/*
+
   useEffect(()=>{
     if (jwtAccess_token !== null) {
-      setisLoggedIn(true)
+      //debugger
+      //authAPI.me()?.then( res => { console.log(res)
+        //setisLoggedIn(true)
+        //setAuthUser(res)
+      //})
+      //setisLoggedIn(true)
     }
-  },[jwtAccess_token])*/
+  },[jwtAccess_token])
 
-  useEffect(() => {
+  /*useEffect(() => {
     // Checking if user is not loggedIn
     console.log('effect nav=' + isLoggedIn )
     //if (jwtAccess_token !== null)
@@ -127,9 +140,8 @@ const App: React.FC = () => {
           } else {
             navigate("/login");
           }
-    }
-  }, [navigate, isLoggedIn]);
-
+      }
+  }, [navigate, isLoggedIn]);*/
 
   return (
   <div id="app-main" className="app-main">

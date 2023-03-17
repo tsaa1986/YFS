@@ -108,11 +108,11 @@ export const authAPI = {
          return instancePrivate.get<UserAccountType>(`${BASE_URL}/Authentication/me`)
             .then(response => { 
                 //console.log(response.status);
+                //debugger
                 //console.log(response.data);
-                return response;
+                return response.data;
             });
         }
-
     },
     login (userName: string, password: string) {
         return instance.post<LoginResponseType>(`${BASE_URL}/Authentication/sign-in`, { userName, password })
