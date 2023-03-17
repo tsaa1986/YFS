@@ -84,10 +84,36 @@ export type UserRegistrationType = {
     userName:	string,
     password:	string,
     email: string | null,
-    phoneNumber: string | null}
+    phoneNumber: string | null
+}
+
+export type UserAccountType = {
+    firstName: string | null,
+    lastName: string | null,
+    userName:	string,
+    email: string | null,
+    phoneNumber: string | null
+}
 
 export const authAPI = {
     //me() who am i from jwt
+    me () {
+        let jwt: string | null = CookieService.get('jwtAccess_token');
+
+        if (jwt !== null) {
+            instancePrivate.interceptors.request.use ( config => {
+                config.headers.Authorization = `Bearer ${jwt}`;
+                return config;});
+        
+         return instancePrivate.get<UserAccountType>(`${BASE_URL}/Authentication/me`)
+            .then(response => { 
+                //console.log(response.status);
+                //console.log(response.data);
+                return response;
+            });
+        }
+
+    },
     login (userName: string, password: string) {
         return instance.post<LoginResponseType>(`${BASE_URL}/Authentication/sign-in`, { userName, password })
         .then(

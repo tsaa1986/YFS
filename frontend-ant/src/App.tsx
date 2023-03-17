@@ -13,6 +13,7 @@ import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { Register } from './components/AccountManagement/Register';
 import CookieService from './services/CookieService';
+import { authAPI } from './api/api';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -96,17 +97,23 @@ const App: React.FC = () => {
     token: { colorBgContainer },
   } = theme.useToken();
 
+  let authUserFromCookie = authAPI.me();
+
+  const [authUser, setAuthUser] = useState(authUserFromCookie);
+
   const [jwtAccess_token, setJwtToken] = useState(CookieService.get('jwtAccess_token'));
 
   const [isLoggedIn, setisLoggedIn] = useState(false);
 
   const selectedKey = useLocation().pathname
 
+
+/*
   useEffect(()=>{
     if (jwtAccess_token !== null) {
       setisLoggedIn(true)
     }
-  },[jwtAccess_token])
+  },[jwtAccess_token])*/
 
   useEffect(() => {
     // Checking if user is not loggedIn
@@ -125,15 +132,17 @@ const App: React.FC = () => {
 
 
   return (
-  <Routes>
-    <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
-    <Route path="/register" element={<Register />}/>
+  <div id="app-main" className="app-main">
+    <Routes>
+      <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
+      <Route path="/register" element={<Register />}/>
 
-    <Route path="/" element={<MainLayout children={HomePage} />} />
-    <Route path="/accounts" element={<MainLayout children={Accounts} />} />
-    <Route path="/budget" element={<MainLayout children={Budget} />} />
-    <Route path="/reports" element={<MainLayout children={Reports} />} />
-  </Routes>
+      <Route path="/" element={<MainLayout children={HomePage} />} />
+      <Route path="/accounts" element={<MainLayout children={Accounts} />} />
+      <Route path="/budget" element={<MainLayout children={Budget} />} />
+      <Route path="/reports" element={<MainLayout children={Reports} />} />
+    </Routes>
+  </div>
   );
 };
 

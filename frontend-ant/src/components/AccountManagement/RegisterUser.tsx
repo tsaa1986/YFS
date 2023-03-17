@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 //import SystemContext from 'context/SystemContext';
 //import { notify } from 'util/Notify';
 
-export const RegisterUser:React.FC = () => {
+export const RegisterUser:React.FC<any> = ({onSuccess}) => {
     const navigate = useNavigate();
 // submit event
 const handleOk = (values: UserRegistrationType) => {
@@ -14,8 +14,7 @@ const handleOk = (values: UserRegistrationType) => {
         res => { 
             console.log('res ' + res)
             if (res === 201){
-                
-                navigate("/");
+                onSuccess(values)
             }
         }
     )
