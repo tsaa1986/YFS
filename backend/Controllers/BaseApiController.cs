@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using YFS.Core.Models;
 using YFS.Service.Interfaces;
 
 namespace Controllers

@@ -123,5 +123,13 @@ namespace YFS.Service.Services
 
             return null;
         }
+        Task<User> IUserAuthenticationRepository.GetUserAccountById(string _userId)
+        {
+            if ((_userId != null) & (_userId != "")) {
+                var _user = _userManager.FindByIdAsync(_userId);
+                return _user;
+            }
+            return null;
+        }
     }
 }
