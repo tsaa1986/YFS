@@ -29,6 +29,7 @@ namespace YFS.Extension
                 map.AddProfile<AccountGroupMappingProfile>();
                 map.AddProfile<AccountTypeMappingProfile>();
                 map.AddProfile<AccountMappingProfile>();
+                map.AddProfile<UserAccountMappingProfile>();
             });
             services.AddSingleton(mapperConfig.CreateMapper());
         }

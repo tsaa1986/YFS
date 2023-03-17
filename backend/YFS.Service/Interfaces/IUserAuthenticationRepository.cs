@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using YFS.Core.Dtos;
-
+using YFS.Core.Models;
 
 namespace YFS.Service.Interfaces
 {
@@ -10,5 +10,6 @@ namespace YFS.Service.Interfaces
         Task<bool> ValidateUserAsync(UserLoginDto loginDto);
         Task<string> CreateTokenAsync();
         Task<string> GetUserId(UserLoginDto loginDto);
+        Task<User> GetUserAccountById(string _userId);
     }
 }

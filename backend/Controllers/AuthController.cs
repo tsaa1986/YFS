@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using Controllers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Service.Filters.ActionFilters;
@@ -38,10 +41,27 @@ namespace YFS.Data.Controllers
                 Password = adminPassword
             };*/
 
-          /*  var userResult = await _repository.UserAuthentication.RegisterUserAsync(user);
-            return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
+        /*  var userResult = await _repository.UserAuthentication.RegisterUserAsync(user);
+          return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
 
-        }*/
+      }*/
+        [HttpGet("me")]
+        [Authorize]
+        public async Task<IActionResult> Me()
+        {
+            try
+            {
+                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
+                var userAccount = await _repository.UserAuthentication.GetUserAccountById(userid);
+                //var userAccountDto = _mapper.Map<IEnumerable<UserAccountDto>>(userAccount);
+                var userAccountDto = _mapper.Map<UserAccountDto>(userAccount);
+                return Ok(userAccountDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         [HttpPost("sign-up")]
         [ServiceFilter(typeof(ValidationFilterAttribute))]
