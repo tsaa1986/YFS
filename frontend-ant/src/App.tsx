@@ -41,8 +41,8 @@ function getItem(
   
 
 const items: MenuItem[] = [
-  getItem("/", <NavLink to={"/"}>{'Home Page'}</NavLink>, '1', <PieChartOutlined />),
-  getItem("/accounts", <NavLink to={"/accounts"}>{<Accounts />}</NavLink>, '2', <DesktopOutlined />),
+  getItem("/", <Link to={"/"}>{'Home Page'}</Link>, '1', <PieChartOutlined />),
+  getItem("/accounts", <Link to={"/accounts"}>{<Accounts />}</Link>, '2', <DesktopOutlined />),
   getItem("/budget",<Link to={"/budget"}>{'Budget'}</Link>, 'sub1', <UserOutlined />, ),
   getItem("/reports",<Link to={"/reports"}>{'Reports'}</Link>, '10', <FileOutlined />),
   getItem("/deposits",<Link to={"/deposits"}>{'Deposits'}</Link>, '9', <DesktopOutlined />),
@@ -94,18 +94,27 @@ const App: React.FC = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   //const { token: { colorBgContainer } } = theme.useToken();
-
-  const [isLoggedIn, setisLoggedIn] = useState(false);
-
-  let authUserFromCookie = authAPI.me()
+  const [authUser, setAuthUser] = useState( () => {
+    authAPI.me()?.then( res => { 
+      console.log(res)
+      setisLoggedIn(true)
+    })
+  });
+  const [isLoggedIn, setisLoggedIn] = useState( false/*()=>{
+    console.log(authUser)
+    if ((authUser !== undefined)) return true 
+      else return false
+  }*/);
+  
+  console.log('loggedin: ' + isLoggedIn)
+  console.log('RENDER')
+  /*let authUserFromCookie = authAPI.me()
     ?.then( res => {
       console.log(res)
       //setisLoggedIn(true)
-    })
-  let jwtToken = CookieService.get('jwtAccess_token');
-
-  const [authUser, setAuthUser] = useState({});
-  const [jwtAccess_token, setJwtToken] = useState("");
+    })*/
+  //let jwtToken = CookieService.get('jwtAccess_token');
+  //const [jwtAccess_token, setJwtToken] = useState("");
   const selectedKey = useLocation().pathname
 
   // forward to the landing page
@@ -116,19 +125,7 @@ const App: React.FC = () => {
       } else { ( navigate("/") ); }
   }*/
 
-
-  useEffect(()=>{
-    if (jwtAccess_token !== null) {
-      //debugger
-      //authAPI.me()?.then( res => { console.log(res)
-        //setisLoggedIn(true)
-        //setAuthUser(res)
-      //})
-      //setisLoggedIn(true)
-    }
-  },[jwtAccess_token])
-
-  /*useEffect(() => {
+  useEffect(() => {
     // Checking if user is not loggedIn
     console.log('effect nav=' + isLoggedIn )
     //if (jwtAccess_token !== null)
@@ -141,7 +138,11 @@ const App: React.FC = () => {
             navigate("/login");
           }
       }
-  }, [navigate, isLoggedIn]);*/
+      if(selectedKey !== '/') {
+        if (isLoggedIn) {
+          navigate("/");
+        }}
+  }, [navigate, isLoggedIn]);
 
   return (
   <div id="app-main" className="app-main">
