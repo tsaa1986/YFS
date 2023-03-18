@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate, Routes, Route, Link, useNavigate,useLocation, NavLink } from 'react-router-dom';
+import { Navigate, Routes, Route, 
+  Link, useNavigate,useLocation, 
+  NavLink, Outlet } from 'react-router-dom';
 import { Login } from './components/AccountManagement/Login';
 import { Main } from './components/MainLayout/Main';
 import {
@@ -12,8 +14,7 @@ import {
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { Register } from './components/AccountManagement/Register';
-import CookieService from './services/CookieService';
-import { authAPI } from './api/api';
+import { authAPI, UserAccountType } from './api/api';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -76,104 +77,88 @@ const Budget = () => {
   return <h4> Reports </h4>
  }
 
- const RouteApp = ({ component: Component, rest }: any) => {
-  return (
-    <Route
-      {...rest}
-      render={(routeProps:any) => (
-        <Layout>
-          <Component {...routeProps} />
-        </Layout>
-      )}
-    />
-  );
-};
+const ProtectedRoute = ({ 
+  isAllowed, 
+  redirectPath = '/login', 
+  children } : any) => {
+  if (!isAllowed) {
+      return <Navigate to={redirectPath} replace />;
+    }
 
+  return children ? children : <Outlet />;
+};
 
 const App: React.FC = () => {
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   //const { token: { colorBgContainer } } = theme.useToken();
-  const [authUser, setAuthUser] = useState( () => {
+  const [isLoggedIn, setisLoggedIn] = useState(false);
+  
+  const [user, setUser] = useState(() => {
     authAPI.me()?.then( res => { 
       console.log(res)
       setisLoggedIn(true)
     })
   });
-  const [isLoggedIn, setisLoggedIn] = useState( false/*()=>{
-    console.log(authUser)
-    if ((authUser !== undefined)) return true 
-      else return false
-  }*/);
-  
+  const handleLogin = () => 
+    setUser( () => { 
+      let res = authAPI.me()
+      if (res === undefined) 
+        return null
+        else return res
+    });
+
+  const handleLogout = () => setUser();
+
   console.log('loggedin: ' + isLoggedIn)
   console.log('RENDER')
-  /*let authUserFromCookie = authAPI.me()
-    ?.then( res => {
-      console.log(res)
-      //setisLoggedIn(true)
-    })*/
-  //let jwtToken = CookieService.get('jwtAccess_token');
-  //const [jwtAccess_token, setJwtToken] = useState("");
+ 
   const selectedKey = useLocation().pathname
 
-  // forward to the landing page
-  /*
-  if (useLocation().pathname === '/') {
-      if (authUserFromCookie === null) {                
-        ( navigate('/login') );                                        
-      } else { ( navigate("/") ); }
-  }*/
-
   useEffect(() => {
-    // Checking if user is not loggedIn
-    console.log('effect nav=' + isLoggedIn )
-    //if (jwtAccess_token !== null)
-    //  { navigate("/") } 
-    //else
+    //console.log('effect nav=' + isLoggedIn + ' key:' + selectedKey  )
       if(selectedKey === '/') {
           if (isLoggedIn) {
             navigate("/");
           } else {
             navigate("/login");
+            return
           }
+      } 
+      if(selectedKey === '/login'){
+        if (isLoggedIn){
+          navigate("/")
+          return
+        }
       }
-      if(selectedKey !== '/') {
-        if (isLoggedIn) {
-          navigate("/");
-        }}
   }, [navigate, isLoggedIn]);
 
   return (
   <div id="app-main" className="app-main">
+
+    {/*{user ? (
+        <button onClick={handleLogout}>Sign Out</button>
+      ) : (
+        <button onClick={handleLogin}>Sign In</button>
+      )} */}
+      
+{/* переделать при логине устанавливать пользователя*/}
     <Routes>
       <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
       <Route path="/register" element={<Register />}/>
 
-      <Route path="/" element={<MainLayout children={HomePage} />} />
-      <Route path="/accounts" element={<MainLayout children={Accounts} />} />
-      <Route path="/budget" element={<MainLayout children={Budget} />} />
-      <Route path="/reports" element={<MainLayout children={Reports} />} />
+      <Route element={
+        <ProtectedRoute isAllowed={ isLoggedIn } />}>
+          <Route path="/" element={<MainLayout children={HomePage} />} />
+          <Route path="/accounts" element={<MainLayout children={Accounts} />} />
+          <Route path="/budget" element={<MainLayout children={Budget} />} />
+          <Route path="/reports" element={<MainLayout children={Reports} />} 
+        />
+      </Route>
     </Routes>
   </div>
   );
 };
-
-/*
-const RestrictedRoute = ({component: Component, authUser, ...rest}:any) =>
-    <Route
-        {...rest}
-        render={props  =>
-            authUser
-                ? <Component {...props} />
-                : <Redirect
-                    to={{
-                        pathname: '/login',
-                        state: {from: props.location}
-                    }}
-                />}
-    />
-*/
 
 const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
 
