@@ -43,7 +43,7 @@ function getItem(
 
 const items: MenuItem[] = [
   getItem("/", <Link to={"/"}>{'Home Page'}</Link>, '1', <PieChartOutlined />),
-  getItem("/accounts", <Link to={"/accounts"}>{<Accounts />}</Link>, '2', <DesktopOutlined />),
+  getItem("/accounts", <Link to={"/accounts"}>{'Accounts'}</Link>, '2', <DesktopOutlined />),
   getItem("/budget",<Link to={"/budget"}>{'Budget'}</Link>, 'sub1', <UserOutlined />, ),
   getItem("/reports",<Link to={"/reports"}>{'Reports'}</Link>, '10', <FileOutlined />),
   getItem("/deposits",<Link to={"/deposits"}>{'Deposits'}</Link>, '9', <DesktopOutlined />),
@@ -141,7 +141,7 @@ const App: React.FC = () => {
       ) : (
         <button onClick={handleLogin}>Sign In</button>
       )} */}
-      
+
 {/* переделать при логине устанавливать пользователя*/}
     <Routes>
       <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
