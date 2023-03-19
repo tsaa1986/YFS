@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 //import Layout from 'components/SimpleLayout';
 import { Typography, Card, Layout } from "antd";
-//import SystemContext from 'context/SystemContext';
 //import RegisterUser from './components/RegisterUser';
 //import { authenticationService } from 'services/AuthenticationService';
 import { RegisterUser } from './RegisterUser';

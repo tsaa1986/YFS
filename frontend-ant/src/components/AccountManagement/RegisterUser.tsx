@@ -41,8 +41,7 @@ const handleOk = (values: UserRegistrationType) => {
 }
 
     return(
-        <Form labelCol={{ span: 10 }} wrapperCol={{ span: 14 }} onFinish={handleOk}
-        >
+        <Form labelCol={{ span: 10 }} wrapperCol={{ span: 14 }} onFinish={handleOk}>
 
         <Form.Item 
             label="Username"
@@ -90,6 +89,20 @@ const handleOk = (values: UserRegistrationType) => {
                 ]}
         >
             <Input placeholder="email" />
+        </Form.Item>
+
+        <Form.Item 
+            label="Firstname"
+            name="firstName"
+        >
+            <Input placeholder="Firstname" />
+        </Form.Item>
+
+        <Form.Item 
+            label="Lastname"
+            name="lastName"
+        >
+            <Input placeholder="Lastname" />
         </Form.Item>
 
         <Form.Item 
