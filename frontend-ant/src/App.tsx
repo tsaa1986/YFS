@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Navigate, Routes, Route, 
-  Link, useNavigate,useLocation, 
+  Link, useNavigate, useLocation, 
   NavLink, Outlet } from 'react-router-dom';
 import { Login } from './components/AccountManagement/Login';
-import { Main } from './components/MainLayout/Main';
 import {
   DesktopOutlined,
   FileOutlined,
@@ -15,6 +14,12 @@ import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { Register } from './components/AccountManagement/Register';
 import { authAPI, UserAccountType } from './api/api';
+import { ReportsLayout } from './components/Reports/ReportsLayout';
+import { BudgetLayout } from './components/Budget/BudgetLayout';
+import { DepositsLayout } from './components/Deposits/DepositsLayout';
+import { AccountsLayout } from './components/Accounts/AccountsLayout';
+import { HomeLayout } from './components/Home/HomeLayout';
+//import { Header }  from './components/Header/Header';
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -36,21 +41,16 @@ function getItem(
     } as MenuItem;
   }
 
-  const Accounts = () => {
-    return <h4> Accounts</h4>
-   }
-  
-
 const items: MenuItem[] = [
   getItem("/", <Link to={"/"}>{'Home Page'}</Link>, '1', <PieChartOutlined />),
   getItem("/accounts", <Link to={"/accounts"}>{'Accounts'}</Link>, '2', <DesktopOutlined />),
-  getItem("/budget",<Link to={"/budget"}>{'Budget'}</Link>, 'sub1', <UserOutlined />, ),
-  getItem("/reports",<Link to={"/reports"}>{'Reports'}</Link>, '10', <FileOutlined />),
-  getItem("/deposits",<Link to={"/deposits"}>{'Deposits'}</Link>, '9', <DesktopOutlined />),
-  getItem("/settings",<Link to={"/settings"}>{'Settings'}</Link>, 'sub2', <TeamOutlined />, 
-    [ getItem("/settings/accountGroup",<Link to={"/settings/accountGroup"}>{'Account Group'}</Link>, '6'), 
-      getItem("/settings/accounts",<Link to={"/settings/accounts"}>{'Accounts'}</Link>, '8'), 
-      getItem("/settings/currency",<Link to={"/settings/currency"}>{'Currency'}</Link>, '11')
+  getItem("/deposits",<Link to={"/deposits"}>{'Deposits'}</Link>, '3', <DesktopOutlined />),
+  getItem("/budget",<Link to={"/budget"}>{'Budget'}</Link>, '4', <UserOutlined />, ),
+  getItem("/reports",<Link to={"/reports"}>{'Reports'}</Link>, '5', <FileOutlined />),
+  getItem("/settings",<Link to={"/settings"}>{'Settings'}</Link>, '10', <TeamOutlined />, 
+    [ getItem("/settings/accountGroup",<Link to={"/settings/accountGroup"}>{'Account Group'}</Link>, 'sub1'), 
+      getItem("/settings/accounts",<Link to={"/settings/accounts"}>{'Accounts'}</Link>, 'sub2'), 
+      getItem("/settings/currency",<Link to={"/settings/currency"}>{'Currency'}</Link>, 'sub3')
     ]),
 ];
 
@@ -65,17 +65,6 @@ const SideMenu:React.FC = () => {
     </Sider>
   );
 }
-
-const Budget = () => {
-  return <h4> Budget </h4>
- }
-
- const HomePage = () => {
-  return <h4> HomePage </h4>
- }
- const Reports = () => {
-  return <h4> Reports </h4>
- }
 
 const ProtectedRoute = ({ 
   isAllowed, 
@@ -149,10 +138,11 @@ const App: React.FC = () => {
 
       <Route element={
         <ProtectedRoute isAllowed={ isLoggedIn } />}>
-          <Route path="/" element={<MainLayout children={HomePage} />} />
-          <Route path="/accounts" element={<MainLayout children={Accounts} />} />
-          <Route path="/budget" element={<MainLayout children={Budget} />} />
-          <Route path="/reports" element={<MainLayout children={Reports} />} 
+          <Route path="/" element={<MainLayout children={HomeLayout} />} />
+          <Route path="/accounts" element={<MainLayout children={AccountsLayout} />} />
+          <Route path="/budget" element={<MainLayout children={BudgetLayout} />} />
+          <Route path="/reports" element={<MainLayout children={ReportsLayout} />} />
+          <Route path="/deposits" element={<MainLayout children={DepositsLayout} />} 
         />
       </Route>
     </Routes>
@@ -165,21 +155,19 @@ const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
   return(
     <Layout style={{ minHeight: '100vh' }}>
         <SideMenu />
-
       <Layout className="site-layout">
         <Header style={{ padding: 0, background: "colorBgContainer" }} />
         <Content style={{ margin: "24px 16px",
               padding: 24,
               background: "#fff",
-              minHeight: 280 }}>
+              minHeight: 380 }}>
                 <Component/>
         </Content>
 
-        <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ant UED</Footer>
+        <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ton@</Footer>
         </Layout>
     </Layout>
   )
 }
-
 
 export default App;
