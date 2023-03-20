@@ -35,7 +35,7 @@ export type AccountGroupType = {
     accountGroupId:	number,
     userId:	string,
     accountGroupNameRu:	string | null,
-    accountGroupNameEn:	string | null,
+    accountGroupNameEn:	string,
     accountGroupNameUa:	string | null,
     groupOrederBy: number}
 
@@ -60,10 +60,10 @@ export const accountGroups = {
                 });
     },
     addAccountGroup(accountGroup: AccountGroupType) {
-        debugger
+        //debugger
         return instancePrivate.post<AccountGroupType>(`${BASE_URL}/AccountGroups`,
         accountGroup
-        ).then(response => console.log(response));
+        )//.then(response => {return response}
     }
 }
 
