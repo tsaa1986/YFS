@@ -206,7 +206,7 @@ const handleSubmitAddGroupForm = () => {
       "accountGroupNameEn": form.getFieldValue('nameAccount'),
       "accountGroupNameRu": form.getFieldValue('nameAccount'),
       "accountGroupNameUa": form.getFieldValue('nameAccount'),
-      "groupOrederBy": 0,
+      "groupOrederBy": form.getFieldValue('groupOrderBy'),
       "userId": "" 
     }).then(response => {
         if (response.status === 200)
@@ -308,7 +308,7 @@ const AddAccountGroupForm: React.FC<AddAccountGroupFormPropsType> = (props) => {
                 onChange={(e) => {setAccountGroupName(e.currentTarget.value)}}/>
           </Form.Item>
 
-          <Form.Item 
+          <Form.Item name="groupOrderBy"
             label='Group Order By'>
             <InputNumber min={1} max={10} defaultValue={3} 
             />
