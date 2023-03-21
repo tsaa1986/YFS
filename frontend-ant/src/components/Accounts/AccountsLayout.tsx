@@ -1,5 +1,6 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Button, Tabs, Space,Table, Form, Input, Modal,InputNumber, Divider } from "antd";
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Tabs, Space,Table, Form, Input, Modal, InputNumber, Divider,
+  Checkbox, Select, DatePicker } from "antd";
 import { accountGroups, AccountGroupsResponseType } from '../../api/api';
 import './AccountsLayout.css';
 
@@ -84,31 +85,23 @@ const initialItemsAccountsGroup: initialItemsType = [
     },
   ];
 
-const AccountTabButton: Record<'left', React.ReactNode> = {
-    left: <Button className="tabs-extra-demo-button">Add Account</Button>,
-  };
-  
-
 export const AccountsTab: React.FC = () => { 
-    const [activeTabKey, setActiveTabKey] = useState('0');//useState(initialItemsAccountsGroup[0].key);
-    const [itemsAccountsGroup, setItems] = useState(initialItemsAccountsGroup);
-    const newTabIndex = useRef(0);
+  const [activeTabKey, setActiveTabKey] = useState('0');//useState(initialItemsAccountsGroup[0].key);
+  const [itemsAccountsGroup, setItems] = useState(initialItemsAccountsGroup);
+  const newTabIndex = useRef(0);
 
     useEffect( ()=>{ 
         console.log('SYNC_EFFECT_TABS');
         getAccountGroups();
       },[])
-    
     useEffect(
         ()=> {
          console.log(activeTabKey);
         }, [activeTabKey]
      )
- 
     const onChange = (newActiveKey: string) => {
        setActiveTabKey(newActiveKey);
      };
-   
     const add = () => {
          const newActiveKey = `newTab${newTabIndex.current++}`;
          const newPanes = [...itemsAccountsGroup];
@@ -117,7 +110,6 @@ export const AccountsTab: React.FC = () => {
          setItems(newPanes);
          setActiveTabKey(newActiveKey);
      };
-
     const addTabAccountGroup = (accountGroupItem: AccountGroupType) => {
         const newActiveKey = accountGroupItem.accountGroupId.toString()//`newTab${newTabIndex.current++}`;
         const newPanes = [...itemsAccountsGroup];
@@ -128,8 +120,6 @@ export const AccountsTab: React.FC = () => {
         setItems(newPanes);
         setActiveTabKey(newActiveKey);
     };
-
-
     const buildTabAccountsGroup = (accData:any) => {
         let newActiveKey = '0';//`newTab${newTabIndex.current++}`;
         const newPanes: any = [...initialItemsAccountsGroup]//[...itemsAccountsGroup];
@@ -151,7 +141,6 @@ export const AccountsTab: React.FC = () => {
         setActiveTabKey(newActiveKey);
         //setActiveKey(newActiveKey);
 }
-
 const remove = (targetKey: TargetKey) => {
     let newActiveKey = activeTabKey;
     let lastIndex = -1;
@@ -172,7 +161,6 @@ const newPanes = itemsAccountsGroup.filter((item) => item.key !== targetKey);
     setItems(newPanes);
     setActiveTabKey(newActiveKey);
 };
-
 const onEdit = (
     targetKey: React.MouseEvent | React.KeyboardEvent | string,
     action: 'add' | 'remove',
@@ -184,7 +172,6 @@ const onEdit = (
       remove(targetKey);
     }
 };
-
 const getAccountGroups = () => {
     accountGroups.get().then(
         res => {
@@ -195,13 +182,21 @@ const getAccountGroups = () => {
 }
 
 const [visibleAddGroupForm, setVisibleAddGroupForm] = useState(false);
+const [visibleAddAccountForm, setVisibleAddAccountForm] = useState(false);
 
 const showModalAddGroupForm = () => {
     setVisibleAddGroupForm(true)
   }
+const showModalAddAccountForm = () => {
+    setVisibleAddAccountForm(true)
+  }
 const handleCancelAddGroupForm = () => {
     setVisibleAddGroupForm(false)
     form.resetFields()
+  }
+const handleCancelAddAccountForm = () => {
+    setVisibleAddAccountForm(false)
+    formAddAccount.resetFields()
   }
 const handleSubmitAddGroupForm = () => {
     console.log('handle');
@@ -226,8 +221,37 @@ const handleSubmitAddGroupForm = () => {
     setVisibleAddGroupForm(false)
     //addTabAccountsGroup
 }
+const handleSubmitAddAccountForm = () => {
+  console.log('handle');
+  console.log(formAddAccount.getFieldValue('nameAccount'));
+/*
+  accountGroups.addAccountGroup({
+    "accountGroupId": 0,
+    "accountGroupNameEn": form.getFieldValue('nameAccount'),
+    "accountGroupNameRu": form.getFieldValue('nameAccount'),
+    "accountGroupNameUa": form.getFieldValue('nameAccount'),
+    "groupOrederBy": form.getFieldValue('groupOrderBy'),
+    "userId": "" 
+  }).then(response => {
+      if (response.status === 200)
+          {
+              console.log(response.data)
+              addTabAccountGroup(response.data)
+          }
+  });
+*/
+  formAddAccount.resetFields()
+  setVisibleAddAccountForm(false)
+  //addTabAccountsGroup
+}
+
+
+const AccountTabButton: Record<'left', React.ReactNode> = {
+  left: <Button className="tabs-extra-demo-button" onClick={showModalAddAccountForm}>Add Account</Button>,
+};
 
 const [form] = Form.useForm();
+const [formAddAccount] = Form.useForm();
 
 return(<div>
         <div className="accountsTab__container">
@@ -257,6 +281,12 @@ return(<div>
             onCreate={handleSubmitAddGroupForm}
             form={form}>
         </AddAccountGroupForm>
+        <AddAccountForm 
+            visible={visibleAddAccountForm}
+            onCancel={handleCancelAddAccountForm}
+            onCreate={handleSubmitAddAccountForm}
+            form={formAddAccount}>
+        </AddAccountForm>
 
         </div>
     </div>
@@ -326,6 +356,89 @@ const AddAccountGroupForm: React.FC<AddAccountGroupFormPropsType> = (props) => {
             <Input />
           </Form.Item>
         </Form>
+      </Modal>
+    </div>);
+  }
+
+type AddAccountFormPropsType = {
+    visible: any,//Boolean | undefined, 
+    onCancel:any, 
+    onCreate:any, 
+    form:any,
+    children: React.ReactNode
+  } 
+const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
+    //const {visible, onCancel, onCreate, form} = props
+    const [accountClosed, setAccountClosed] = useState<boolean>(false);
+    const [accountName, setAccountName] = useState('');
+
+    const { TextArea } = Input;
+    const { RangePicker } = DatePicker;
+    //debugger
+    return(<div>
+      <Modal
+        visible={props.visible}
+        title="Create a new Account"
+        okText="Create"
+        onCancel={props.onCancel}
+        onOk={() => {
+            props.form
+              .validateFields()
+              .then((values: any) => {
+                props.onCreate(values);
+              })
+              .catch((info: any) => {
+                console.log("Validate Failed:", info);
+              });
+            }
+          }
+        //onOk={onCreate}
+      >
+        <Checkbox
+          checked={accountClosed}
+          onChange={(e) => setAccountClosed(e.target.checked)}
+        >
+          Account is closed
+        </Checkbox>
+        <Form layout='vertical' 
+          labelCol={{ span: 8 }}
+          wrapperCol={{ span: 14 }}
+          form={props.form}
+          disabled={accountClosed}
+          style={{ maxWidth: 600 }}
+          >
+          <Form.Item name="nameAccount"
+            label='Name account'
+            rules={[{required: true, message: 'Please input account group name!'}]}>
+            <Input 
+                value={accountName} 
+                onChange={(e) => {setAccountName(e.currentTarget.value)}}/>
+          </Form.Item>
+          <Form.Item label="Account Group">
+            <Select>
+              <Select.Option value="accountGroup">AccountGroup</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Account Type">
+            <Select>
+              <Select.Option value="accountType">AccountType</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Currency">
+            <Select>
+              <Select.Option value="usd">usd</Select.Option>
+            </Select>
+          </Form.Item>
+          <Form.Item label="Openning Balance">
+            <InputNumber value={0.00}/>
+          </Form.Item>
+          <Form.Item label="Open Date Account">
+            <DatePicker />
+          </Form.Item>
+          <Form.Item label="Description">
+            <TextArea rows={2} />
+            </Form.Item>
+          </Form>
       </Modal>
     </div>);
   }
