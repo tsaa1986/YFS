@@ -76,7 +76,7 @@ type initialItemsType = {
 
 const initialItemsAccountsGroup: initialItemsType = [
     { label: 'Favorites', 
-    children:  <div>dvi</div>,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
+    children:  <TabDetails key={'0'} accountData={null}/>,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
     key: '0', 
     closable: false,
     },
@@ -124,10 +124,9 @@ export const AccountsTab: React.FC = () => {
 
 
     const buildTabAccountsGroup = (accData:any) => {
-        let newActiveKey = '';//`newTab${newTabIndex.current++}`;
-        const newPanes: any = [];//[...itemsAccountsGroup];
-        //let indexTab = '';
-        //newPanes.splice(0,1);
+        let newActiveKey = '0';//`newTab${newTabIndex.current++}`;
+        const newPanes: any = [...initialItemsAccountsGroup]//[...itemsAccountsGroup];
+
         if (accData.data[0] !== null)
           {
             newActiveKey = accData.data[0].accountGroupId.toString();
