@@ -176,6 +176,10 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Favorites")
+                        .HasColumnType("int")
+                        .HasColumnName("Favorites");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -218,7 +222,7 @@ namespace YFS.Repo.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR(100)");
 
-                    b.Property<int>("GroupOrederBy")
+                    b.Property<int>("GroupOrderBy")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")

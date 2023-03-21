@@ -14,6 +14,7 @@ namespace YFS.Core.Dtos
     {
         public int Id { get; set; }
         //add userid
+        public int Favorites { get; set; }
         public int AccountGroupId { get; set; }
         public int CurrencyId { get; set; }
         public int BankId { get; set; }

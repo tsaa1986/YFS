@@ -8,6 +8,8 @@ namespace YFS.Core.Models
     {
         [Column("AccountId")]
         public int Id { get; set; }
+        [Column("Favorites")]
+        public int Favorites { get; set; }
 
         [ForeignKey(nameof(AccountGroup))]
         public int AccountGroupId { get; set; }

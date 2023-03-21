@@ -10,6 +10,26 @@ namespace YFS.Repo.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "AccountTypes",
+                columns: table => new
+                {
+                    TypeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    NameUa = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
+                    NameRu = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
+                    NameEn = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
+                    NoteUa = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
+                    NoteRu = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
+                    NoteEn = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
+                    TypeOrederBy = table.Column<int>(type: "int", nullable: false, defaultValueSql: "0"),
+                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountTypes", x => x.TypeId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -52,6 +72,37 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Categories",
+                columns: table => new
+                {
+                    CategoryId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    RootId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
+                    Note = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Currencies",
+                columns: table => new
+                {
+                    CurrencyId = table.Column<int>(type: "int", nullable: false),
+                    ShortNameUs = table.Column<string>(type: "VARCHAR(10)", maxLength: 10, nullable: true),
+                    Name_ru = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
+                    Name_ua = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true),
+                    Name_en = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Currencies", x => x.CurrencyId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -82,7 +133,7 @@ namespace YFS.Repo.Migrations
                     AccountGroupNameRu = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
                     AccountGroupNameEn = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
                     AccountGroupNameUa = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    GroupOrederBy = table.Column<int>(type: "int", nullable: false)
+                    GroupOrderBy = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -181,29 +232,53 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Account",
+                name: "Accounts",
                 columns: table => new
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Favorites = table.Column<int>(type: "int", nullable: false),
+                    AccountGroupId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyId = table.Column<int>(type: "int", nullable: false),
+                    BankId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: false),
-                    AccountGroupId = table.Column<int>(type: "int", nullable: false)
+                    OpeningDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Note = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
+                    Balance = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Account", x => x.AccountId);
+                    table.PrimaryKey("PK_Accounts", x => x.AccountId);
                     table.ForeignKey(
-                        name: "FK_Account_AccountGroups_AccountGroupId",
+                        name: "FK_Accounts_AccountGroups_AccountGroupId",
                         column: x => x.AccountGroupId,
                         principalTable: "AccountGroups",
                         principalColumn: "AccountGroupId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            migrationBuilder.CreateIndex(
-                name: "IX_Account_AccountGroupId",
-                table: "Account",
-                column: "AccountGroupId");
+            migrationBuilder.InsertData(
+                table: "AccountTypes",
+                columns: new[] { "TypeId", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
+                values: new object[,]
+                {
+                    { 1, "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, "Credit card", "Кредитная карточка", "Кредитна картка", null, "Кредитные карточки Visa, Mastercard и др.", null },
+                    { 5, "Debit card", "Дебетная карта", "Дебетна картка", null, "Дебетовые карты Visa, Mastercard и др.", null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Currencies",
+                columns: new[] { "CurrencyId", "Name_en", "Name_ru", "Name_ua", "ShortNameUs" },
+                values: new object[,]
+                {
+                    { 36, "Australian dollar", "Австралийский доллар", "Австралійський Долар", "AUD" },
+                    { 840, "US Dollar", "Доллар США", "Долар США", "USD" },
+                    { 978, "Euro", "Евро", "Євро", "EUR" },
+                    { 980, "Hryvnia", "Гривня", "Гривня", "UAH" }
+                });
 
             migrationBuilder.CreateIndex(
                 name: "IX_AccountGroups_UserId_AccountGroupNameEn",
@@ -222,6 +297,11 @@ namespace YFS.Repo.Migrations
                 table: "AccountGroups",
                 columns: new[] { "UserId", "AccountGroupNameUa" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Accounts_AccountGroupId",
+                table: "Accounts",
+                column: "AccountGroupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -266,7 +346,10 @@ namespace YFS.Repo.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Account");
+                name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "AccountTypes");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
@@ -282,6 +365,12 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
+
+            migrationBuilder.DropTable(
+                name: "Currencies");
 
             migrationBuilder.DropTable(
                 name: "AccountGroups");

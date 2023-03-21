@@ -10,6 +10,6 @@
 
         public string? AccountGroupNameUa { get; set; }
 
-        public int GroupOrederBy { get; set; }
+        public int GroupOrderBy { get; set; }
     }
 }
