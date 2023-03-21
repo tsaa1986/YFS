@@ -12,8 +12,8 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20221112084257_Currency Models")]
-    partial class CurrencyModels
+    [Migration("20230321083654_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -169,19 +169,38 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountGroupId")
                         .HasColumnType("int");
 
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("BankId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CurrencyId")
                         .HasColumnType("int");
+
+                    b.Property<int>("Favorites")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Favorites")
+                        .HasDefaultValueSql("0");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("VARCHAR(255)");
 
+                    b.Property<string>("Note")
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.Property<DateTime>("OpeningDate")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.HasIndex("AccountGroupId");
 
-                    b.ToTable("Account");
+                    b.ToTable("Accounts");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
@@ -207,7 +226,7 @@ namespace YFS.Repo.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR(100)");
 
-                    b.Property<int>("GroupOrederBy")
+                    b.Property<int>("GroupOrderBy")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
@@ -228,14 +247,142 @@ namespace YFS.Repo.Migrations
                     b.ToTable("AccountGroups");
                 });
 
-            modelBuilder.Entity("YFS.Core.Models.Currency", b =>
+            modelBuilder.Entity("YFS.Core.Models.AccountType", b =>
+                {
+                    b.Property<int>("TypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedOn")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.Property<string>("NameEn")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("VARCHAR(30)");
+
+                    b.Property<string>("NameRu")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("VARCHAR(30)");
+
+                    b.Property<string>("NameUa")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("VARCHAR(30)");
+
+                    b.Property<string>("NoteEn")
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.Property<string>("NoteRu")
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.Property<string>("NoteUa")
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR(255)");
+
+                    b.Property<int>("TypeOrederBy")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValueSql("0");
+
+                    b.HasKey("TypeId");
+
+                    b.ToTable("AccountTypes");
+
+                    b.HasData(
+                        new
+                        {
+                            TypeId = 1,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NameEn = "Cash",
+                            NameRu = "Наличные деньги",
+                            NameUa = "Готівкові гроші",
+                            NoteRu = "Учет наличных средств",
+                            TypeOrederBy = 0
+                        },
+                        new
+                        {
+                            TypeId = 2,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NameEn = "Internet-money",
+                            NameRu = "Интернет-деньги",
+                            NameUa = "Інтернет-гроші",
+                            NoteRu = "Интернет счета",
+                            TypeOrederBy = 0
+                        },
+                        new
+                        {
+                            TypeId = 3,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NameEn = "Deposit",
+                            NameRu = "Депозит",
+                            NameUa = "Депозит",
+                            NoteRu = "Учет реальных депозитов",
+                            TypeOrederBy = 0
+                        },
+                        new
+                        {
+                            TypeId = 4,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NameEn = "Credit card",
+                            NameRu = "Кредитная карточка",
+                            NameUa = "Кредитна картка",
+                            NoteRu = "Кредитные карточки Visa, Mastercard и др.",
+                            TypeOrederBy = 0
+                        },
+                        new
+                        {
+                            TypeId = 5,
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            NameEn = "Debit card",
+                            NameRu = "Дебетная карта",
+                            NameUa = "Дебетна картка",
+                            NoteRu = "Дебетовые карты Visa, Mastercard и др.",
+                            TypeOrederBy = 0
+                        });
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("CurrencyId");
+                        .HasColumnName("CategoryId");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<int>("RootId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Currency", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int")
+                        .HasColumnName("CurrencyId");
 
                     b.Property<string>("Name_en")
                         .HasMaxLength(100)
@@ -257,6 +404,40 @@ namespace YFS.Repo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Currencies");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 36,
+                            Name_en = "Australian dollar",
+                            Name_ru = "Австралийский доллар",
+                            Name_ua = "Австралійський Долар",
+                            ShortNameUs = "AUD"
+                        },
+                        new
+                        {
+                            Id = 980,
+                            Name_en = "Hryvnia",
+                            Name_ru = "Гривня",
+                            Name_ua = "Гривня",
+                            ShortNameUs = "UAH"
+                        },
+                        new
+                        {
+                            Id = 840,
+                            Name_en = "US Dollar",
+                            Name_ru = "Доллар США",
+                            Name_ua = "Долар США",
+                            ShortNameUs = "USD"
+                        },
+                        new
+                        {
+                            Id = 978,
+                            Name_en = "Euro",
+                            Name_ru = "Евро",
+                            Name_ua = "Євро",
+                            ShortNameUs = "EUR"
+                        });
                 });
 
             modelBuilder.Entity("YFS.Core.Models.User", b =>

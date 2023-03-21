@@ -32,7 +32,7 @@ namespace YFS.Service.Services
             throw new NotImplementedException();
         }
         public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, bool trackChanges)
-            => await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges).Result.OrderBy(c => c.GroupOrederBy).ToListAsync();
+            => await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges).Result.OrderBy(c => c.GroupOrderBy).ToListAsync();
         public async Task UpdateAccountGroupForUser(AccountGroup accountGroup) => 
             await UpdateAsync(accountGroup);
     }

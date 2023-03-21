@@ -8,6 +8,8 @@ namespace YFS.Repo.Data
         {
             RepositoryContext context =
             services.GetRequiredService<RepositoryContext>();
+
+
             //context.Database.Migrate();
             //if (!context.Products.Any())
             //{

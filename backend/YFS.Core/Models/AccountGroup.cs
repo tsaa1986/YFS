@@ -28,7 +28,7 @@ namespace YFS.Core.Models
         public string? AccountGroupNameUa { get; set; }
 
         [Required]
-        public int GroupOrederBy { get; set; }     
+        public int GroupOrderBy { get; set; }     
 
         public ICollection<Account> Accounts { get; set; }
         

@@ -1,4 +1,4 @@
-Инструментарий командной строки включается через NuGet посредством добавления зависимости для пакета Microsoft.
+﻿Инструментарий командной строки включается через NuGet посредством добавления зависимости для пакета Microsoft.
 EntityFrameworkCore.Tools и выполнением команды #dotnet ef
 
 Tools -> NuGet Package Manager -> Package Manager Console
@@ -17,7 +17,7 @@ $dotnet ef database update
 
 Добавление миграций
 $Enable-migrations
-$Enable-Migrations -StartUpProjectName YFS -ContextProjectName ApplicationContext -verbose
+$Enable-Migrations -StartUpProjectName YFS -ContextProjectName RepositoryContext -verbose
 $Add-Migration Initial
 update-database -Context RepositoryContext
 
@@ -42,3 +42,11 @@ update-database -Context RepositoryContext
     --Simply remove -script if you want it to rectify immediately to database.
 
 5. Execute the following script to sql server
+
+
+error not load assembly -> change platform to x86
+Add-Migration Initial - use defaultProject YFS>REpo
+
+
+
+Remove-Migration

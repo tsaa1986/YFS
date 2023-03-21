@@ -8,6 +8,8 @@ namespace YFS.Core.Models
     {
         [Column("AccountId")]
         public int Id { get; set; }
+        [Column("Favorites")]
+        public int Favorites { get; set; }
 
         [ForeignKey(nameof(AccountGroup))]
         public int AccountGroupId { get; set; }
@@ -19,7 +21,7 @@ namespace YFS.Core.Models
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "Acount's name is a required field")]
         [MaxLength(255, ErrorMessage = "Maximum length for the Name is 255 characters.")]
-        public string? Name { get; set; }
+        public string Name { get; set; }
         public DateTime OpeningDate { get; set; }
 
         [Column(TypeName = "VARCHAR")]
