@@ -53,7 +53,6 @@ namespace YFS.Data.Controllers
             {
                 string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
                 var userAccount = await _repository.UserAuthentication.GetUserAccountById(userid);
-                //var userAccountDto = _mapper.Map<IEnumerable<UserAccountDto>>(userAccount);
                 var userAccountDto = _mapper.Map<UserAccountDto>(userAccount);
                 return Ok(userAccountDto);
             }
