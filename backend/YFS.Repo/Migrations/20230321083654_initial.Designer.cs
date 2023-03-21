@@ -12,8 +12,8 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230321075200_Initial")]
-    partial class Initial
+    [Migration("20230321083654_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -179,8 +179,10 @@ namespace YFS.Repo.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Favorites")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Favorites");
+                        .HasColumnName("Favorites")
+                        .HasDefaultValueSql("0");
 
                     b.Property<string>("Name")
                         .IsRequired()

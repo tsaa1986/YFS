@@ -20,6 +20,7 @@ namespace YFS.Repo.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            modelBuilder.Entity<Account>().Property(b => b.Favorites).HasDefaultValueSql("0");
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameRu }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();
@@ -31,6 +32,7 @@ namespace YFS.Repo.Data
 
             modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("getdate()");
 
+            modelBuilder.ApplyConfiguration(new UserData());
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CurrencyData());
         } 

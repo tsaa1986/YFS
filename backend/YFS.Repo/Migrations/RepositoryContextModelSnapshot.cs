@@ -177,8 +177,10 @@ namespace YFS.Repo.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("Favorites")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Favorites");
+                        .HasColumnName("Favorites")
+                        .HasDefaultValueSql("0");
 
                     b.Property<string>("Name")
                         .IsRequired()
