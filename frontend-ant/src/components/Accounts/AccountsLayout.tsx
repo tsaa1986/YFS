@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Tabs, Space,Table, Form, Input, Modal,InputNumber } from "antd";
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Button, Tabs, Space,Table, Form, Input, Modal,InputNumber, Divider } from "antd";
 import { accountGroups, AccountGroupsResponseType } from '../../api/api';
+import './AccountsLayout.css';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -56,6 +57,7 @@ export const TabDetails = (props:tabDetailsPropsType) => {
   
   return ( <div>
     Tab Details
+    <Divider />
     <br></br>
     <Button onClick={()=>{console.log(props.accountData)}}>Get Accounts</Button>
     <Space style={{ display: 'flex' }}>
@@ -81,6 +83,11 @@ const initialItemsAccountsGroup: initialItemsType = [
     closable: false,
     },
   ];
+
+const AccountTabButton: Record<'left', React.ReactNode> = {
+    left: <Button className="tabs-extra-demo-button">Add Account</Button>,
+  };
+  
 
 export const AccountsTab: React.FC = () => { 
     const [activeTabKey, setActiveTabKey] = useState('0');//useState(initialItemsAccountsGroup[0].key);
@@ -241,6 +248,7 @@ return(<div>
             onChange={onChange}
             activeKey={activeTabKey}
             onEdit={onEdit}
+            tabBarExtraContent={AccountTabButton}
             items={itemsAccountsGroup}
             />
         <AddAccountGroupForm 
