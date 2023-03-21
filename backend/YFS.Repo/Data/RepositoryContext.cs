@@ -32,7 +32,7 @@ namespace YFS.Repo.Data
 
             modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("getdate()");
 
-            modelBuilder.ApplyConfiguration(new UserData());
+            //modelBuilder.ApplyConfiguration(new UserData());
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CurrencyData());
         } 
