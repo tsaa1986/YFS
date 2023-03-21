@@ -17,6 +17,14 @@ namespace YFS.Service.Services
             await CreateAsync(accountGroup);
         public async Task CreateAccountGroupsDefaultForUser(string userid) 
         {
+            AccountGroup acFavorite = new AccountGroup
+            {
+                UserId = userid,
+                AccountGroupNameEn = "Favorites",
+                AccountGroupNameRu = "Избранное",
+                AccountGroupNameUa = "Обрані"
+            };
+
             AccountGroup ac = new AccountGroup
             {
                 UserId = userid,
@@ -26,6 +34,7 @@ namespace YFS.Service.Services
             };
 
             await CreateAsync(ac);// CreateAccountGroup(ac);
+            await CreateAsync(acFavorite);
         }
         public Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
         {
