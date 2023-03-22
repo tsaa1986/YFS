@@ -67,6 +67,23 @@ export const accountGroups = {
     }
 }
 
+export type accountTypesResponseType = [{
+    typeId: number
+    nameUa: string
+    nameRu: string
+    nameEn: string
+    noteUa: string | null
+    noteEn: string | null
+    typeOrederBy: number
+}]
+export const account = {
+    getAccountTypes() {
+
+        return instance.get(`${BASE_URL}/AccountTypes`)
+            .then(res=> {return res.data})
+            .catch((err) => console.log(err))
+    },
+}
 
 type LoginResponseType = {
     token: string

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Tabs, Space,Table, Form, Input, Modal, InputNumber, Divider,
   Checkbox, Select, DatePicker } from "antd";
-import { accountGroups, AccountGroupsResponseType } from '../../api/api';
+import { account, accountGroups, AccountGroupsResponseType, accountTypesResponseType } from '../../api/api';
 import './AccountsLayout.css';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -371,6 +371,18 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     //const {visible, onCancel, onCreate, form} = props
     const [accountClosed, setAccountClosed] = useState<boolean>(false);
     const [accountName, setAccountName] = useState('');
+    const [currencies, setCurrencies] = useState<accountTypesResponseType>();
+
+    useEffect(()=> {  
+      account.getAccountTypes().then(
+        res => {
+          if (res != undefined){
+            setCurrencies(res)
+          }
+        }
+      );
+      console.log(currencies)
+    }, [])
 
     const { TextArea } = Input;
     const { RangePicker } = DatePicker;
@@ -420,8 +432,10 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
             </Select>
           </Form.Item>
           <Form.Item label="Account Type">
-            <Select>
-              <Select.Option value="accountType">AccountType</Select.Option>
+            <Select onChange={(e:any)=>console.log(e)}>
+              { (currencies != undefined) ? (currencies.map( d => {return <Select.Option value={d.typeId}>{d.nameEn}</Select.Option>}
+                )) : (<Select.Option value={''}>{''}</Select.Option>)
+              }
             </Select>
           </Form.Item>
           <Form.Item label="Currency">
