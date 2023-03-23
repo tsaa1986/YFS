@@ -359,6 +359,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     const [accountClosed, setAccountClosed] = useState<boolean>(false);
     const [accountName, setAccountName] = useState('');
     const [currencies, setCurrencies] = useState<accountTypesResponseType>();
+    const [selectedAccountsType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);
 
     useEffect(()=> {  
       account.getAccountTypes().then(
@@ -413,11 +414,25 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
                 value={accountName} 
                 onChange={(e) => {setAccountName(e.currentTarget.value)}}/>
           </Form.Item>
+          <Form.Item name="isFavorite">
+            <Checkbox
+            //checked={accountClosed}
+            //onChange={(e) => setAccountClosed(e.target.checked)}
+            >
+            Account is favorite
+          </Checkbox>
+          </Form.Item>
           <Form.Item label="Account Group">
-            <Select onChange={(e:any)=>console.log(e)} value={props.activeAccountsGroupKey}>
+            <Select 
+              onChange={(e:any)=> {
+                console.log(e)
+                setSelectedAccountsType(e)}
+              } 
+              value={selectedAccountsType} 
+            >
               { (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
-                return (item.key !="0") ? <Select.Option value={item.key}>{item.label}</Select.Option> :  true }
-                  )) : (<Select.Option value={''}>{''}</Select.Option>)
+                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
+                  )) : (<Select.Option value={'0'}>{''}</Select.Option>)
               }
             </Select>
           </Form.Item>
