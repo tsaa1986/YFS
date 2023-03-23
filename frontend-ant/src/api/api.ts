@@ -53,7 +53,8 @@ export const accountGroups = {
             return config;
         });
         return instancePrivate.get<AccountGroupsResponseType>(`${BASE_URL}/AccountGroups`)
-                .then(response => { 
+                .then(response => {
+                    //debugger
                     //console.log(response.status);
                     //console.log(response.data);
                     return response;

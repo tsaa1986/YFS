@@ -224,27 +224,9 @@ const handleSubmitAddGroupForm = () => {
 const handleSubmitAddAccountForm = () => {
   console.log('handle');
   console.log(formAddAccount.getFieldValue('nameAccount'));
-/*
-  accountGroups.addAccountGroup({
-    "accountGroupId": 0,
-    "accountGroupNameEn": form.getFieldValue('nameAccount'),
-    "accountGroupNameRu": form.getFieldValue('nameAccount'),
-    "accountGroupNameUa": form.getFieldValue('nameAccount'),
-    "groupOrederBy": form.getFieldValue('groupOrderBy'),
-    "userId": "" 
-  }).then(response => {
-      if (response.status === 200)
-          {
-              console.log(response.data)
-              addTabAccountGroup(response.data)
-          }
-  });
-*/
   formAddAccount.resetFields()
   setVisibleAddAccountForm(false)
-  //addTabAccountsGroup
 }
-
 
 const AccountTabButton: Record<'left', React.ReactNode> = {
   left: <Button className="tabs-extra-demo-button" onClick={showModalAddAccountForm}>Add Account</Button>,
@@ -285,7 +267,10 @@ return(<div>
             visible={visibleAddAccountForm}
             onCancel={handleCancelAddAccountForm}
             onCreate={handleSubmitAddAccountForm}
-            form={formAddAccount}>
+            form={formAddAccount}
+            itemsAccountsGroup={itemsAccountsGroup}
+            activeAccountsGroupKey={activeTabKey}
+            >
         </AddAccountForm>
 
         </div>
@@ -365,6 +350,8 @@ type AddAccountFormPropsType = {
     onCancel:any, 
     onCreate:any, 
     form:any,
+    itemsAccountsGroup: initialItemsType,
+    activeAccountsGroupKey: string
     children: React.ReactNode
   } 
 const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
@@ -427,13 +414,16 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
                 onChange={(e) => {setAccountName(e.currentTarget.value)}}/>
           </Form.Item>
           <Form.Item label="Account Group">
-            <Select>
-              <Select.Option value="accountGroup">AccountGroup</Select.Option>
+            <Select onChange={(e:any)=>console.log(e)} value={props.activeAccountsGroupKey}>
+              { (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
+                return (item.key !="0") ? <Select.Option value={item.key}>{item.label}</Select.Option> :  true }
+                  )) : (<Select.Option value={''}>{''}</Select.Option>)
+              }
             </Select>
           </Form.Item>
           <Form.Item label="Account Type">
             <Select onChange={(e:any)=>console.log(e)}>
-              { (currencies != undefined) ? (currencies.map( d => {return <Select.Option value={d.typeId}>{d.nameEn}</Select.Option>}
+              { (currencies !== undefined) ? (currencies.map( d => {return <Select.Option value={d.typeId}>{d.nameEn}</Select.Option>}
                 )) : (<Select.Option value={''}>{''}</Select.Option>)
               }
             </Select>
@@ -456,39 +446,3 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
       </Modal>
     </div>);
   }
-  
-/*}
-export const ModalWithFormExample: React.FC = () => {
-    const [visible, setVisible] = useState(false);
-    const [form] = Form.useForm();
-      
-    const showModal = () => {
-        setVisible(true)
-    }
-    
-    const handleSubmit = (values:any) => {
-        console.log(values)
-    }
-      
-    const handleCancel = () => {
-        setVisible(false)
-        form.resetFields()
-    };
-      
-    return (
-        <>
-          <Button onClick={showModal}>Open Modal</Button>
-          <Modal visible={visible} onOk={form.submit} onCancel={handleCancel}>
-            <Form form={form} onFinish={handleSubmit}>
-            <Form.Item
-            label="Name AccountGroup"
-            rules={[{required: true, message: 'Please input accountgroup name!'}]}>
-              <Input />
-            </Form.Item>
-              {/* Any input }*/
-     /*       </Form>
-          </Modal>
-        </>
-      )
-    }
-*/
