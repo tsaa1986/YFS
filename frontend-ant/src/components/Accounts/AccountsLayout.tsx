@@ -301,7 +301,7 @@ const AddAccountGroupForm: React.FC<AddAccountGroupFormPropsType> = (props) => {
     //debugger
     return(<div>
       <Modal
-        visible={props.visible}
+        open={props.visible}
         title="Create a new Account Group"
         okText="Create"
         onCancel={props.onCancel}
@@ -389,7 +389,8 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     //debugger
     return(<div>
       <Modal
-        visible={props.visible}
+        //visible={props.visible}
+        open={props.visible}
         title="Create a new Account"
         okText="Create"
         onCancel={props.onCancel}
