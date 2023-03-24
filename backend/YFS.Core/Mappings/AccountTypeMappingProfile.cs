@@ -9,7 +9,6 @@ namespace YFS.Core.Mappings
         public AccountTypeMappingProfile()
         {
             CreateMap<AccountType, AccountTypeDto>();
-
             CreateMap<AccountTypeDto, AccountType>();
         }
     }

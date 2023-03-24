@@ -30,6 +30,7 @@ namespace YFS.Extension
                 map.AddProfile<AccountTypeMappingProfile>();
                 map.AddProfile<AccountMappingProfile>();
                 map.AddProfile<UserAccountMappingProfile>();
+                map.AddProfile<CurrencyMappingProfile>();
             });
             services.AddSingleton(mapperConfig.CreateMapper());
         }
