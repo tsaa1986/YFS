@@ -77,6 +77,18 @@ export type accountTypesResponseType = [{
     noteEn: string | null
     typeOrederBy: number
 }]
+
+export type accountType = {
+    id: number,
+    favorites: number,
+    accountGroupId: number,
+    currencyId: number,
+    bankId: number,
+    name: string,
+    openingDate: Date,
+    note: string,
+    balance: number
+}
 export const account = {
     getAccountTypes() {
 
@@ -84,6 +96,11 @@ export const account = {
             .then(res=> {return res.data})
             .catch((err) => console.log(err))
     },
+    add(account: accountType) {
+
+        return instancePrivate.post<accountType>(`${BASE_URL}/Accounts`,
+        account)
+    }
 }
 
 export type currencyType = [{   

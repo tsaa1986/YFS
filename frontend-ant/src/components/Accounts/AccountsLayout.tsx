@@ -420,14 +420,15 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           disabled={accountClosed}
           style={{ maxWidth: 600 }}
           >
-          <Form.Item name="nameAccount"
+          <Form.Item 
+            name="accountName"
             label='Name account'
-            rules={[{required: true, message: 'Please input account group name!'}]}>
+            rules={[{required: true, message: 'Please input Account name!'}]}>
             <Input 
                 value={accountName} 
                 onChange={(e) => {setAccountName(e.currentTarget.value)}}/>
           </Form.Item>
-          <Form.Item name="isFavorite">
+          <Form.Item name="favorites">
             <Checkbox
             //checked={accountClosed}
             //onChange={(e) => setAccountClosed(e.target.checked)}
@@ -435,7 +436,9 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
             Account is favorite
           </Checkbox>
           </Form.Item>
-          <Form.Item label="Account Group">
+          <Form.Item 
+            name="accountGroupId"
+            label="Account Group">
             <Select 
               onChange={(e:any)=> {
                 console.log(e)
@@ -445,31 +448,46 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
             >
               { (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
                 return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
-                  )) : (<Select.Option value={'0'}>{''}</Select.Option>)
+                  )) : (<Select.Option value={''}>{''}</Select.Option>)
               }
             </Select>
           </Form.Item>
-          <Form.Item label="Account Type">
+          <Form.Item 
+            name="accountTypeId"
+            label="Account Type">
             <Select onChange={(e:any)=>console.log(e)}>
               { (accountTypes !== undefined) ? (accountTypes.map( d => {return <Select.Option value={d.typeId}>{d.nameEn}</Select.Option>}
-                )) : (<Select.Option value={''}>{''}</Select.Option>)
+                )) : (<Select.Option value={'0'}>{'Choose types'}</Select.Option>)
               }
             </Select>
           </Form.Item>
-          <Form.Item label="Currency">
+          <Form.Item 
+            name="bankId"
+            label="Bank">
+            <InputNumber value=""/>
+          </Form.Item>
+          <Form.Item 
+            name="currencyId"
+            label="Currency">
             <Select onChange={(e:any)=>console.log(e)}>
               { (currencies !== undefined) ? (currencies.map( item => {return <Select.Option value={item.id}>{item.name_en}</Select.Option>}
                 )) : (<Select.Option value={''}>{''}</Select.Option>)
               }
             </Select>
           </Form.Item>
-          <Form.Item label="Openning Balance">
+          <Form.Item 
+            name="balance"
+            label="Openning Balance">
             <InputNumber value={0.00}/>
           </Form.Item>
-          <Form.Item label="Open Date Account">
+          <Form.Item 
+            name="openingDate"
+            label="Open Date Account">
             <DatePicker />
           </Form.Item>
-          <Form.Item label="Description">
+          <Form.Item 
+            name="note"
+            label="Description">
             <TextArea rows={2} />
             </Form.Item>
           </Form>
