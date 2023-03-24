@@ -86,6 +86,25 @@ export const account = {
     },
 }
 
+export type currencyType = [{   
+        id: number,
+        shortNameUs: string,
+        name_ru: string,
+        name_ua: string,
+        name_en: string
+}]
+
+export const currency = {
+    getAllCuttencies() {
+
+        return instance.get(`${BASE_URL}/Currency`)
+            .then(res=> {
+                return res.data
+            })
+            .catch((err) => console.log(err))
+    }
+}
+
 type LoginResponseType = {
     token: string
     responseCode: ResponseCodesEnum

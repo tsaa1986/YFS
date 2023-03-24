@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Tabs, Space,Table, Form, Input, Modal, InputNumber, Divider,
   Checkbox, Select, DatePicker } from "antd";
-import { account, accountGroups, AccountGroupsResponseType, accountTypesResponseType } from '../../api/api';
+import { account, accountGroups, AccountGroupsResponseType, accountTypesResponseType, currency, currencyType } from '../../api/api';
 import './AccountsLayout.css';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -53,7 +53,6 @@ export const TabDetails = (props:tabDetailsPropsType) => {
         key: 'address',
       },
     ];
-  
   
   
   return ( <div>
@@ -351,18 +350,31 @@ type AddAccountFormPropsType = {
     onCreate:any, 
     form:any,
     itemsAccountsGroup: initialItemsType,
-    activeAccountsGroupKey: string
+    activeAccountsGroupKey: string,
+    //itemsCurrency: Array<currencyType>,
     children: React.ReactNode
   } 
 const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     //const {visible, onCancel, onCreate, form} = props
     const [accountClosed, setAccountClosed] = useState<boolean>(false);
     const [accountName, setAccountName] = useState('');
-    const [currencies, setCurrencies] = useState<accountTypesResponseType>();
+    const [accountTypes, setAccountTypes] = useState<accountTypesResponseType>();
+    const [currencies, setCurrencies] = useState<currencyType>();
     const [selectedAccountsType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);
 
     useEffect(()=> {  
       account.getAccountTypes().then(
+        res => {
+          if (res != undefined){
+            setAccountTypes(res)
+          }
+        }
+      );
+      console.log(accountTypes)
+    }, [])
+
+    useEffect(()=> {  
+      currency.getAllCuttencies().then(
         res => {
           if (res != undefined){
             setCurrencies(res)
@@ -438,14 +450,16 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           </Form.Item>
           <Form.Item label="Account Type">
             <Select onChange={(e:any)=>console.log(e)}>
-              { (currencies !== undefined) ? (currencies.map( d => {return <Select.Option value={d.typeId}>{d.nameEn}</Select.Option>}
+              { (accountTypes !== undefined) ? (accountTypes.map( d => {return <Select.Option value={d.typeId}>{d.nameEn}</Select.Option>}
                 )) : (<Select.Option value={''}>{''}</Select.Option>)
               }
             </Select>
           </Form.Item>
           <Form.Item label="Currency">
-            <Select>
-              <Select.Option value="usd">usd</Select.Option>
+            <Select onChange={(e:any)=>console.log(e)}>
+              { (currencies !== undefined) ? (currencies.map( item => {return <Select.Option value={item.id}>{item.name_en}</Select.Option>}
+                )) : (<Select.Option value={''}>{''}</Select.Option>)
+              }
             </Select>
           </Form.Item>
           <Form.Item label="Openning Balance">
