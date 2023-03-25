@@ -112,7 +112,7 @@ export type currencyType = [{
 }]
 
 export const currency = {
-    getAllCuttencies() {
+    getAllCurrencies() {
 
         return instance.get(`${BASE_URL}/Currency`)
             .then(res=> {

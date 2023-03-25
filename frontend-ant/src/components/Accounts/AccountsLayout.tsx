@@ -134,11 +134,8 @@ export const AccountsTab: React.FC = () => {
           //  newPanes.push({ label: accData.data[0].accountGroupNameEn, children: <TabDetails key1={accData.data[0].accountGroupNameEn}/>, key: accData.data[0].accountGroupId });
           //  newPanes.push({ label: accData.data[1].accountGroupNameEn, children: <TabDetails key1={accData.data[1].accountGroupNameEn}/>, key: accData.data[1].accountGroupId });
         } //);
-        //debugger
-        //newPanes.push({ label: name, children: 'Content of new Tab', key: newActiveKey });
         setItems(newPanes);
         setActiveTabKey(newActiveKey);
-        //setActiveKey(newActiveKey);
 }
 const remove = (targetKey: TargetKey) => {
     let newActiveKey = activeTabKey;
@@ -360,7 +357,9 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     const [accountName, setAccountName] = useState('');
     const [accountTypes, setAccountTypes] = useState<accountTypesResponseType>();
     const [currencies, setCurrencies] = useState<currencyType>();
-    const [selectedAccountsType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);
+    const [selectedAccountType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);
+    //let selectedAccountType = props.activeAccountsGroupKey;
+
 
     useEffect(()=> {  
       account.getAccountTypes().then(
@@ -374,7 +373,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     }, [])
 
     useEffect(()=> {  
-      currency.getAllCuttencies().then(
+      currency.getAllCurrencies().then(
         res => {
           if (res != undefined){
             setCurrencies(res)
@@ -438,13 +437,15 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           </Form.Item>
           <Form.Item 
             name="accountGroupId"
-            label="Account Group">
+            label="Account Group"
+            rules={[{required: true, message: 'Please select Account Group!'}]}>
             <Select 
               onChange={(e:any)=> {
                 console.log(e)
                 setSelectedAccountsType(e)}
+                //selectedAccountType = e;
               } 
-              value={selectedAccountsType} 
+              value={selectedAccountType} 
             >
               { (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
                 return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
@@ -454,21 +455,23 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           </Form.Item>
           <Form.Item 
             name="accountTypeId"
-            label="Account Type">
+            label="Account Type"
+            rules={[{required: true, message: 'Please select Account Type!'}]}>
             <Select onChange={(e:any)=>console.log(e)}>
               { (accountTypes !== undefined) ? (accountTypes.map( d => {return <Select.Option value={d.typeId}>{d.nameEn}</Select.Option>}
-                )) : (<Select.Option value={'0'}>{'Choose types'}</Select.Option>)
+                )) : (<Select.Option value={'1'}>{'Choose types'}</Select.Option>)
               }
             </Select>
           </Form.Item>
           <Form.Item 
             name="bankId"
             label="Bank">
-            <InputNumber value=""/>
+            <InputNumber value="0"/>
           </Form.Item>
           <Form.Item 
             name="currencyId"
-            label="Currency">
+            label="Currency"
+            rules={[{required: true, message: 'Please select Currency!'}]}>
             <Select onChange={(e:any)=>console.log(e)}>
               { (currencies !== undefined) ? (currencies.map( item => {return <Select.Option value={item.id}>{item.name_en}</Select.Option>}
                 )) : (<Select.Option value={''}>{''}</Select.Option>)
@@ -477,7 +480,8 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           </Form.Item>
           <Form.Item 
             name="balance"
-            label="Openning Balance">
+            label="Openning Balance"
+            rules={[{required: true, message: 'Please enter balance of account!'}]}>
             <InputNumber value={0.00}/>
           </Form.Item>
           <Form.Item 
