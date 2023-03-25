@@ -11,6 +11,7 @@ namespace YFS.Repo.Data
         public DbSet<AccountType> AccountTypes { get; set; } = null!;
         public DbSet<Currency> Currencies { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
+        public DbSet<Bank> Banks { get; set; } = null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {

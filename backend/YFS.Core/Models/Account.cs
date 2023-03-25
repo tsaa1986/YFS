@@ -14,9 +14,16 @@ namespace YFS.Core.Models
         [ForeignKey(nameof(AccountGroup))]
         public int AccountGroupId { get; set; }
 
+        [ForeignKey(nameof(AccountTypeId))]
+        public int AccountTypeId { get; set; }
+        public AccountType AccountType { get; set; }
+
         [ForeignKey(nameof(Currency))]
         public int CurrencyId { get; set; }
+        public Currency Currency { get; set; }
+        [ForeignKey(nameof(Bank))]
         public int BankId { get; set; }
+        public Bank Bank { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "Acount's name is a required field")]
