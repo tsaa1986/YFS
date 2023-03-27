@@ -1,8 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Tabs, Space,Table, Form, Input, Modal, InputNumber, Divider,
   Checkbox, Select, DatePicker } from "antd";
-import { account, accountGroups, AccountGroupsResponseType, accountTypesResponseType, bankType, currency, currencyType } from '../../api/api';
+import { account, accountGroups, AccountGroupsResponseType, accountType, accountTypesResponseType, bankType, currency, currencyType,
+accountListType } from '../../api/api';
 import './AccountsLayout.css';
+import { AccountsList } from './AccountsList';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -20,50 +22,13 @@ type tabDetailsPropsType = {
 }
 
 export const TabDetails = (props:tabDetailsPropsType) => {
-    //let [key1, setKey1] = useState(props.key);
-    const dataSource = [
-      {
-        key: '1',
-        name: 'Mike',
-        age: 32,
-        address: '10 Downing Street',
-      },
-      {
-        key: '2',
-        name: 'John',
-        age: 42,
-        address: '10 Downing Street',
-      },
-    ];
-    
-    const columns = [
-      {
-        title: 'Name',
-        dataIndex: 'name',
-        key: 'name',
-      },
-      {
-        title: 'Age',
-        dataIndex: 'age',
-        key: 'age',
-      },
-      {
-        title: 'Address',
-        dataIndex: 'address',
-        key: 'address',
-      },
-    ];
-  
   
   return ( <div>
     Tab Details
-    <Divider />
-    <br></br>
-    <Button onClick={()=>{console.log(props.accountData)}}>Get Accounts</Button>
-    <Space style={{ display: 'flex' }}>
-      <h2>Accounts List</h2>
-    </Space>
-    <Table dataSource={dataSource} columns={columns}/>
+      <Divider />
+      <br></br>
+      <Button onClick={()=>{console.log(props.accountData)}}>Get Accounts</Button>
+      <AccountsList />
     </div>
   );
   }
@@ -84,18 +49,25 @@ const initialItemsAccountsGroup: initialItemsType = [
     },
   ];
 
+
 export const AccountsTab: React.FC = () => { 
   const [activeTabKey, setActiveTabKey] = useState('0');//useState(initialItemsAccountsGroup[0].key);
   const [itemsAccountsGroup, setItems] = useState(initialItemsAccountsGroup);
   const newTabIndex = useRef(0);
+  const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>();
 
     useEffect( ()=>{ 
         console.log('SYNC_EFFECT_TABS');
         getAccountGroups();
       },[])
+
     useEffect(
         ()=> {
-         console.log(activeTabKey);
+          console.log(activeTabKey);
+          //debugger
+          let tempAccountList: any = account.getListByGroupId(activeTabKey);
+          setAccountListSelectedTab(tempAccountList);
+          console.log(accountListSelectedTab)
         }, [activeTabKey]
      )
     const onChange = (newActiveKey: string) => {
@@ -122,7 +94,7 @@ export const AccountsTab: React.FC = () => {
     const buildTabAccountsGroup = (accData:any) => {
         let newActiveKey = '0';//`newTab${newTabIndex.current++}`;
         const newPanes: any = [...initialItemsAccountsGroup]//[...itemsAccountsGroup];
-
+        //debugger
         if (accData.data[0] !== null)
           {
             newActiveKey = accData.data[0].accountGroupId.toString();
@@ -215,7 +187,6 @@ const handleSubmitAddGroupForm = () => {
   
     form.resetFields()
     setVisibleAddGroupForm(false)
-    //addTabAccountsGroup
 }
 const handleSubmitAddAccountForm = () => {
   console.log('handle');
@@ -235,7 +206,7 @@ const handleSubmitAddAccountForm = () => {
   }).then(response => {
       if (response.status === 200)
           {
-            //debugger
+              //debugger
               console.log(response.data)
               //addAccount(response.data)
               formAddAccount.resetFields()
@@ -372,6 +343,7 @@ type AddAccountFormPropsType = {
     //itemsCurrency: Array<currencyType>,
     children: React.ReactNode
   } 
+
 const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     //const {visible, onCancel, onCreate, form} = props
     const [accountClosed, setAccountClosed] = useState<boolean>(false);
@@ -440,6 +412,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           form={props.form}
           disabled={accountClosed}
           style={{ maxWidth: 600 }}
+          initialValues={{ bankId: 1 }}
           >
           <Form.Item 
             name="nameAccount"
@@ -451,7 +424,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           </Form.Item>
           <Form.Item name="favorites">
             <Checkbox
-            //checked={accountClosed}
+            checked={false}
             //onChange={(e) => setAccountClosed(e.target.checked)}
             >
             Account is favorite
@@ -488,7 +461,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           <Form.Item 
             name="bankId"
             label="Bank">
-            <Select defaultValue="1">
+            <Select>
               { (banks !== undefined) ? (banks.map( item => {return <Select.Option value={item.id}>{item.name}</Select.Option>}
                 )) : (<Select.Option value={'1'}>{'Test Bank'}</Select.Option>)
               }

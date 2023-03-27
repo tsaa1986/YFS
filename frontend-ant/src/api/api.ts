@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getMaxListeners } from "process";
 import CookieService from "../services/CookieService";
 
 const BASE_URL = 'https://localhost:5001/api';
@@ -90,6 +91,7 @@ export type accountType = {
     note: string,
     balance: number
 }
+export type accountListType = [accountType]
 export const account = {
     getAccountTypes() {
 
@@ -98,9 +100,16 @@ export const account = {
             .catch((err) => console.log(err))
     },
     add(account: accountType) {
-
-        return instancePrivate.post<accountType>(`${BASE_URL}/Accounts`,
+        //debugger
+    return instancePrivate.post<accountType>(`${BASE_URL}/Accounts`,
         account)
+    },
+    getListByGroupId(accountGroupId: string) {
+        return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/${accountGroupId}`)
+        .then( res=> {
+            console.log(res.data)
+            return res.data} )
+        .catch((err) => console.log(err))
     }
 }
 
