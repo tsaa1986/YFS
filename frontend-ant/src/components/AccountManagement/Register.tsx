@@ -16,7 +16,7 @@ const loginUser = (values:  UserRegistrationType) => {
 
         authAPI.login(values.userName, values.password)
             .then(data => {
-                debugger
+                //debugger
                 console.log('loginuser: ' + data);
                 handleLogin(data);
             })

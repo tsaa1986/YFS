@@ -82,6 +82,7 @@ export type accountType = {
     id: number,
     favorites: number,
     accountGroupId: number,
+    accountTypeId: number,
     currencyId: number,
     bankId: number,
     name: string,
@@ -109,6 +110,11 @@ export type currencyType = [{
         name_ru: string,
         name_ua: string,
         name_en: string
+}]
+
+export type bankType = [{   
+    id: number,
+    name: string,
 }]
 
 export const currency = {

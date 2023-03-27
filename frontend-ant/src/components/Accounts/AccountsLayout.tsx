@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Tabs, Space,Table, Form, Input, Modal, InputNumber, Divider,
   Checkbox, Select, DatePicker } from "antd";
-import { account, accountGroups, AccountGroupsResponseType, accountTypesResponseType, currency, currencyType } from '../../api/api';
+import { account, accountGroups, AccountGroupsResponseType, accountTypesResponseType, bankType, currency, currencyType } from '../../api/api';
 import './AccountsLayout.css';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -196,7 +196,7 @@ const handleCancelAddAccountForm = () => {
   }
 const handleSubmitAddGroupForm = () => {
     console.log('handle');
-    console.log(form.getFieldValue('nameAccount'));
+    console.log(form.getFieldValue('nameGroupAccount'));
   
     accountGroups.addAccountGroup({
       "accountGroupId": 0,
@@ -220,8 +220,29 @@ const handleSubmitAddGroupForm = () => {
 const handleSubmitAddAccountForm = () => {
   console.log('handle');
   console.log(formAddAccount.getFieldValue('nameAccount'));
-  formAddAccount.resetFields()
-  setVisibleAddAccountForm(false)
+
+  account.add({
+    "id": 0,
+    "favorites": formAddAccount.getFieldValue('favorites'),
+    "accountGroupId": formAddAccount.getFieldValue('accountGroupId'),
+    "accountTypeId": formAddAccount.getFieldValue('accountTypeId'),
+    "currencyId": formAddAccount.getFieldValue('currencyId'),
+    "bankId": formAddAccount.getFieldValue('bankId'),
+    "name": formAddAccount.getFieldValue('nameAccount'),
+    "balance": formAddAccount.getFieldValue('balance'),
+    "openingDate": formAddAccount.getFieldValue('openingDate'),//.toDateString(),
+    "note": formAddAccount.getFieldValue('note')
+  }).then(response => {
+      if (response.status === 200)
+          {
+            //debugger
+              console.log(response.data)
+              //addAccount(response.data)
+              formAddAccount.resetFields()
+              setVisibleAddAccountForm(false)
+          }
+  });  
+
 }
 
 const AccountTabButton: Record<'left', React.ReactNode> = {
@@ -357,6 +378,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     const [accountName, setAccountName] = useState('');
     const [accountTypes, setAccountTypes] = useState<accountTypesResponseType>();
     const [currencies, setCurrencies] = useState<currencyType>();
+    const [banks, setBanks] = useState<bankType>();
     const [selectedAccountType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);
     //let selectedAccountType = props.activeAccountsGroupKey;
 
@@ -420,7 +442,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           style={{ maxWidth: 600 }}
           >
           <Form.Item 
-            name="accountName"
+            name="nameAccount"
             label='Name account'
             rules={[{required: true, message: 'Please input Account name!'}]}>
             <Input 
@@ -466,13 +488,17 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           <Form.Item 
             name="bankId"
             label="Bank">
-            <InputNumber value="0"/>
+            <Select defaultValue="1">
+              { (banks !== undefined) ? (banks.map( item => {return <Select.Option value={item.id}>{item.name}</Select.Option>}
+                )) : (<Select.Option value={'1'}>{'Test Bank'}</Select.Option>)
+              }
+            </Select>
           </Form.Item>
           <Form.Item 
             name="currencyId"
             label="Currency"
             rules={[{required: true, message: 'Please select Currency!'}]}>
-            <Select onChange={(e:any)=>console.log(e)}>
+            <Select >
               { (currencies !== undefined) ? (currencies.map( item => {return <Select.Option value={item.id}>{item.name_en}</Select.Option>}
                 )) : (<Select.Option value={''}>{''}</Select.Option>)
               }
