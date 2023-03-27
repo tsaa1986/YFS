@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace YFS.Controllers
 {
@@ -19,10 +20,13 @@ namespace YFS.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> CreateAccountForUser([FromBody] AccountDto account)
         {
             var accountData = _mapper.Map<Account>(account);
 
+            string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            accountData.UserId = userid;
             await _repository.Account.CreateAccount(accountData);
             await _repository.SaveAsync();
 
@@ -31,11 +35,13 @@ namespace YFS.Controllers
         }
 
         [HttpGet("{accountGroupId}")]
+        [Authorize]
         public async Task<IActionResult> GetAccountsByGroup(int accountGroupId)
         {
             try
             {
-                var accounts = await _repository.Account.GetAccountsByGroup(accountGroupId, trackChanges: false);
+                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
+                var accounts = await _repository.Account.GetAccountsByGroup(accountGroupId, userid, trackChanges: false);
                 var accountDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
                 return Ok(accountDto);
             }

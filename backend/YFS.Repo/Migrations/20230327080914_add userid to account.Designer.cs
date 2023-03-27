@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YFS.Repo.Data;
 
@@ -11,9 +12,10 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20230327080914_add userid to account")]
+    partial class adduseridtoaccount
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -167,9 +169,6 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountGroupId")
                         .HasColumnType("int");
 
-                    b.Property<int>("AccountTypeId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Balance")
                         .HasColumnType("decimal(10,2)");
 
@@ -204,12 +203,6 @@ namespace YFS.Repo.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountGroupId");
-
-                    b.HasIndex("AccountTypeId");
-
-                    b.HasIndex("BankId");
-
-                    b.HasIndex("CurrencyId");
 
                     b.ToTable("Accounts");
                 });
@@ -358,25 +351,6 @@ namespace YFS.Repo.Migrations
                             NoteRu = "Дебетовые карты Visa, Mastercard и др.",
                             TypeOrederBy = 0
                         });
-                });
-
-            modelBuilder.Entity("YFS.Core.Models.Bank", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasColumnName("BankId");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("VARCHAR(255)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Banks");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Category", b =>
@@ -604,30 +578,6 @@ namespace YFS.Repo.Migrations
                         .HasForeignKey("AccountGroupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.HasOne("YFS.Core.Models.AccountType", "AccountType")
-                        .WithMany()
-                        .HasForeignKey("AccountTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("YFS.Core.Models.Bank", "Bank")
-                        .WithMany()
-                        .HasForeignKey("BankId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("YFS.Core.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("AccountType");
-
-                    b.Navigation("Bank");
-
-                    b.Navigation("Currency");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>

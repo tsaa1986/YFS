@@ -6,7 +6,7 @@ namespace YFS.Service.Interfaces
     {
         Task CreateAccount(Account account);
         Task UpdateAccount(Account account);
-        Task<IEnumerable<Account>> GetAccountsByGroup(int accountGroupId, bool trackChanges);
+        Task<IEnumerable<Account>> GetAccountsByGroup(int accountGroupId, string userId, bool trackChanges);
         Task<Account> GetAccount(Account account);
     }
 }
