@@ -8,6 +8,10 @@ namespace YFS.Core.Models
     {
         [Column("AccountId")]
         public int Id { get; set; }
+
+        [Required]
+        [ForeignKey("AspNetUser")]
+        public string UserId { get; set; }
         [Column("Favorites")]
         public int Favorites { get; set; }
 

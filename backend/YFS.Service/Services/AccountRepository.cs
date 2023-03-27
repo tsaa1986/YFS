@@ -20,7 +20,7 @@ namespace YFS.Service.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<Account>> GetAccountsByGroup(int accountGroupId, bool trackChanges) =>
+        public async Task<IEnumerable<Account>> GetAccountsByGroup(int accountGroupId, string userId, bool trackChanges) =>
             await FindByConditionAsync(c => c.AccountGroupId.Equals(accountGroupId), trackChanges);
         public async Task UpdateAccount(Account account) => 
             await UpdateAsync(account);
