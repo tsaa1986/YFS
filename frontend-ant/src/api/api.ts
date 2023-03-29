@@ -91,7 +91,7 @@ export type accountType = {
     note: string,
     balance: number
 }
-export type accountListType = [accountType] | undefined
+export type accountListType = Array<accountType>
 export const account = {
     getAccountTypes() {
 

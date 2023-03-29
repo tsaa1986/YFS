@@ -5,14 +5,16 @@ import { ColumnsType } from 'antd/es/table';
 
 
 type accountListPropsType = {
-  accounts: accountListType | undefined
-  activeTabKey: string
+  accountGroupData: AccountGroupType | null
+  //accountListSelectedTab: accountListType
+ // onChange: (showTab: boolean) => void
   //onTabSelected: (tab: AccountGroupType) => void
   //onTabSelected: (tab: string) => void
 }
 
 export const AccountsList = (props: accountListPropsType) => {
     /*const dataSource = [
+
         {
           key: '1',
           name: 'Mike',
@@ -44,6 +46,7 @@ export const AccountsList = (props: accountListPropsType) => {
         },
       ];
 */
+
 const columns: ColumnsType<any> = [
   {
     title: 'Name',
@@ -64,31 +67,39 @@ const columns: ColumnsType<any> = [
 ];
     const [accountListGroupId, setAccountListGroupId] = useState('0')
     //const [activeTab, setActiveTab] = useState<AccountGroupType>();
-    const [accountListDataSource, setAccountListSelectedTab] = useState<accountListType>(props.accounts);
-    
-    useEffect(()=>{
+    const [accountListDataSource, setAccountListSelectedTab] = useState<accountListType>([]);
 
-    }, )
+    const fetchAccountList = (groupId: string) => {
 
-    useEffect(()=>{
-      //debugger
-      console.log('accountlist effect:', props.activeTabKey)
-      console.log('accountlist effect:', props.accounts)
-      setAccountListGroupId(props.activeTabKey)
-      //let accounts = account.getListByGroupId(accountListGroupId.toString()).then(
-       // res=>{ return res}
-      //);
-      //setAccountListSelectedTab(accounts)
-      //setAccountListSelectedTab(tempAccountList);
-    },[props.activeTabKey])
+    }
+
+    console.log('render accountslist')
+
+    useEffect(
+      ()=> {
+        //console.log(activeTabKey);
+        //debugger
+        if (props.accountGroupData !== null)
+        {
+          let tabId = props.accountGroupData.accountGroupId.toString();
+          let tempAcc:accountListType
+          account.getListByGroupId(tabId).then(
+            res => { //setAccountListSelectedTab(res)//return res
+              }
+          )
+          //setAccountListSelectedTab(tempAcc);
+          console.log('useeffect accountlist:',accountListDataSource)
+        }
+      }, [])
 
     return(
     <div>
         <Space style={{ display: 'flex' }}>
         <h2>Accounts List</h2>
         </Space>
-        <div>{accountListGroupId}</div>
-        <Table dataSource={accountListDataSource} columns={columns}/>
+        {/*accountListDataSource?.map( item => {return item} )*/}
+        {/*<Table dataSource={accountListDataSource} columns={columns}/>
+        <div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
     </div>
     )
 }

@@ -18,27 +18,29 @@ type AccountGroupType = {
 }
 
 type tabDetailsPropsType = {
-    accountData: AccountGroupType | null
-    activeTabKey: string
-    accounts: accountListType
+    accountGroupData: AccountGroupType | null
+    //accountListSelectedTab: accountListType
+    //onTabSelected: (tab: AccountGroupType | null) => void
 }
 
 export const TabDetails = (props:tabDetailsPropsType) => {
   const [activeTabKey, setActiveTabKey] = useState('0')
 
   useEffect(()=>{
-    console.log('tabdetails: ',props.activeTabKey)
-    console.log('tabdetails: ',props.accounts)
-    setActiveTabKey(props.activeTabKey)
-  },[props.activeTabKey])
+    console.log('tabdetails: ', props.accountGroupData)
+    console.log('tabdetails: ','props.accounts')
+    //setActiveTabKey('')
+  },[props.accountGroupData])
 
   return ( <div>
     Tab Details
       <Divider />
       <br></br>
-      <Button onClick={()=>{console.log(props.accountData)}}>Get Account</Button>
-      <Button onClick={()=>{console.log(props.accounts)}}>Get Accounts</Button>
-      <AccountsList activeTabKey={activeTabKey} accounts={props.accounts} />
+      <Button onClick={()=>{console.log(props.accountGroupData)}}>Get Account</Button>
+      <Button onClick={()=>{console.log()}}>Get Accounts</Button>
+      {props.accountGroupData?.accountGroupId}
+      
+      <AccountsList accountGroupData={props.accountGroupData}/>
     </div>
   );
   }
@@ -53,7 +55,7 @@ type initialItemsType = {
 
 const initialItemsAccountsGroup: initialItemsType = [
     { label: 'Favorites', 
-    children:  <TabDetails key={'0'} accountData={null} activeTabKey={'0'} accounts={undefined} />,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
+    children:  <TabDetails key={'0'} accountGroupData={null}/>,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
     key: '0', 
     closable: false,
     },
@@ -64,7 +66,7 @@ export const AccountsTab: React.FC = () => {
   const [activeTabKey, setActiveTabKey] = useState('0');
   const [itemsAccountsGroup, setItems] = useState(initialItemsAccountsGroup);
   const newTabIndex = useRef(0);
-  const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>();
+  const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>([]);
 
     useEffect( ()=>{ 
         console.log('SYNC_EFFECT_TABS');
@@ -73,13 +75,18 @@ export const AccountsTab: React.FC = () => {
 
     useEffect(
         ()=> {
-          console.log(activeTabKey);
+          //console.log(activeTabKey);
           //debugger
           let tempAccountList: any = account.getListByGroupId(activeTabKey);
           setAccountListSelectedTab(tempAccountList);
-          console.log(accountListSelectedTab)
+          console.log('useeffect accountsTab:',accountListSelectedTab)
         }, [activeTabKey]
      )
+
+     useEffect(()=>{
+
+     },[accountListSelectedTab])
+
     const onChange = (newActiveKey: string) => {
        setActiveTabKey(newActiveKey);
      };
@@ -94,10 +101,8 @@ export const AccountsTab: React.FC = () => {
     const addTabAccountGroup = (accountGroupItem: AccountGroupType) => {
         const newActiveKey = accountGroupItem.accountGroupId.toString()//`newTab${newTabIndex.current++}`;
         const newPanes = [...itemsAccountsGroup];
-        //newPanes.push({ label: 'New Tab', children: <TabDetails />, key: newActiveKey
-    //});
         newPanes.push({ label: accountGroupItem.accountGroupNameEn, 
-          children: <TabDetails key={accountGroupItem.accountGroupNameEn} accountData={accountGroupItem} activeTabKey={newActiveKey} accounts={accountListSelectedTab}/>, 
+          children: <TabDetails key={accountGroupItem.accountGroupNameEn} accountGroupData={accountGroupItem} />, 
           key: accountGroupItem.accountGroupId.toString(), 
           closable: false });
         setItems(newPanes);
@@ -112,7 +117,7 @@ export const AccountsTab: React.FC = () => {
             newActiveKey = accData.data[0].accountGroupId.toString();
             accData.data.map( (m:AccountGroupType) => {
               newPanes.push({ label: m.accountGroupNameEn, 
-                children: <TabDetails key={m.accountGroupNameEn} accountData={m} activeTabKey={activeTabKey} accounts={accountListSelectedTab}/>, 
+                children: <TabDetails key={m.accountGroupNameEn} accountGroupData={m} />, 
                 key: m.accountGroupId.toString(), closable: false });
             })
             //console.log(acc)
