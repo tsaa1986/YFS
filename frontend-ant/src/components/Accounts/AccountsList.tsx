@@ -67,15 +67,31 @@ const columns: ColumnsType<any> = [
 ];
     const [accountListGroupId, setAccountListGroupId] = useState('0')
     //const [activeTab, setActiveTab] = useState<AccountGroupType>();
-    const [accountListDataSource, setAccountListSelectedTab] = useState<accountListType>([]);
+    const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
 
-    const fetchAccountList = (groupId: string) => {
-
+    const fetchAccountList = (groupId: string | undefined) => {
+        if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
+            let tabId = props.accountGroupData.accountGroupId.toString();
+            let tempAcc:accountListType
+            account.getListByGroupId(tabId).then(
+              res => { console.log(res)
+                setAccountListSelectedTab(res)//return res
+                }
+            )
+        //setAccountListSelectedTab(tempAcc);
+        console.log('useeffect fetch accountlist:',accountListDataSource)
+      }
     }
 
-    console.log('render accountslist')
+    useEffect(()=>{
+      //debugger
+      fetchAccountList(props.accountGroupData?.accountGroupId.toString());
+    }, [props.accountGroupData?.accountGroupId])
 
-    useEffect(
+
+    console.log('render accountslist',accountListDataSource,props.accountGroupData?.accountGroupId)
+
+   /* useEffect(
       ()=> {
         //console.log(activeTabKey);
         //debugger
@@ -84,13 +100,14 @@ const columns: ColumnsType<any> = [
           let tabId = props.accountGroupData.accountGroupId.toString();
           let tempAcc:accountListType
           account.getListByGroupId(tabId).then(
-            res => { //setAccountListSelectedTab(res)//return res
+            res => { console.log(res)
+              setAccountListSelectedTab(res)//return res
               }
           )
           //setAccountListSelectedTab(tempAcc);
           console.log('useeffect accountlist:',accountListDataSource)
         }
-      }, [])
+      }, [])*/
 
     return(
     <div>
@@ -98,8 +115,8 @@ const columns: ColumnsType<any> = [
         <h2>Accounts List</h2>
         </Space>
         {/*accountListDataSource?.map( item => {return item} )*/}
-        {/*<Table dataSource={accountListDataSource} columns={columns}/>
-        <div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
+        <Table dataSource={accountListDataSource} columns={columns}/>
+        {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
     </div>
     )
 }
