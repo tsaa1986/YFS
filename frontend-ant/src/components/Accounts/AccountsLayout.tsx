@@ -5,6 +5,7 @@ import { account, accountGroups, AccountGroupsResponseType, accountType, account
 accountListType } from '../../api/api';
 import './AccountsLayout.css';
 import { AccountsList } from './AccountsList';
+import TabDetails from './TabDetails';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -17,35 +18,6 @@ type AccountGroupType = {
     groupOrederBy:	number
 }
 
-type tabDetailsPropsType = {
-    accountGroupData: AccountGroupType | null
-    //accountListSelectedTab: accountListType
-    //onTabSelected: (tab: AccountGroupType | null) => void
-}
-
-export const TabDetails = (props:tabDetailsPropsType) => {
-  const [activeTabKey, setActiveTabKey] = useState('0')
-
-  useEffect(()=>{
-    console.log('tabdetails: ', props.accountGroupData)
-    console.log('tabdetails: ','props.accounts')
-    //setActiveTabKey('')
-  },[props.accountGroupData])
-
-  return ( <div>
-    Tab Details
-      <Divider />
-      <br></br>
-      <Button onClick={()=>{console.log(props.accountGroupData)}}>Get Account</Button>
-      <Button onClick={()=>{console.log()}}>Get Accounts</Button>
-      {props.accountGroupData?.accountGroupId}
-      
-      <AccountsList accountGroupData={props.accountGroupData}/>
-    </div>
-  );
-  }
-  
-
 type initialItemsType = {
     label: string,
     children: JSX.Element,
@@ -53,19 +25,26 @@ type initialItemsType = {
     closable: false,
 }[]
 
+/*
+interface Person {
+   name: string
+   age: number
+}
+type Workplace = Person[]*/ 
+
 const initialItemsAccountsGroup: initialItemsType = [
     { label: 'Favorites', 
     children:  <TabDetails key={'0'} accountGroupData={null}/>,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
     key: '0', 
     closable: false,
-    },
+    }
   ];
 
 
 export const AccountsTab: React.FC = () => { 
   const [activeTabKey, setActiveTabKey] = useState('0');
   const [itemsAccountsGroup, setItems] = useState(initialItemsAccountsGroup);
-  const newTabIndex = useRef(0);
+  //const newTabIndex = useRef(0);
   const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>([]);
 
     useEffect( ()=>{ 
@@ -90,14 +69,6 @@ export const AccountsTab: React.FC = () => {
     const onChange = (newActiveKey: string) => {
        setActiveTabKey(newActiveKey);
      };
-    const add = () => {
-         const newActiveKey = `newTab${newTabIndex.current++}`;
-         const newPanes = [...itemsAccountsGroup];
-         //newPanes.push({ label: 'New Tab', children: <TabDetails />, key: newActiveKey
-     //});
-         setItems(newPanes);
-         setActiveTabKey(newActiveKey);
-     };
     const addTabAccountGroup = (accountGroupItem: AccountGroupType) => {
         const newActiveKey = accountGroupItem.accountGroupId.toString()//`newTab${newTabIndex.current++}`;
         const newPanes = [...itemsAccountsGroup];
@@ -120,10 +91,6 @@ export const AccountsTab: React.FC = () => {
                 children: <TabDetails key={m.accountGroupNameEn} accountGroupData={m} />, 
                 key: m.accountGroupId.toString(), closable: false });
             })
-            //console.log(acc)
-          //newPanes.push({ label: value.accountGroupNameUa, children: `tab`/*<AccountTabPanel/>*/ /*`Рахунки групи: ${value.accountGroupNameUa}`*/, key: `newTab${newTabIndex.current++}` });
-          //  newPanes.push({ label: accData.data[0].accountGroupNameEn, children: <TabDetails key1={accData.data[0].accountGroupNameEn}/>, key: accData.data[0].accountGroupId });
-          //  newPanes.push({ label: accData.data[1].accountGroupNameEn, children: <TabDetails key1={accData.data[1].accountGroupNameEn}/>, key: accData.data[1].accountGroupId });
         } //);
         setItems(newPanes);
         setActiveTabKey(newActiveKey);

@@ -92,6 +92,11 @@ export type accountType = {
     balance: number
 }
 export type accountListType = Array<accountType> | undefined
+
+interface IAccountListTypeResponse {
+    data: Array<accountType>
+}
+
 export const account = {
     getAccountTypes() {
 
@@ -110,6 +115,15 @@ export const account = {
             console.log(res.data)
             return res.data} )
         .catch((err) => console.log(err))
+    },
+    getListByGroupId2<AccountGroupsResponseType>(accountGroupId: string) {
+        return instancePrivate.get<AccountGroupsResponseType>(`${BASE_URL}/Accounts/${accountGroupId}`)
+        .then( res=> {
+            console.log(res.data)
+            return res.data} )
+        .catch((err) => {
+            console.log(err);
+            return null})
     }
 }
 
