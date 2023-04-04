@@ -114,9 +114,11 @@ export const account = {
         .then( res=> {
             console.log(res.data)
             return res.data} )
-        .catch((err) => console.log(err))
+        .catch((err) => {
+            console.log(err)
+        })
     },
-    getListByGroupId2<AccountGroupsResponseType>(accountGroupId: string) {
+    getListByGroupId2(accountGroupId: string) {
         return instancePrivate.get<AccountGroupsResponseType>(`${BASE_URL}/Accounts/${accountGroupId}`)
         .then( res=> {
             console.log(res.data)

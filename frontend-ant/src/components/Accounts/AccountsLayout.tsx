@@ -25,6 +25,13 @@ type initialItemsType = {
     closable: false,
 }[]
 
+interface ITabItem {
+  label: string,
+  children: JSX.Element,
+  key: string,
+  closable: false,
+}
+type tabItems = ITabItem[];
 /*
 interface Person {
    name: string
@@ -43,7 +50,8 @@ const initialItemsAccountsGroup: initialItemsType = [
 
 export const AccountsTab: React.FC = () => { 
   const [activeTabKey, setActiveTabKey] = useState('0');
-  const [itemsAccountsGroup, setItems] = useState(initialItemsAccountsGroup);
+  const [itemsAccountsGroup, setItems] = useState<initialItemsType>([]);//(initialItemsAccountsGroup);
+  const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
   //const newTabIndex = useRef(0);
   const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>([]);
 
