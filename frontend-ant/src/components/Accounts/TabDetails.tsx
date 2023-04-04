@@ -23,13 +23,9 @@ const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData}) => {
     },[accountGroupData])
   
     return ( <div>
-      Tab Details
-        <Divider />
-        <br></br>
-        <Button onClick={()=>{console.log(accountGroupData)}}>Get Account</Button>
-        <Button onClick={()=>{console.log()}}>Get Accounts</Button>
-        {accountGroupData?.accountGroupId}
-        
+        {/*<Divider />
+        /*<Button onClick={()=>{console.log(accountGroupData)}}>Get Account</Button>
+        <Button onClick={()=>{console.log()}}>Get Accounts</Button>*/ }      
         <AccountsList accountGroupData={accountGroupData}/>
       </div>
     );

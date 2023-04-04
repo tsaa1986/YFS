@@ -12,52 +12,28 @@ type accountListPropsType = {
   //onTabSelected: (tab: string) => void
 }
 
+interface DataType {
+  key: React.Key;
+  name: string;
+  balance: number;
+}
+
 export const AccountsList = (props: accountListPropsType) => {
-    /*const dataSource = [
 
-        {
-          key: '1',
-          name: 'Mike',
-          age: 32,
-          address: '10 Downing Street',
-        },
-        {
-          key: '2',
-          name: 'John',
-          age: 42,
-          address: '10 Downing Street',
-        },
-      ];
-      const columns = [
-        {
-          title: 'Name',
-          dataIndex: 'name',
-          key: 'name',
-        },
-        {
-          title: 'Age',
-          dataIndex: 'age',
-          key: 'age',
-        },
-        {
-          title: 'Address',
-          dataIndex: 'address',
-          key: 'address',
-        },
-      ];
-*/
 
-const columns: ColumnsType<any> = [
+
+const columns: ColumnsType<DataType> = [
+  {
+    title: 'action',
+    dataIndex: '',
+    key: 'x',
+    width:120,
+    render: () => {return(<button title='Add expens'>add expens</button>)},
+  },
   {
     title: 'Name',
     dataIndex: 'name',
     key: 'name'
-    //render: (text: string) => <a>{text}</a>,
-  },
-  {
-    title: 'Id',
-    dataIndex: 'id',
-    key: 'id'
   },
   {
     title: 'Balance',
@@ -76,13 +52,13 @@ const columns: ColumnsType<any> = [
             if (props.accountGroupData.accountGroupId.toString() =='0') {
               account.getListByFavorites().then(
                 res => { console.log(res)
-                  setAccountListSelectedTab(res)//return res
+                  setAccountListSelectedTab(res)
                   })
             }
             else {
               account.getListByGroupId(tabId).then(
                 res => { console.log(res)
-                  setAccountListSelectedTab(res)//return res
+                  setAccountListSelectedTab(res)
                   })
             }            
         //setAccountListSelectedTab(tempAcc);
@@ -119,10 +95,9 @@ const columns: ColumnsType<any> = [
     return(
     <div>
         <Space style={{ display: 'flex' }}>
-        <h2>Accounts List</h2>
         </Space>
         {/*accountListDataSource?.map( item => {return item} )*/}
-        <Table dataSource={accountListDataSource} columns={columns}/>
+        <Table columns={columns} dataSource={accountListDataSource}/>
         {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
     </div>
     )

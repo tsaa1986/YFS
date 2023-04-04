@@ -58,7 +58,6 @@ export const AccountsTab: React.FC = () => {
   //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
   //const newTabIndex = useRef(0);
   const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>([]);
-
     useEffect( ()=>{ 
         console.log('SYNC_EFFECT_TABS');
         getAccountGroups();
