@@ -69,15 +69,22 @@ const columns: ColumnsType<any> = [
     //const [activeTab, setActiveTab] = useState<AccountGroupType>();
     const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
 
-    const fetchAccountList = (groupId: string | undefined) => {
+    const fetchAccountList = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
             let tabId = props.accountGroupData.accountGroupId.toString();
             let tempAcc:accountListType
-            account.getListByGroupId(tabId).then(
-              res => { console.log(res)
-                setAccountListSelectedTab(res)//return res
-                }
-            )
+            if (props.accountGroupData.accountGroupId.toString() =='0') {
+              account.getListByFavorites().then(
+                res => { console.log(res)
+                  setAccountListSelectedTab(res)//return res
+                  })
+            }
+            else {
+              account.getListByGroupId(tabId).then(
+                res => { console.log(res)
+                  setAccountListSelectedTab(res)//return res
+                  })
+            }            
         //setAccountListSelectedTab(tempAcc);
         console.log('useeffect fetch accountlist:',accountListDataSource)
       }
@@ -85,7 +92,7 @@ const columns: ColumnsType<any> = [
 
     useEffect(()=>{
       //debugger
-      fetchAccountList(props.accountGroupData?.accountGroupId.toString());
+      fetchAccountList();
     }, [props.accountGroupData?.accountGroupId])
 
 

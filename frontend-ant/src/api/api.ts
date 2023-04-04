@@ -118,6 +118,16 @@ export const account = {
             console.log(err)
         })
     },
+    getListByFavorites() {
+        return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts`)
+        .then( res=> {
+            console.log(res.data)
+            return res.data} )
+        .catch((err) => {
+            console.log(err)
+            return null
+        })
+    },
     getListByGroupId2(accountGroupId: string) {
         return instancePrivate.get<AccountGroupsResponseType>(`${BASE_URL}/Accounts/${accountGroupId}`)
         .then( res=> {

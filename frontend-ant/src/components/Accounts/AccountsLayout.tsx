@@ -1,10 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Button, Tabs, Space,Table, Form, Input, Modal, InputNumber, Divider,
+import { Button, Tabs, Form, Input, Modal, InputNumber, Divider,
   Checkbox, Select, DatePicker } from "antd";
-import { account, accountGroups, AccountGroupsResponseType, accountType, accountTypesResponseType, bankType, currency, currencyType,
+import { account, accountGroups, accountTypesResponseType, bankType, currency, currencyType,
 accountListType } from '../../api/api';
 import './AccountsLayout.css';
-import { AccountsList } from './AccountsList';
 import TabDetails from './TabDetails';
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
@@ -41,7 +40,12 @@ type Workplace = Person[]*/
 
 const initialItemsAccountsGroup: initialItemsType = [
     { label: 'Favorites', 
-    children:  <TabDetails key={'0'} accountGroupData={null}/>,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
+    children:  <TabDetails key={'0'} accountGroupData={ {accountGroupId:0,   
+      userId: '',
+      accountGroupNameRu:	'',
+      accountGroupNameEn:	'',
+      accountGroupNameUa:	'',
+      groupOrederBy:	0}}/>,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
     key: '0', 
     closable: false,
     }
@@ -51,7 +55,7 @@ const initialItemsAccountsGroup: initialItemsType = [
 export const AccountsTab: React.FC = () => { 
   const [activeTabKey, setActiveTabKey] = useState('0');
   const [itemsAccountsGroup, setItems] = useState<initialItemsType>([]);//(initialItemsAccountsGroup);
-  const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
+  //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
   //const newTabIndex = useRef(0);
   const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>([]);
 
@@ -88,7 +92,7 @@ export const AccountsTab: React.FC = () => {
         setActiveTabKey(newActiveKey);
     };
     const buildTabAccountsGroup = (accData:any) => {
-        let newActiveKey = '0';//`newTab${newTabIndex.current++}`;
+        let newActiveKey = '';//`newTab${newTabIndex.current++}`;
         const newPanes: any = [...initialItemsAccountsGroup]//[...itemsAccountsGroup];
         //debugger
         if (accData.data[0] !== null)
@@ -139,7 +143,7 @@ const getAccountGroups = () => {
         res => {
             if (res != null ) {
             buildTabAccountsGroup(res)
-            return res
+            //return res
         }});
 }
 
@@ -231,14 +235,13 @@ return(<div>
         <ModalWithFormExample></ModalWithFormExample>
         </div>*/}
         <div className="accountsTab">
-        <Tabs defaultActiveKey='0'
+        <Tabs 
             type="editable-card"
             onChange={onChange}
             activeKey={activeTabKey}
             onEdit={onEdit}
             tabBarExtraContent={AccountTabButton}
-            items={itemsAccountsGroup}
-            />
+            items={itemsAccountsGroup}/>
         <AddAccountGroupForm 
             visible={visibleAddGroupForm}
             onCancel={handleCancelAddGroupForm}
@@ -251,8 +254,7 @@ return(<div>
             onCreate={handleSubmitAddAccountForm}
             form={formAddAccount}
             itemsAccountsGroup={itemsAccountsGroup}
-            activeAccountsGroupKey={activeTabKey}
-            >
+            activeAccountsGroupKey={activeTabKey}>
         </AddAccountForm>
 
         </div>
