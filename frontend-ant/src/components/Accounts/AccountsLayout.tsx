@@ -67,7 +67,7 @@ export const AccountsTab: React.FC = () => {
         ()=> {
           //console.log(activeTabKey);
           //debugger
-          let tempAccountList: any = account.getListByGroupId(activeTabKey);
+          //let tempAccountList: any = account.getListByGroupId(activeTabKey);
           //setAccountListSelectedTab(tempAccountList);
           //console.log('useeffect accountsTab:',accountListSelectedTab)
         }, [activeTabKey]

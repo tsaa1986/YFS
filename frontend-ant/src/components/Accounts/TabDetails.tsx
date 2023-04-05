@@ -7,6 +7,7 @@ type tabDetailsPropsType = {
     accountGroupData: AccountGroupType | null
     //accountListSelectedTab: accountListType
     //onTabSelected: (tab: AccountGroupType | null) => void
+    //accountSelected:
 }
 
 interface tabDetailsPropsType1 {
@@ -15,6 +16,7 @@ interface tabDetailsPropsType1 {
 
 const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData}) => {
     const [activeTabKey, setActiveTabKey] = useState('0')
+    const [selectedAccount, setSelectedAccount] = useState();
 
     useEffect(()=>{
       console.log('tabdetails: ', accountGroupData)
@@ -26,7 +28,7 @@ const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData}) => {
         {/*<Divider />
         /*<Button onClick={()=>{console.log(accountGroupData)}}>Get Account</Button>
         <Button onClick={()=>{console.log()}}>Get Accounts</Button>*/ }      
-        <AccountsList accountGroupData={accountGroupData}/>
+        <AccountsList accountGroupData={accountGroupData}/>        
       </div>
     );
 }
