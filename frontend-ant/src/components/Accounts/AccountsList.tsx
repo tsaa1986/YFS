@@ -95,8 +95,7 @@ const columns: ColumnsType<DataType> = [
           onRow={(record, rowIndex) => {
               return {
                 onClick: (e) => { 
-                  
-                  console.log(record);
+                  //console.log(record);
                   setSelectedAccount(record);
                 } 
               } 

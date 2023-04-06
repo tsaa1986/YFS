@@ -6,18 +6,15 @@ import { DataType } from "./AccountsList";
 
 interface IAccountOperationProps {
     selectedAccountGroupData: AccountGroupType | null
-    //onChangeAccount: (account: DataType | undefined) => void
     selectedAccount: DataType | undefined
-    //onChange: (account: DataType) => void
 }
 
 
 const AccountOperation: React.FC<IAccountOperationProps> = ({selectedAccountGroupData, selectedAccount}) => {
     const [account, setAccount] = useState(selectedAccount);
 
-
     useEffect(()=>{
-        console.log('seekcted account:', account)
+        //console.log('seekcted account:', account)
         setAccount(selectedAccount)
     },[selectedAccount])
 
