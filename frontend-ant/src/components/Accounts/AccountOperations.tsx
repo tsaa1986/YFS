@@ -8,25 +8,24 @@ interface IAccountOperationProps {
     selectedAccountGroupData: AccountGroupType | null
     //onChangeAccount: (account: DataType | undefined) => void
     selectedAccount: DataType | undefined
+    //onChange: (account: DataType) => void
 }
 
 
 const AccountOperation: React.FC<IAccountOperationProps> = ({selectedAccountGroupData, selectedAccount}) => {
-    const [selectedAccount2, setSelected2Account] = useState();
-/*
-    const onChangeAccount = (newAccount: DataType) => {
-        setSelected2Account(newAccount);
-      };*/
-console.log(selectedAccount)
+    const [account, setAccount] = useState(selectedAccount);
+
+
     useEffect(()=>{
-        console.log('seekcted account:', selectedAccount2)
-    },[selectedAccount2])
+        console.log('seekcted account:', account)
+        setAccount(selectedAccount)
+    },[selectedAccount])
 
     return (
         <div>
             <AccountSelectedPeriod/>
             <div>{selectedAccountGroupData?.accountGroupId}</div>
-
+            <div>{account?.balance}</div>
         </div>
     )
 }

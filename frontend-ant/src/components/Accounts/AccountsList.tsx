@@ -74,10 +74,6 @@ const columns: ColumnsType<DataType> = [
     }
 
     
-    const onChangeAccount = (newAccount: DataType) => {
-      setSelectedAccount(newAccount);
-    };
-
     useEffect(()=>{
       //debugger
       fetchAccountList();
@@ -98,7 +94,9 @@ const columns: ColumnsType<DataType> = [
         <Table 
           onRow={(record, rowIndex) => {
               return {
-                onClick: (e) => { //console.log(record);
+                onClick: (e) => { 
+                  
+                  console.log(record);
                   setSelectedAccount(record);
                 } 
               } 
