@@ -27,11 +27,8 @@ export interface ISelectedDate {
   startDate: Date,
   endDate: Date
 }
-
-const rowSelection = {
-  onChange: (selectedRowKeys: React.Key[], selectedRows: DataType[]) => {
-    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-  },
+export interface IDateOption {
+  period: ISelectedDate
 }
 
 export const AccountsList = (props: accountListPropsType) => {
@@ -59,7 +56,7 @@ const columns: ColumnsType<DataType> = [
     //const [activeTab, setActiveTab] = useState<AccountGroupType>();
     const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
     const [selectedAccount, setSelectedAccount] = useState<DataType>();
-    const [selectedDate, setSelectedDate] = useState<ISelectedDate>({startDate: new Date(), endDate: new Date()})
+    const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}})
 
     const fetchAccountList = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
@@ -89,11 +86,8 @@ const columns: ColumnsType<DataType> = [
     }, [props.accountGroupData?.accountGroupId])
 
     useEffect(()=> {
-      console.log(selectedDate)
-    },[selectedDate])
-
-
-    //console.log('render accountslist',accountListDataSource, props.accountGroupData?.accountGroupId)
+      console.log(selectedDateOption)
+    },[selectedDateOption])
 
     return(
     <div>
@@ -113,8 +107,8 @@ const columns: ColumnsType<DataType> = [
     <div>
           <Divider />
           <Collapse defaultActiveKey={['1']} ghost>
-            <Panel header="This is panel header 1" key="1">
-              <AccountSelectedPeriod setSelectedDate={setSelectedDate}/>  
+            <Panel header={`This is panel header ${selectedAccount?.name}`} key="1">
+              <AccountSelectedPeriod selectedDateOption={selectedDateOption} setSelectedDateOption={setSelectedDateOption}/>  
             </Panel>
           </Collapse>
           <AccountOperation selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount}/>

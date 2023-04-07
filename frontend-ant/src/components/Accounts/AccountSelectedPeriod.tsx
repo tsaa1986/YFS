@@ -4,16 +4,17 @@ import type {DatePickerProps} from 'antd';
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import moment from 'moment';
 import dayjs from 'dayjs';
-import { ISelectedDate } from "./AccountsList";
+import { IDateOption, ISelectedDate } from "./AccountsList";
 
 const { RangePicker } = DatePicker;
 const dateFormat = 'YYYY-MM-DD';
 
 interface IAccountSelectedPeriod {
-    setSelectedDate: Dispatch<SetStateAction<ISelectedDate>>//(selectedDate: ISelectedDate) => {}
+    selectedDateOption: IDateOption
+    setSelectedDateOption: Dispatch<SetStateAction<IDateOption>>//(selectedDate: ISelectedDate) => {}
 }
 
-enum SelectedVariant {
+export enum SelectedVariantPeriod {
     lastOperation10 = 1,
     currentMonth = 2,
     previousMonth = 3,
@@ -22,11 +23,11 @@ enum SelectedVariant {
 }
 
 const selectOptions = [
-    {value: SelectedVariant.lastOperation10, label: "Last 10 operation"},
-    {value: SelectedVariant.currentMonth, label: "Current Month"},
-    {value: SelectedVariant.previousMonth, label: "Previous Month"},
-    {value: SelectedVariant.last3Month, label: "Last 3 month"},
-    {value: SelectedVariant.rangeDates, label: "Range dates"},
+    {value: SelectedVariantPeriod.lastOperation10, label: "Last 10 operation"},
+    {value: SelectedVariantPeriod.currentMonth, label: "Current Month"},
+    {value: SelectedVariantPeriod.previousMonth, label: "Previous Month"},
+    {value: SelectedVariantPeriod.last3Month, label: "Last 3 month"},
+    {value: SelectedVariantPeriod.rangeDates, label: "Range dates"},
 ]
 
 const handleChange = (value: string) => {
@@ -36,25 +37,55 @@ const onChangeMonth: DatePickerProps['onChange'] = (date, dateString) => {
     console.log(date, dateString);
   };
 
-const AccountSelectedPeriod: React.FC<IAccountSelectedPeriod> = ({setSelectedDate}) => {
+const AccountSelectedPeriod: React.FC<IAccountSelectedPeriod> = ({selectedDateOption, setSelectedDateOption}) => {
     const [size, setSize] = useState<SizeType>('small');
-    const [selectOption, setSelectOption] = useState<SelectedVariant>(1);
+    const [selectOption, setSelectOption] = useState<SelectedVariantPeriod>(1);
     const [picker, setPicker] = useState("month");
     const [today, setToday] = useState(new Date());
     
-    const today1 = dayjs(`${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`)//new Date();
-
     useEffect( ()=> {
-        console.log(SelectedVariant[selectOption])
-        console.log(`${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`)
-        //console.log(selectedDate)
-        setSelectedDate({startDate: new Date(), endDate: new Date()});
+        let firstDate, lastDate: Date;
+        switch(selectOption) {
+            case 2: 
+                firstDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                lastDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                setSelectedDateOption( {period: {startDate: firstDate, endDate: lastDate}})
+                break
+            case 3: 
+                firstDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                lastDate = new Date(today.getFullYear(), today.getMonth(), 0);
+                setSelectedDateOption( {period: { startDate: firstDate, endDate: lastDate}})
+                break
+            case 4: 
+                firstDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
+                lastDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                setSelectedDateOption( {period: { startDate: firstDate, endDate: lastDate}})
+                break
+            case 5:
+                setSelectedDateOption( {period: { startDate: new Date(), endDate: new Date()}})
+                break
+            default:
+                firstDate = new Date()
+                lastDate = new Date()
+                break
+        }
+        //console.log(`date: ${selectedDate.startDate.getFullYear()}-${selectedDate.startDate.getMonth()}-${selectedDate.startDate.getDay()}`)
     }, [selectOption]
     )
 
-    const GetDataPicker = () => { switch(SelectedVariant[selectOption]) {
-        case SelectedVariant[2]: return <DatePicker size={size} value={dayjs(`${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`)} onChange={onChangeMonth} picker="month" disabled/>
-        case SelectedVariant[3]: return <DatePicker size={size} value={dayjs(`${today.getFullYear()}-${today.getMonth()-1}-${today.getDay()}`)} onChange={onChangeMonth} picker="month" disabled/>  
+    const RenderDataPicker = () => { switch(SelectedVariantPeriod[selectOption]) {
+        case SelectedVariantPeriod[1]: return ``
+        /*case SelectedVariant[2]: return <DatePicker 
+                size={size} 
+                value={dayjs(`${selectedDate.startDate.getFullYear()}-${selectedDate.startDate.getMonth()}-${selectedDate.startDate.getDay()}`)} 
+                onChange={onChangeMonth} 
+                picker="month" 
+                disabled/>*/
+        case SelectedVariantPeriod[5]: return <RangePicker />  
+            default:
+                return `${selectedDateOption.period.startDate.toDateString()} - ${selectedDateOption.period.endDate.toDateString()}`
+                break
+        //case SelectedVariant[3]: return <DatePicker size={size} value={dayjs(`${selectedDate.startDate.getFullYear()}-${selectedDate.startDate.getMonth()}-${selectedDate.startDate.getDay()}`)} onChange={onChangeMonth} picker="month" disabled/>  
        // case SelectedVariant[4]: return <RangePicker size={size} value={[dayjs(`${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`, dateFormat), dayjs('2015-06-06', dateFormat)]} disabled/>
         }   
     }
@@ -68,8 +99,7 @@ const AccountSelectedPeriod: React.FC<IAccountSelectedPeriod> = ({setSelectedDat
                 options={ selectOptions }
                 size={size}
             />
-       { GetDataPicker()}
-
+        { RenderDataPicker() }
         </Space>
     )
 }
