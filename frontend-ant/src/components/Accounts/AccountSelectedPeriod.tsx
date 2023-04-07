@@ -1,15 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { DatePicker, Select, Space } from 'antd';
 import type {DatePickerProps} from 'antd';
 import { SizeType } from "antd/es/config-provider/SizeContext";
 import moment from 'moment';
 import dayjs from 'dayjs';
+import { ISelectedDate } from "./AccountsList";
 
 const { RangePicker } = DatePicker;
 const dateFormat = 'YYYY-MM-DD';
 
 interface IAccountSelectedPeriod {
-
+    setSelectedDate: Dispatch<SetStateAction<ISelectedDate>>//(selectedDate: ISelectedDate) => {}
 }
 
 enum SelectedVariant {
@@ -35,24 +36,19 @@ const onChangeMonth: DatePickerProps['onChange'] = (date, dateString) => {
     console.log(date, dateString);
   };
 
-interface ISelectedDate {
-    startDate: Date,
-    endDate: Date
-}
-
-const AccountSelectedPeriod: React.FC<IAccountSelectedPeriod> = () => {
+const AccountSelectedPeriod: React.FC<IAccountSelectedPeriod> = ({setSelectedDate}) => {
     const [size, setSize] = useState<SizeType>('small');
     const [selectOption, setSelectOption] = useState<SelectedVariant>(1);
     const [picker, setPicker] = useState("month");
     const [today, setToday] = useState(new Date());
-    const [selectedDate, setStartDate] = useState<ISelectedDate>({startDate: new Date(), endDate: new Date()})
-
+    
     const today1 = dayjs(`${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`)//new Date();
 
     useEffect( ()=> {
         console.log(SelectedVariant[selectOption])
         console.log(`${today.getFullYear()}-${today.getMonth()}-${today.getDay()}`)
-        console.log(selectedDate)
+        //console.log(selectedDate)
+        setSelectedDate({startDate: new Date(), endDate: new Date()});
     }, [selectOption]
     )
 

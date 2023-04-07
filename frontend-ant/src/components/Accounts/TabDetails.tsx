@@ -1,6 +1,7 @@
 import { Button, Divider } from "antd";
 import React, { useEffect, useState } from "react";
 import { AccountGroupType } from "../../api/api";
+import AccountSelectedPeriod from "./AccountSelectedPeriod";
 import { AccountsList } from "./AccountsList";
 
 type tabDetailsPropsType = {
@@ -24,12 +25,10 @@ const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData}) => {
       //setActiveTabKey('')
     },[accountGroupData])
   
-    return ( <div>
-        {/*<Divider />
-        /*<Button onClick={()=>{console.log(accountGroupData)}}>Get Account</Button>
-        <Button onClick={()=>{console.log()}}>Get Accounts</Button>*/ }      
-        <AccountsList accountGroupData={accountGroupData}/>        
-      </div>
+    return (           
+        <div>
+        <AccountsList accountGroupData={accountGroupData}/>  
+        </div>
     );
 }
 

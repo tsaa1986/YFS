@@ -3,7 +3,10 @@ import { Button, Space,Table, Divider } from "antd";
 import { account, AccountGroupType, accountListType, accountType } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
 import AccountOperation from './AccountOperations';
+import { Collapse } from 'antd';
+import AccountSelectedPeriod from './AccountSelectedPeriod';
 
+const { Panel } = Collapse;
 
 type accountListPropsType = {
   accountGroupData: AccountGroupType | null
@@ -18,6 +21,11 @@ export interface DataType {
   key: React.Key;
   name: string;
   balance: number;
+}
+
+export interface ISelectedDate {
+  startDate: Date,
+  endDate: Date
 }
 
 const rowSelection = {
@@ -51,6 +59,7 @@ const columns: ColumnsType<DataType> = [
     //const [activeTab, setActiveTab] = useState<AccountGroupType>();
     const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
     const [selectedAccount, setSelectedAccount] = useState<DataType>();
+    const [selectedDate, setSelectedDate] = useState<ISelectedDate>({startDate: new Date(), endDate: new Date()})
 
     const fetchAccountList = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
@@ -80,17 +89,14 @@ const columns: ColumnsType<DataType> = [
     }, [props.accountGroupData?.accountGroupId])
 
     useEffect(()=> {
-      //console.log(selectedAccount)
-    },[selectedAccount])
+      console.log(selectedDate)
+    },[selectedDate])
 
 
     //console.log('render accountslist',accountListDataSource, props.accountGroupData?.accountGroupId)
 
     return(
     <div>
-        <Space style={{ display: 'flex' }}>
-        </Space>
-        {/*accountListDataSource?.map( item => {return item} )*/}
         <Table 
           onRow={(record, rowIndex) => {
               return {
@@ -103,9 +109,17 @@ const columns: ColumnsType<DataType> = [
           }
           columns={columns} 
           dataSource={accountListDataSource}/>
-        <Divider />
-        <AccountOperation selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount}/>
-        {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
+          
+    <div>
+          <Divider />
+          <Collapse defaultActiveKey={['1']} ghost>
+            <Panel header="This is panel header 1" key="1">
+              <AccountSelectedPeriod setSelectedDate={setSelectedDate}/>  
+            </Panel>
+          </Collapse>
+          <AccountOperation selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount}/>
+          {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
+        </div>
     </div>
     )
 }

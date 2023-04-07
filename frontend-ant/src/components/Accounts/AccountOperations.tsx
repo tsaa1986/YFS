@@ -20,7 +20,6 @@ const AccountOperation: React.FC<IAccountOperationProps> = ({selectedAccountGrou
 
     return (
         <div>
-            <AccountSelectedPeriod/>
             <div>{selectedAccountGroupData?.accountGroupId}</div>
             <div>{account?.balance}</div>
         </div>
