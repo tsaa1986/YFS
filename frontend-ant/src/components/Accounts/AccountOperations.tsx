@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Collapse } from 'antd';
+import { Collapse, Space } from 'antd';
 import AccountSelectedPeriod from "./AccountSelectedPeriod";
 import { AccountGroupType } from "../../api/api";
 import { DataType } from "./AccountsList";
@@ -19,10 +19,10 @@ const AccountOperation: React.FC<IAccountOperationProps> = ({selectedAccountGrou
     },[selectedAccount])
 
     return (
-        <div>
+        <Space wrap>
             <div>{selectedAccountGroupData?.accountGroupId}</div>
             <div>{account?.balance}</div>
-        </div>
+        </Space>
     )
 }
 

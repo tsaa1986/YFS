@@ -109,9 +109,9 @@ const columns: ColumnsType<DataType> = [
           <Collapse defaultActiveKey={['1']} ghost>
             <Panel header={`This is panel header ${selectedAccount?.name}`} key="1">
               <AccountSelectedPeriod selectedDateOption={selectedDateOption} setSelectedDateOption={setSelectedDateOption}/>  
+              <AccountOperation selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount}/>
             </Panel>
           </Collapse>
-          <AccountOperation selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount}/>
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
         </div>
     </div>
