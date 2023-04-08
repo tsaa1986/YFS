@@ -17,15 +17,31 @@ namespace YFS.Service.Services
             await CreateAsync(accountGroup);
         public async Task CreateAccountGroupsDefaultForUser(string userid) 
         {
-            AccountGroup ac = new AccountGroup
+            AccountGroup acGroup = new AccountGroup
             {
                 UserId = userid,
                 AccountGroupNameEn = "Cash",
                 AccountGroupNameRu = "Наличные",
                 AccountGroupNameUa = "Готівка"
             };
+            AccountGroup acGroup_bank = new AccountGroup
+            {
+                UserId = userid,
+                AccountGroupNameEn = "Bank accounts",
+                AccountGroupNameRu = "Банковские счета",
+                AccountGroupNameUa = "Банківські рахунки"
+            };
+            AccountGroup acGroup_internetmoney = new AccountGroup
+            {
+                UserId = userid,
+                AccountGroupNameEn = "Internet accounts",
+                AccountGroupNameRu = "Интернет счета",
+                AccountGroupNameUa = "Інтернет рахунки"
+            };
 
-            await CreateAsync(ac);// CreateAccountGroup(ac);
+            await CreateAsync(acGroup);// CreateAccountGroup(ac);
+            await CreateAsync(acGroup_internetmoney);
+            await CreateAsync(acGroup_bank);
         }
         public Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
         {

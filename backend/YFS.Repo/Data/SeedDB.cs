@@ -42,6 +42,7 @@ namespace YFS.Repo.Data
             {
                 if (roleManager.RoleExistsAsync(UserRoles.Admin) != null)
                     roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                context.SaveChanges();
                 if (roleManager.RoleExistsAsync(UserRoles.User) != null)
                     roleManager.CreateAsync(new IdentityRole(UserRoles.User));
                 context.SaveChanges();
@@ -52,8 +53,23 @@ namespace YFS.Repo.Data
 
             if (demoUser == null) { 
                 return; }
-              else {
+              else { 
                 userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
+                context.SaveChanges();
+            }
+            
+            if (demoUser != null)
+            {
+                AccountGroup acGroup = new AccountGroup
+                {
+                    UserId = demoUser.Id,
+                    AccountGroupNameEn = "Cash",
+                    AccountGroupNameRu = "Наличные",
+                    AccountGroupNameUa = "Готівка"
+                };
+                //create default group
+                context.AccountGroups.AddAsync(acGroup);
+                context.SaveChanges();
             }
 
 
