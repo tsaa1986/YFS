@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using YFS.Repo.Data;
 
@@ -11,9 +12,10 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    partial class RepositoryContextModelSnapshot : ModelSnapshot
+    [Migration("20230408083704_modelcategory-fix-userid")]
+    partial class modelcategoryfixuserid
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -525,42 +527,6 @@ namespace YFS.Repo.Migrations
                             Name_UA = "Особиста гігієна",
                             Note = "",
                             RootId = 0
-                        },
-                        new
-                        {
-                            Id = 13,
-                            Name_ENG = "Household",
-                            Name_RU = "Хозяйственные расходы",
-                            Name_UA = "Побутові видатки",
-                            Note = "",
-                            RootId = 0
-                        },
-                        new
-                        {
-                            Id = 14,
-                            Name_ENG = "Improvements",
-                            Name_RU = "Улучшения",
-                            Name_UA = "Покращення",
-                            Note = "",
-                            RootId = 13
-                        },
-                        new
-                        {
-                            Id = 15,
-                            Name_ENG = "Furnishings",
-                            Name_RU = "Мебель",
-                            Name_UA = "Меблі",
-                            Note = "",
-                            RootId = 13
-                        },
-                        new
-                        {
-                            Id = 16,
-                            Name_ENG = "Electronics",
-                            Name_RU = "Електроника",
-                            Name_UA = "Електроніка",
-                            Note = "",
-                            RootId = 13
                         });
                 });
 
