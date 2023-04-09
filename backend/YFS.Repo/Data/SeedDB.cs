@@ -1,13 +1,116 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using YFS.Core.Models;
 
 namespace YFS.Repo.Data
 {
     public static class SeedDb
     {
-        public static void Initialize(IServiceProvider serviceProvider)
+        public static List<AccountGroup> InitializeAccountGroupsDefault(string _userid)
+        {
+            List<AccountGroup> accountGroups = new List<AccountGroup>();
+            if (!string.IsNullOrEmpty(_userid))
+            {
+                accountGroups.Add(new AccountGroup
+                { UserId = _userid, AccountGroupNameEn = "Cash", AccountGroupNameRu = "Наличные", AccountGroupNameUa = "Готівка" });
+                accountGroups.Add(new AccountGroup
+                { UserId = _userid, AccountGroupNameEn = "Bank accounts", AccountGroupNameRu = "Банковские счета", AccountGroupNameUa = "Банківські рахунки" });
+                accountGroups.Add(new AccountGroup
+                { UserId = _userid, AccountGroupNameEn = "Internet accounts", AccountGroupNameRu = "Интернет счета", AccountGroupNameUa = "Інтернет рахунки" });
+            }
+            return accountGroups;
+        }
+        public static List<Account> InitializeAccountsDefault(string _userid, List<AccountGroup> _accountGroups)
+        {
+            List<Account> accounts = new List<Account>();
+
+            if(!string.IsNullOrEmpty(_userid) & (_accountGroups != null)) {
+                foreach (AccountGroup accGroup in _accountGroups)
+                {
+                    if (accGroup.AccountGroupNameEn == "Cash") {
+                        accounts.Add(new Account { UserId = _userid, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
+                            CurrencyId = 980, BankId = 1, Name = "Wallet UAH", OpeningDate = new DateTime(),
+                            Note = "wallet uah", Balance = 0 });
+                        accounts.Add(new Account
+                        {
+                            UserId = _userid,
+                            Favorites = 0,
+                            AccountGroupId = accGroup.AccountGroupId,
+                            AccountTypeId = 1,
+                            CurrencyId = 840,
+                            BankId = 1,
+                            Name = "Wallet USD",
+                            OpeningDate = new DateTime(),
+                            Note = "wallet usd",
+                            Balance = 0
+                        });
+                        accounts.Add(new Account
+                        {
+                            UserId = _userid,
+                            Favorites = 0,
+                            AccountGroupId = accGroup.AccountGroupId,
+                            AccountTypeId = 1,
+                            CurrencyId = 978,
+                            BankId = 1,
+                            Name = "Wallet EURO",
+                            OpeningDate = new DateTime(),
+                            Note = "wallet euro",
+                            Balance = 0
+                        });
+                    }
+                    if (accGroup.AccountGroupNameEn == "Bank accounts")
+                    {
+                        accounts.Add(new Account
+                        {
+                            UserId = _userid,
+                            Favorites = 0,
+                            AccountGroupId = accGroup.AccountGroupId,
+                            AccountTypeId = 4,
+                            CurrencyId = 840,
+                            BankId = 1,
+                            Name = "MonoBank USD",
+                            OpeningDate = new DateTime(),
+                            Note = "monobank usd",
+                            Balance = 0
+                        });
+                        accounts.Add(new Account
+                        {
+                            UserId = _userid,
+                            Favorites = 1,
+                            AccountGroupId = accGroup.AccountGroupId,
+                            AccountTypeId = 4,
+                            CurrencyId = 980,
+                            BankId = 1,
+                            Name = "BlackMono",
+                            OpeningDate = new DateTime(),
+                            Note = "monobank uah",
+                            Balance = 0
+                        });
+                        accounts.Add(new Account
+                        {
+                            UserId = _userid,
+                            Favorites = 0,
+                            AccountGroupId = accGroup.AccountGroupId,
+                            AccountTypeId = 4,
+                            CurrencyId = 980,
+                            BankId = 1,
+                            Name = "WhiteMono",
+                            OpeningDate = new DateTime(),
+                            Note = "monobank uah",
+                            Balance = 0
+                        });
+                    }
+                }
+            }
+
+            return accounts;
+        }
+        public static async void Initialize(IServiceProvider serviceProvider)
         {
             const string demoEmail = "demo@demo.com";
             const string demoPassword = "123$qweR";
@@ -57,22 +160,34 @@ namespace YFS.Repo.Data
                 userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
                 context.SaveChanges();
             }
-            
+
+            //create default group
             if (demoUser != null)
             {
-                AccountGroup acGroup = new AccountGroup
+                var accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
+                var accounts = context.Accounts.Where(a => a.UserId == demoUser.Id).ToList();
+
+                if (accountGroupUser.Count == 0)
                 {
-                    UserId = demoUser.Id,
-                    AccountGroupNameEn = "Cash",
-                    AccountGroupNameRu = "Наличные",
-                    AccountGroupNameUa = "Готівка"
-                };
-                //create default group
-                context.AccountGroups.AddAsync(acGroup);
-                context.SaveChanges();
+                    foreach (AccountGroup agd in InitializeAccountGroupsDefault(demoUser.Id))
+                    {
+                        context.AccountGroups.AddAsync(agd);
+                    }
+                    context.SaveChanges();
+                    accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList(); 
+                }
+
+                //create default accounts
+                if (accounts.Count == 0)
+                {
+                    foreach (Account account in InitializeAccountsDefault(demoUser.Id, accountGroupUser))
+                    {
+                        context.Accounts.AddAsync(account);
+                    }
+                    context.SaveChanges();
+                }
+
             }
-
-
             //context.Database.Migrate();
             //if (!context.Products.Any())
             //{
