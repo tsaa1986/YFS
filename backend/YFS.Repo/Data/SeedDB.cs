@@ -144,11 +144,11 @@ namespace YFS.Repo.Data
             if (!context.Roles.Any())
             {
                 if (roleManager.RoleExistsAsync(UserRoles.Admin) != null)
-                    roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                context.SaveChanges();
+                    await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                await context.SaveChangesAsync();
                 if (roleManager.RoleExistsAsync(UserRoles.User) != null)
-                    roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                context.SaveChanges();
+                    await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
+                await context.SaveChangesAsync();
             }
 
             // get the demo user we just made
@@ -157,8 +157,8 @@ namespace YFS.Repo.Data
             if (demoUser == null) { 
                 return; }
               else { 
-                userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
-                context.SaveChanges();
+                await userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
+                await context.SaveChangesAsync();
             }
 
             //create default group
@@ -171,9 +171,9 @@ namespace YFS.Repo.Data
                 {
                     foreach (AccountGroup agd in InitializeAccountGroupsDefault(demoUser.Id))
                     {
-                        context.AccountGroups.AddAsync(agd);
+                        await context.AccountGroups.AddAsync(agd);
                     }
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
                     accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList(); 
                 }
 
@@ -182,9 +182,9 @@ namespace YFS.Repo.Data
                 {
                     foreach (Account account in InitializeAccountsDefault(demoUser.Id, accountGroupUser))
                     {
-                        context.Accounts.AddAsync(account);
+                        await context.Accounts.AddAsync(account);
                     }
-                    context.SaveChanges();
+                    await context.SaveChangesAsync();
                 }
 
             }
