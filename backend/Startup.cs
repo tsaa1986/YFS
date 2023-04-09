@@ -41,6 +41,7 @@ namespace YFS
                           policy
                           //.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
                           //.SetIsOriginAllowed("http://localhost:3000")
+                          //.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
                           .WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001").AllowAnyMethod().AllowAnyHeader().AllowCredentials();                          
                       }));
             ServiceExtension.ConfigureMapping(services);
@@ -91,6 +92,9 @@ namespace YFS
 
             //SeedData.EnsurePopulated(app);
             //IdentitySeedData.EnsurePopulated(app);
+            // handle DB seeding
+            SeedDb.Initialize(app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope().ServiceProvider);
+
         }
 
     }

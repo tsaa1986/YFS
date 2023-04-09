@@ -36,6 +36,9 @@ namespace YFS.Repo.Data
             //modelBuilder.ApplyConfiguration(new UserData());
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CurrencyData());
+            modelBuilder.ApplyConfiguration(new CategoryData());
+            modelBuilder.ApplyConfiguration(new BankData());
+
         } 
     }
 }
