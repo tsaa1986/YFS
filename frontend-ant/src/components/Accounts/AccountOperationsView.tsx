@@ -2,15 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Collapse, Space } from 'antd';
 import AccountSelectedPeriod from "./AccountSelectedPeriod";
 import { AccountGroupType } from "../../api/api";
-import { DataType } from "./AccountsList";
+import { DataType, IDateOption } from "./AccountsList";
 
-interface IAccountOperationProps {
+interface IAccountOperationViewProps {
     selectedAccountGroupData: AccountGroupType | null
     selectedAccount: DataType | undefined
+    selectedDateOption: IDateOption
 }
 
 
-const AccountOperation: React.FC<IAccountOperationProps> = ({selectedAccountGroupData, selectedAccount}) => {
+const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAccountGroupData, selectedAccount, selectedDateOption}) => {
     const [account, setAccount] = useState(selectedAccount);
 
     useEffect(()=>{
@@ -22,9 +23,10 @@ const AccountOperation: React.FC<IAccountOperationProps> = ({selectedAccountGrou
         <Space wrap>
             <div>{selectedAccountGroupData?.accountGroupId}</div>
             <div>{account?.balance}</div>
+            <div>{selectedDateOption.period.startDate.toDateString()}</div>
         </Space>
     )
 }
 
 
-export default AccountOperation;
+export default AccountOperationsView;

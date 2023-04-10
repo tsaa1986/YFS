@@ -2,7 +2,7 @@ import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 're
 import { Button, Space,Table, Divider } from "antd";
 import { account, AccountGroupType, accountListType, accountType } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
-import AccountOperation from './AccountOperations';
+import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
 import AccountSelectedPeriod from './AccountSelectedPeriod';
 
@@ -109,7 +109,7 @@ const columns: ColumnsType<DataType> = [
           <Collapse defaultActiveKey={['1']} ghost>
             <Panel header={`This is panel header ${selectedAccount?.name}`} key="1">
               <AccountSelectedPeriod selectedDateOption={selectedDateOption} setSelectedDateOption={setSelectedDateOption}/>  
-              <AccountOperation selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount}/>
+              <AccountOperationsView selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount} selectedDateOption={selectedDateOption}/>
             </Panel>
           </Collapse>
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
