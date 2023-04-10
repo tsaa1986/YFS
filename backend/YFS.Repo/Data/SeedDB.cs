@@ -145,7 +145,7 @@ namespace YFS.Repo.Data
             {
                 if (roleManager.RoleExistsAsync(UserRoles.Admin) != null)
                     await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                await context.SaveChangesAsync();
+                //await context.SaveChangesAsync();
                 if (roleManager.RoleExistsAsync(UserRoles.User) != null)
                     await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
                 await context.SaveChangesAsync();

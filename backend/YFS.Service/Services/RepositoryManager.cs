@@ -16,6 +16,7 @@ namespace YFS.Service.Services
         private IAccountTypeRepository _accountTypeRepository;
         private IAccountRepository _accountRepository;
         private ICurrencyRepository _currencyRepository;
+        private ICategoryRepository _categoryRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -80,6 +81,16 @@ namespace YFS.Service.Services
                 if (_currencyRepository is null)
                     _currencyRepository = new CurrencyRepository(_repositoryContext);
                 return _currencyRepository;
+            }
+        }
+
+        public ICategoryRepository Category
+        {
+            get
+            {
+                if (_categoryRepository is null)
+                    _categoryRepository = new CategoryRepository(_repositoryContext);
+                return _categoryRepository;
             }
         }
 
