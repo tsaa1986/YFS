@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import { Collapse, Space } from 'antd';
 import AccountSelectedPeriod from "./AccountSelectedPeriod";
 import { AccountGroupType } from "../../api/api";
-import { DataType, IDateOption } from "./AccountsList";
+import { AccountDataType, IDateOption } from "./AccountsList";
 
 interface IAccountOperationViewProps {
     selectedAccountGroupData: AccountGroupType | null
-    selectedAccount: DataType | undefined
+    selectedAccount: AccountDataType | undefined
     selectedDateOption: IDateOption
 }
 

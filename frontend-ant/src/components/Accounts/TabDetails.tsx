@@ -27,7 +27,7 @@ const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData}) => {
   
     return (           
         <div>
-        <AccountsList accountGroupData={accountGroupData}/>  
+            <AccountsList accountGroupData={accountGroupData}/>  
         </div>
     );
 }

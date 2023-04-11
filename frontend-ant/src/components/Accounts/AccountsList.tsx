@@ -5,6 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
 import AccountSelectedPeriod from './AccountSelectedPeriod';
+import TransactionForm, { TypeTransaction } from './AccountTransaction';
 
 const { Panel } = Collapse;
 
@@ -17,7 +18,7 @@ type accountListPropsType = {
   //onTabSelected: (tab: string) => void
 }
 
-export interface DataType {
+export interface AccountDataType {
   key: React.Key;
   name: string;
   balance: number;
@@ -33,13 +34,13 @@ export interface IDateOption {
 
 export const AccountsList = (props: accountListPropsType) => {
 
-const columns: ColumnsType<DataType> = [
+const columns: ColumnsType<AccountDataType> = [
   {
     title: 'action',
     dataIndex: '',
     key: 'x',
     width:120,
-    render: () => {return(<button title='Add expens'>add expens</button>)},
+    render: () => {return(<button onClick={()=> {setOpenTransactionForm(true)}} title='Add expens'>transaction</button>)},
   },
   {
     title: 'Name',
@@ -55,8 +56,9 @@ const columns: ColumnsType<DataType> = [
     const [accountListGroupId, setAccountListGroupId] = useState('0')
     //const [activeTab, setActiveTab] = useState<AccountGroupType>();
     const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
-    const [selectedAccount, setSelectedAccount] = useState<DataType>();
+    const [selectedAccount, setSelectedAccount] = useState<AccountDataType>();
     const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}})
+    const [openTransactionForm, setOpenTransactionForm] = useState<boolean>(false);
 
     const fetchAccountList = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
@@ -78,7 +80,6 @@ const columns: ColumnsType<DataType> = [
         console.log('useeffect fetch accountlist:',accountListDataSource)
       }
     }
-
     
     useEffect(()=>{
       //debugger
@@ -112,6 +113,7 @@ const columns: ColumnsType<DataType> = [
               <AccountOperationsView selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount} selectedDateOption={selectedDateOption}/>
             </Panel>
           </Collapse>
+          <TransactionForm open={openTransactionForm} onCancel={()=>{ setOpenTransactionForm(false)}} account={selectedAccount} />
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
         </div>
     </div>

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { Button, Form, Input, Modal, Radio } from "antd";
+import { Button, Form, Input, InputNumber, Modal, Radio, Select } from "antd";
+import { AccountDataType } from "./AccountsList";
 
-enum TypeTransaction {
+export enum TypeTransaction {
     Expense = 1,
     Income = 2,
     Transfer = 3,
@@ -20,16 +21,22 @@ interface Values {
 
 interface TransactionFormProps {
     open: boolean;
-    onCreate: (values: Values) => void;
+    //onCreate: (values: Values) => void;
     onCancel: () => void;
+    account: AccountDataType | undefined
+    //accountGroup: AccountGroupType
+    //typeTransaction: TypeTransaction;
+    //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
   }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({open, onCreate, onCancel}) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ onCancel, account}) => {
     const [formTransaction] = Form.useForm();
+    const [typeTransaction, setTypeTransaction] = useState<TypeTransaction>(TypeTransaction.Expense);
+
     return(
     <Modal
       open={open}
-      title="Create a new collection"
+      title="Create a new transaction"
       okText="Create"
       cancelText="Cancel"
       onCancel={onCancel}
@@ -38,7 +45,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open, onCreate, onCanc
           .validateFields()
           .then((values) => {
             formTransaction.resetFields();
-            onCreate(values);
+            //onCreate(values);
           })
           .catch((info) => {
             console.log('Validate Failed:', info);
@@ -48,27 +55,113 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open, onCreate, onCanc
             form={formTransaction}
             layout="vertical"
             name="form_in_modal"
+            size="small"
             initialValues={{ modifier: 'public' }}>
+            <Form.Item name="modifier" className="collection-create-form_last-form-item">
+              <Radio.Group>
+                  <Radio value={TypeTransaction.Expense}>Expense</Radio>
+                  <Radio value={TypeTransaction.Income}>Income</Radio>
+                  <Radio value={TypeTransaction.Transfer}>Transfer</Radio>
+              </Radio.Group>
+            </Form.Item>
+
+            <Form.Item 
+            name="withdrawFromAccountId"
+            label="WithdrawFromAccount"
+            rules={[{required: true, message: 'Please select WithdrawFromAccount'}]}>
+            <Select 
+              onChange={(e:any)=> {
+                console.log(e)
+                //setSelectedAccountsType(e)}
+                //selectedAccountType = e;
+              } }
+              //value={selectedAccountType} 
+            >
+              {/* (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
+                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
+                  )) : (<Select.Option value={''}>{''}</Select.Option>)*/
+              }
+            </Select>
+            </Form.Item>
+            <Form.Item 
+            name="targetAccountId"
+            label="Target Account"
+            rules={[{required: true, message: 'Please select Target Account'}]}>
+            <Select 
+              onChange={(e:any)=> {
+                console.log(e)
+                //setSelectedAccountsType(e)}
+                //selectedAccountType = e;
+              } }
+              //value={selectedAccountType} 
+            >
+              {/* (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
+                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
+                  )) : (<Select.Option value={''}>{''}</Select.Option>)*/
+              }
+            </Select>
+            </Form.Item>
+            <Form.Item 
+            name="categoryId"
+            label="Category"
+            rules={[{required: true, message: 'Please select Category'}]}>
+            <Select 
+              onChange={(e:any)=> {
+                console.log(e)
+                //setSelectedAccountsType(e)}
+                //selectedAccountType = e;
+              } }
+              //value={selectedAccountType} 
+            >
+              {/* (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
+                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
+                  )) : (<Select.Option value={''}>{''}</Select.Option>)*/
+              }
+            </Select>
+            </Form.Item>
+            <Form.Item 
+            name="amount"
+            label="Amount"
+            rules={[{required: true, message: 'Please enter amount!'}]}>
+              <InputNumber value={0.00}/>
+            </Form.Item>
+            <Form.Item 
+            name="transactionDate"
+            label="Date">
+            <Select 
+              onChange={(e:any)=> {
+                console.log(e)
+                //setSelectedAccountsType(e)}
+                //selectedAccountType = e;
+              } }
+              //value={selectedAccountType} 
+            >
+              {/* (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
+                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
+                  )) : (<Select.Option value={''}>{''}</Select.Option>)*/
+              }
+            </Select>
+            </Form.Item>
+
+            {/*<Form.Item>
+              {/*}
+            <Button onClick={() => {return <div>{account?.key}</div>}}>{account?.key}</Button>
+            </Form.Item>*/}
+            
             <Form.Item
-            name="title"
-            label="Title"
-            rules={[{ required: true, message: 'Please input the title of collection!' }]}
+            name="tag"
+            label="Tag"
             >
             <Input />
             </Form.Item>
             <Form.Item name="description" label="Description">
-            <Input type="textarea" />
-            </Form.Item>
-            <Form.Item name="modifier" className="collection-create-form_last-form-item">
-            <Radio.Group>
-                <Radio value="public">Public</Radio>
-                <Radio value="private">Private</Radio>
-            </Radio.Group>
+            <Input type="textarea" value={account?.balance}/>
             </Form.Item>
         </Form>
       </Modal>
 )
 }
+export default TransactionForm;
 
 
 const AccountTransaction: React.FC<IAccountTransactionProps> = ({typeTransaction}) => {
@@ -84,7 +177,7 @@ const AccountTransaction: React.FC<IAccountTransactionProps> = ({typeTransaction
     const [formAccountTransaction] = Form.useForm();
     return(
     <div>
-      <Button
+    { /* <Button
         type="primary"
         onClick={() => {
           setOpen(true);
@@ -94,11 +187,11 @@ const AccountTransaction: React.FC<IAccountTransactionProps> = ({typeTransaction
       </Button>
       <TransactionForm
         open={open}
-        onCreate={onCreate}
+        //onCreate={onCreate}
         onCancel={() => {
-          setOpen(false);
+         setOpen(false);
         }}
-      />
+      />*/}
     </div>
     )
 }
