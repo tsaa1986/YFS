@@ -60,7 +60,7 @@ const columns: ColumnsType<AccountDataType> = [
     const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}})
     const [openTransactionForm, setOpenTransactionForm] = useState<boolean>(false);
 
-    const fetchAccountList = () => {
+    const fetchAccountListSelectedTab = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
             let tabId = props.accountGroupData.accountGroupId.toString();
             let tempAcc:accountListType
@@ -83,7 +83,7 @@ const columns: ColumnsType<AccountDataType> = [
     
     useEffect(()=>{
       //debugger
-      fetchAccountList();
+      fetchAccountListSelectedTab();
     }, [props.accountGroupData?.accountGroupId])
 
     useEffect(()=> {

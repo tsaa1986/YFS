@@ -109,6 +109,15 @@ export const account = {
     return instancePrivate.post<accountType>(`${BASE_URL}/Accounts`,
         account)
     },
+    getListByUserId() {
+        return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/byUserId`)
+        .then( res=> {
+            console.log(res.data)
+            return res.data} )
+        .catch((err) => {
+            console.log(err)
+        })
+    },
     getListByGroupId(accountGroupId: string) {
         return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/${accountGroupId}`)
         .then( res=> {
@@ -127,8 +136,8 @@ export const account = {
             console.log(err)
             return null
         })
-    },
-    getListByGroupId2(accountGroupId: string) {
+    }
+    /*getListByGroupId2(accountGroupId: string) {
         return instancePrivate.get<AccountGroupsResponseType>(`${BASE_URL}/Accounts/${accountGroupId}`)
         .then( res=> {
             console.log(res.data)
@@ -136,7 +145,7 @@ export const account = {
         .catch((err) => {
             console.log(err);
             return null})
-    }
+    }*/
 }
 
 export type currencyType = [{   
