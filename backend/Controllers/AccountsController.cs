@@ -67,6 +67,23 @@ namespace YFS.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
+        
+        [HttpGet("openAccountsByUserId")]
+        [Authorize]
+        public async Task<IActionResult> GetOpenAccountsByUserId()
+        {
+            try
+            {
+                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
+                var accounts = await _repository.Account.GetOpenAccountsByUserId(userid, trackChanges: false);
+                var accountDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
+                return Ok(accountDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAccount([FromBody] AccountDto account)

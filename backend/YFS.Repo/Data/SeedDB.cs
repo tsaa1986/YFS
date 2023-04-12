@@ -33,12 +33,13 @@ namespace YFS.Repo.Data
                 foreach (AccountGroup accGroup in _accountGroups)
                 {
                     if (accGroup.AccountGroupNameEn == "Cash") {
-                        accounts.Add(new Account { UserId = _userid, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
+                        accounts.Add(new Account { UserId = _userid, AccountStatus=1, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
                             CurrencyId = 980, BankId = 1, Name = "Wallet UAH", OpeningDate = new DateTime(),
                             Note = "wallet uah", Balance = 0 });
                         accounts.Add(new Account
                         {
                             UserId = _userid,
+                            AccountStatus = 1,
                             Favorites = 0,
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 1,
@@ -52,6 +53,7 @@ namespace YFS.Repo.Data
                         accounts.Add(new Account
                         {
                             UserId = _userid,
+                            AccountStatus = 1,
                             Favorites = 0,
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 1,
@@ -69,6 +71,7 @@ namespace YFS.Repo.Data
                         {
                             UserId = _userid,
                             Favorites = 0,
+                            AccountStatus = 1,
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,
                             CurrencyId = 840,
@@ -81,6 +84,7 @@ namespace YFS.Repo.Data
                         accounts.Add(new Account
                         {
                             UserId = _userid,
+                            AccountStatus = 1,
                             Favorites = 1,
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,
@@ -94,6 +98,7 @@ namespace YFS.Repo.Data
                         accounts.Add(new Account
                         {
                             UserId = _userid,
+                            AccountStatus = 1,
                             Favorites = 0,
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,

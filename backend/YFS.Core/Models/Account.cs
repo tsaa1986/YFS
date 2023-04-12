@@ -12,8 +12,11 @@ namespace YFS.Core.Models
         [Required]
         [ForeignKey("AspNetUser")]
         public string UserId { get; set; }
+        [Required]
+        public int AccountStatus { get; set; } //0-disabled,1-enabled
         [Column("Favorites")]
         public int Favorites { get; set; }
+
 
         [ForeignKey(nameof(AccountGroup))]
         public int AccountGroupId { get; set; }
