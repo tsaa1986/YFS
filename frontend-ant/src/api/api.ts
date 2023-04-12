@@ -109,10 +109,10 @@ export const account = {
     return instancePrivate.post<accountType>(`${BASE_URL}/Accounts`,
         account)
     },
-    getListByUserId() {
-        return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/byUserId`)
+    getListOpenAccountByUserId() {
+        return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/openAccountsByUserId`)
         .then( res=> {
-            console.log(res.data)
+            //console.log(res.data)
             return res.data} )
         .catch((err) => {
             console.log(err)

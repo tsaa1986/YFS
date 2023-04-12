@@ -77,9 +77,9 @@ const columns: ColumnsType<AccountDataType> = [
                   })
             }            
         //setAccountListSelectedTab(tempAcc);
-        console.log('useeffect fetch accountlist:',accountListDataSource)
+        //console.log('useeffect fetch accountlist:',accountListDataSource)
       }
-    }
+    }  
     
     useEffect(()=>{
       //debugger

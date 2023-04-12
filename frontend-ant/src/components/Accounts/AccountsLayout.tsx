@@ -2,7 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button, Tabs, Form, Input, Modal, InputNumber, Divider,
   Checkbox, Select, DatePicker } from "antd";
 import { account, accountGroups, accountTypesResponseType, bankType, currency, currencyType,
-accountListType } from '../../api/api';
+accountListType, 
+accountType} from '../../api/api';
 import './AccountsLayout.css';
 import TabDetails from './TabDetails';
 
@@ -45,7 +46,9 @@ const initialItemsAccountsGroup: initialItemsType = [
       accountGroupNameRu:	'',
       accountGroupNameEn:	'',
       accountGroupNameUa:	'',
-      groupOrederBy:	0}}/>,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
+      groupOrederBy:	0}}
+      openAccounts={undefined}
+      />,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
     key: '0', 
     closable: false,
     }
@@ -58,10 +61,20 @@ export const AccountsTab: React.FC = () => {
   //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
   //const newTabIndex = useRef(0);
   const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>([]);
+  const [openAccounts, setOpenAccounts] = useState<accountType[]>();
+
     useEffect( ()=>{ 
         console.log('SYNC_EFFECT_TABS');
         getAccountGroups();
       },[])
+    
+    useEffect(() => {
+      account.getListOpenAccountByUserId().then(res => {
+            if (res != undefined)
+               setOpenAccounts(res);
+               console.log('fetch openaccount:', openAccounts)
+       })
+      }, [])
 
     useEffect(
         ()=> {
@@ -84,7 +97,7 @@ export const AccountsTab: React.FC = () => {
         const newActiveKey = accountGroupItem.accountGroupId.toString()//`newTab${newTabIndex.current++}`;
         const newPanes = [...itemsAccountsGroup];
         newPanes.push({ label: accountGroupItem.accountGroupNameEn, 
-          children: <TabDetails key={accountGroupItem.accountGroupNameEn} accountGroupData={accountGroupItem} />, 
+          children: <TabDetails key={accountGroupItem.accountGroupNameEn} accountGroupData={accountGroupItem} openAccounts={openAccounts}/>, 
           key: accountGroupItem.accountGroupId.toString(), 
           closable: false });
         setItems(newPanes);
@@ -99,7 +112,7 @@ export const AccountsTab: React.FC = () => {
             newActiveKey = accData.data[0].accountGroupId.toString();
             accData.data.map( (m:AccountGroupType) => {
               newPanes.push({ label: m.accountGroupNameEn, 
-                children: <TabDetails key={m.accountGroupNameEn} accountGroupData={m} />, 
+                children: <TabDetails key={m.accountGroupNameEn} accountGroupData={m} openAccounts={openAccounts} />, 
                 key: m.accountGroupId.toString(), closable: false });
             })
         } //);
@@ -347,8 +360,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     const [currencies, setCurrencies] = useState<currencyType>();
     const [banks, setBanks] = useState<bankType>();
     const [selectedAccountType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);
-    //let selectedAccountType = props.activeAccountsGroupKey;
-
+    
 
     useEffect(()=> {  
       account.getAccountTypes().then(
@@ -369,7 +381,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
           }
         }
       );
-      console.log(currencies)
+      //console.log(currencies)
     }, [])
 
     const { TextArea } = Input;
