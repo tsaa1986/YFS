@@ -70,9 +70,12 @@ export const AccountsTab: React.FC = () => {
     
     useEffect(() => {
       account.getListOpenAccountByUserId().then(res => {
+        //debugger
             if (res != undefined)
-               setOpenAccounts(res);
-               console.log('fetch openaccount:', openAccounts)
+               {
+                setOpenAccounts(res);
+                console.log('fetch openaccount:', openAccounts)
+              }
        })
       }, [])
 

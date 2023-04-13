@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select } from "antd";
 import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
+import { accountType } from "../../api/api";
 
 export enum TypeTransaction {
     Expense = 1,
@@ -23,20 +24,35 @@ interface Values {
 interface TransactionFormProps {
     open: boolean;
     //onCreate: (values: Values) => void;
-    onCancel: () => void;
+    //onCancel: () => void;
+    setOpenTransactionForm: React.Dispatch<React.SetStateAction<boolean>>
     account: AccountDataType | undefined
+    openAccounts: accountType[] | undefined
+    typeTransaction: TypeTransaction
     //accountGroup: AccountGroupType
     //typeTransaction: TypeTransaction;
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
   }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ onCancel, account}) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ setOpenTransactionForm, account, openAccounts, typeTransaction}) => {
     const [formTransaction] = Form.useForm();
-    const [typeTransaction, setTypeTransaction] = useState<TypeTransaction>(1);
+    const [selectTypeTransaction, setSelectTypeTransaction] = useState<TypeTransaction>(typeTransaction);
 
     useEffect (()=>{
-      console.log('effect:',typeTransaction)
+      console.log('effect:', typeTransaction)
+      console.log('from transactionform', openAccounts)
+      setSelectTypeTransaction(typeTransaction)
+      //console.log('selecteffect:', selectTypeTransaction)
+      //formTransaction.setFieldsValue({ radioTypeTransacion: selectTypeTransaction});
     },[typeTransaction])
+
+    useEffect (()=>{
+      //console.log('effect:', typeTransaction)
+      console.log('selectedType', selectTypeTransaction)
+      formTransaction.resetFields();
+      formTransaction.setFieldsValue({ radioTypeTransacion: selectTypeTransaction});
+      //setSelectTypeTransaction(typeTransaction)
+    },[selectTypeTransaction])
 
     return(
     <Modal
@@ -44,7 +60,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ o
       title="Create a new transaction"
       okText="Create"
       cancelText="Cancel"
-      onCancel={onCancel}
+      onCancel={()=>{
+        formTransaction.resetFields()
+        //setSelectTypeTransaction(0)
+        setOpenTransactionForm(false)
+      }}
       onOk={() => {
         formTransaction
           .validateFields()
@@ -61,9 +81,14 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ o
             layout="vertical"
             name="form_in_modal"
             size="small"
-            initialValues={{ modifier: 'public' }}>
-            <Form.Item name="modifier" className="collection-create-form_last-form-item">
-              <Radio.Group onChange={(e: RadioChangeEvent) => {setTypeTransaction(e.target.value) }}>
+            initialValues={{ radioTypeTransaction: selectTypeTransaction }}>
+
+            <Form.Item name="radioTypeTransaction" className="collection-create-form_last-form-item">
+              <Radio.Group 
+                //name="radioTypeTransacion"
+                //defaultValue={radioTypeTransaction}
+                value={selectTypeTransaction} 
+                onChange={(e: RadioChangeEvent) => {setSelectTypeTransaction(e.target.value)}}>
                   <Radio value={TypeTransaction.Expense} >Expense</Radio>
                   <Radio value={TypeTransaction.Income} >Income</Radio>
                   <Radio value={TypeTransaction.Transfer} >Transfer</Radio>
@@ -73,7 +98,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ o
             <Form.Item 
             name="withdrawFromAccountId"
             label="WithdrawFromAccount"            
-            hidden={ ((typeTransaction == TypeTransaction.Income)) ? true : false }
+            hidden={ ((selectTypeTransaction == TypeTransaction.Income)) ? true : false }
             rules={[{required: true, message: 'Please select WithdrawFromAccount'}]}>          
             <Select 
               onChange={(e:any)=> {
@@ -92,7 +117,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ o
             <Form.Item 
             name="targetAccountId"
             label="Target Account"
-            hidden={ ((typeTransaction == TypeTransaction.Expense)) ? true : false }
+            hidden={ ((selectTypeTransaction == TypeTransaction.Expense)) ? true : false }
             rules={[{required: true, message: 'Please select Target Account'}]}>
             <Select 
               onChange={(e:any)=> {
@@ -147,11 +172,11 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ o
             name="tag"
             label="Tag"
             >
-            <Input />
+             <Input />
             </Form.Item>
 
             <Form.Item name="description" label="Description">
-            <Input type="textarea" value={account?.balance}/>
+              <Input type="textarea" value={account?.balance}/>
             </Form.Item>
         </Form>
       </Modal>
