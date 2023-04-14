@@ -11,7 +11,6 @@ const { Panel } = Collapse;
 
 type accountListPropsType = {
   accountGroupData: AccountGroupType | null
-  openAccounts: accountType[] | undefined
   //setSelectedAccount: Dispatch<SetStateAction<DataType>>;
   //accountListSelectedTab: accountListType
   //onChange: (account: DataType) => void
@@ -21,6 +20,7 @@ type accountListPropsType = {
 
 export interface AccountDataType {
   key: React.Key;
+  id: number;
   name: string;
   balance: number;
 }
@@ -40,14 +40,14 @@ const columns: ColumnsType<AccountDataType> = [
     title: 'action',
     dataIndex: '',
     key: 'x',
-    width:120,
+    width:100,
     render: () => {return(<div>
                   <button onClick={()=> {                      
                       setSelectedTypeTransaction(TypeTransaction.Expense)
                       setOpenTransactionForm(true)
                     }
                   } 
-                        title='Add expens'>-</button>
+                      title='Add expens'>-</button>
                   <button onClick={()=> {                      
                       setSelectedTypeTransaction(TypeTransaction.Income)     
                       setOpenTransactionForm(true)               
@@ -71,6 +71,11 @@ const columns: ColumnsType<AccountDataType> = [
     title: 'Balance',
     dataIndex: 'balance',
     key: 'balance'
+  },
+  {
+    title: 'id',
+    dataIndex: 'id',
+    key: 'id'
   },
 ];
     const [accountListGroupId, setAccountListGroupId] = useState('0')
@@ -134,8 +139,7 @@ const columns: ColumnsType<AccountDataType> = [
             </Panel>
           </Collapse>
           <TransactionForm open={openTransactionForm} setOpenTransactionForm={setOpenTransactionForm}
-              account={selectedAccount}
-              openAccounts={props.openAccounts}
+              selectedAccount={selectedAccount}
               typeTransaction={selectedTypeTransaction}/>
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
         </div>

@@ -60,38 +60,28 @@ export const AccountsTab: React.FC = () => {
   const [itemsAccountsGroup, setItems] = useState<initialItemsType>([]);//(initialItemsAccountsGroup);
   //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
   //const newTabIndex = useRef(0);
-  const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>([]);
-  const [openAccounts, setOpenAccounts] = useState<accountType[]>();
+  const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>();
+  const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
+  /*const [testAcc, setTetAcc] = useState<accountType[]>( () => {
+    return account.getListOpenAccountByUserId().then(res => {if (res != undefined) {return res } else { return [] }})
+  })*/
 
-    useEffect( ()=>{ 
-        console.log('SYNC_EFFECT_TABS');
-        getAccountGroups();
-      },[])
-    
-    useEffect(() => {
+  useEffect(()=>{
+      console.log('SYNC_EFFECT_TABS');      
+      getAccountGroups();
+  }, [])
+
+  useEffect(() => {
       account.getListOpenAccountByUserId().then(res => {
-        //debugger
             if (res != undefined)
-               {
+              {                
                 setOpenAccounts(res);
-                console.log('fetch openaccount:', openAccounts)
               }
+              //return []
        })
-      }, [])
+  }, [])
 
-    useEffect(
-        ()=> {
-          //console.log(activeTabKey);
-          //debugger
-          //let tempAccountList: any = account.getListByGroupId(activeTabKey);
-          //setAccountListSelectedTab(tempAccountList);
-          //console.log('useeffect accountsTab:',accountListSelectedTab)
-        }, [activeTabKey]
-     )
-
-     useEffect(()=>{
-
-     },[accountListSelectedTab])
+  useEffect(()=> console.log('useeffect openaccout', openAccounts), [openAccounts])
 
     const onChange = (newActiveKey: string) => {
        setActiveTabKey(newActiveKey);
@@ -157,8 +147,7 @@ const getAccountGroups = () => {
     accountGroups.get().then(
         res => {
             if (res != null ) {
-            buildTabAccountsGroup(res)
-            //return res
+              buildTabAccountsGroup(res)
         }});
 }
 
@@ -362,8 +351,7 @@ const AddAccountForm: React.FC<AddAccountFormPropsType> = (props) => {
     const [accountTypes, setAccountTypes] = useState<accountTypesResponseType>();
     const [currencies, setCurrencies] = useState<currencyType>();
     const [banks, setBanks] = useState<bankType>();
-    const [selectedAccountType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);
-    
+    const [selectedAccountType, setSelectedAccountsType] = useState(props.activeAccountsGroupKey);    
 
     useEffect(()=> {  
       account.getAccountTypes().then(

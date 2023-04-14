@@ -2,7 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select } from "antd";
 import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
-import { accountType } from "../../api/api";
+import { accountType, account } from "../../api/api";
+import moment from "moment";
+const dateFormat = 'YYYY/MM/DD';
 
 export enum TypeTransaction {
     Expense = 1,
@@ -26,31 +28,40 @@ interface TransactionFormProps {
     //onCreate: (values: Values) => void;
     //onCancel: () => void;
     setOpenTransactionForm: React.Dispatch<React.SetStateAction<boolean>>
-    account: AccountDataType | undefined
-    openAccounts: accountType[] | undefined
+    selectedAccount: AccountDataType | undefined
     typeTransaction: TypeTransaction
     //accountGroup: AccountGroupType
     //typeTransaction: TypeTransaction;
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
   }
 
-const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ setOpenTransactionForm, account, openAccounts, typeTransaction}) => {
+const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ setOpenTransactionForm, selectedAccount, typeTransaction}) => {
     const [formTransaction] = Form.useForm();
     const [selectTypeTransaction, setSelectTypeTransaction] = useState<TypeTransaction>(typeTransaction);
+    const [selectedWithdrawFromAccounts, setSelectedWithDrawFromAccounts] = useState()
+    const [openAccounts, setOpenAccounts2] = useState<accountType[]>([]);
+
+    useEffect(() => {
+      account.getListOpenAccountByUserId().then(res => {
+            if (res != undefined)
+              {                
+                setOpenAccounts2(res);
+              }
+              //return []
+       })
+    }, [])
 
     useEffect (()=>{
       console.log('effect:', typeTransaction)
-      console.log('from transactionform', openAccounts)
       setSelectTypeTransaction(typeTransaction)
-      //console.log('selecteffect:', selectTypeTransaction)
-      //formTransaction.setFieldsValue({ radioTypeTransacion: selectTypeTransaction});
+      console.log('accounttransaction',openAccounts)
     },[typeTransaction])
 
     useEffect (()=>{
       //console.log('effect:', typeTransaction)
       console.log('selectedType', selectTypeTransaction)
       formTransaction.resetFields();
-      formTransaction.setFieldsValue({ radioTypeTransacion: selectTypeTransaction});
+      formTransaction.setFieldsValue({ radioTypeTransacion: selectTypeTransaction, withdrawFromAccountId: selectedAccount?.id});
       //setSelectTypeTransaction(typeTransaction)
     },[selectTypeTransaction])
 
@@ -81,12 +92,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ s
             layout="vertical"
             name="form_in_modal"
             size="small"
-            initialValues={{ radioTypeTransaction: selectTypeTransaction }}>
+            initialValues={{ radioTypeTransaction: selectTypeTransaction, withdrawFromAccountId: selectedAccount?.id, targetAccountId: selectedAccount?.id}}>
 
             <Form.Item name="radioTypeTransaction" className="collection-create-form_last-form-item">
               <Radio.Group 
-                //name="radioTypeTransacion"
-                //defaultValue={radioTypeTransaction}
                 value={selectTypeTransaction} 
                 onChange={(e: RadioChangeEvent) => {setSelectTypeTransaction(e.target.value)}}>
                   <Radio value={TypeTransaction.Expense} >Expense</Radio>
@@ -97,19 +106,22 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ s
 
             <Form.Item 
             name="withdrawFromAccountId"
-            label="WithdrawFromAccount"            
+            label="WithdrawFromAccount"           
+            initialValue={selectedAccount?.id}
             hidden={ ((selectTypeTransaction == TypeTransaction.Income)) ? true : false }
             rules={[{required: true, message: 'Please select WithdrawFromAccount'}]}>          
             <Select 
+              //value={account?.key}
               onChange={(e:any)=> {
                 console.log(e)
                 //setSelectedAccountsType(e)}
                 //selectedAccountType = e;
               }}//value={selectedAccountType} 
             >
-              {/* (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
-                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
-                  )) : (<Select.Option value={''}>{''}</Select.Option>)*/
+              {
+                  (openAccounts !== undefined) ? (openAccounts.map( item => {
+                    return (item.id != 0) ? <Select.Option value={item.id}>{`GroupName: ${item.accountGroupId}  ${item.name}` + ` Balance = `+`${item.balance}`}</Select.Option> : ''}
+                      )) : (<Select.Option value={0}>{'Sekect Account'}</Select.Option>)
               }
             </Select>
             </Form.Item>
@@ -127,9 +139,10 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ s
               } }
               //value={selectedAccountType} 
             >
-              {/* (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
-                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
-                  )) : (<Select.Option value={''}>{''}</Select.Option>)*/
+              {
+                  (openAccounts !== undefined) ? (openAccounts.map( item => {
+                    return (item.id != 0) ? <Select.Option value={item.id}>{`GroupName: ${item.accountGroupId}  ${item.name}` + ` Balance = `+`${item.balance}`}</Select.Option> : ''}
+                      )) : (<Select.Option value={0}>{'Sekect Account'}</Select.Option>)
               }
             </Select>
             </Form.Item>
@@ -160,7 +173,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ s
             <Form.Item  
                name="transactionDate"
                label="Date">
-              <DatePicker />
+              <DatePicker format={dateFormat} />
             </Form.Item>
 
             {/*<Form.Item>
@@ -176,7 +189,7 @@ const TransactionForm: React.FC<TransactionFormProps> = ({open,/*, onCreate,*/ s
             </Form.Item>
 
             <Form.Item name="description" label="Description">
-              <Input type="textarea" value={account?.balance}/>
+              <Input type="textarea" value={selectedAccount?.balance}/>
             </Form.Item>
         </Form>
       </Modal>
@@ -215,4 +228,8 @@ const AccountTransaction: React.FC<IAccountTransactionProps> = ({typeTransaction
       />*/}
     </div>
     )
+}
+
+function dayjs(arg0: string) {
+  throw new Error("Function not implemented.");
 }

@@ -23,13 +23,12 @@ const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData, openAccou
     useEffect(()=>{
       console.log('tabdetails: ', accountGroupData)
       console.log('tabdetails: ', openAccounts)
-      console.log('tabdetails: ','props.accounts')
       //setActiveTabKey('')
     },[accountGroupData])
   
     return (           
         <div>
-            <AccountsList accountGroupData={accountGroupData} openAccounts={openAccounts}/>  
+            <AccountsList accountGroupData={accountGroupData}/>  
         </div>
     );
 }

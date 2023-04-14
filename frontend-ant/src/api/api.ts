@@ -91,7 +91,7 @@ export type accountType = {
     note: string,
     balance: number
 }
-export type accountListType = Array<accountType> | undefined
+export type accountListType = Promise<accountType[]> | undefined
 
 interface IAccountListTypeResponse {
     data: Array<accountType>
@@ -112,16 +112,18 @@ export const account = {
     getListOpenAccountByUserId() {
         return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/openAccountsByUserId`)
         .then( res=> {
+            //debugger
             //console.log(res.data)
             return res.data} )
         .catch((err) => {
             console.log(err)
+            return undefined
         })
     },
     getListByGroupId(accountGroupId: string) {
         return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/${accountGroupId}`)
         .then( res=> {
-            console.log(res.data)
+            //console.log(res.data)
             return res.data} )
         .catch((err) => {
             console.log(err)
