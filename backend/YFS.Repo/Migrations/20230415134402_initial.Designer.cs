@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230415131002_initial")]
+    [Migration("20230415134402_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -191,7 +191,6 @@ namespace YFS.Repo.Migrations
                         .HasDefaultValueSql("0");
 
                     b.Property<string>("IBAN")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("VARCHAR(40)");
 
