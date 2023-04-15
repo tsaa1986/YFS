@@ -281,7 +281,7 @@ namespace YFS.Repo.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     AccountStatus = table.Column<int>(type: "int", nullable: false),
-                    IBAN = table.Column<string>(type: "VARCHAR(40)", maxLength: 40, nullable: false),
+                    IBAN = table.Column<string>(type: "VARCHAR(40)", maxLength: 40, nullable: true),
                     Favorites = table.Column<int>(type: "int", nullable: false, defaultValueSql: "0"),
                     AccountGroupId = table.Column<int>(type: "int", nullable: false),
                     AccountTypeId = table.Column<int>(type: "int", nullable: false),

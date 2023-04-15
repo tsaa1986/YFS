@@ -189,7 +189,6 @@ namespace YFS.Repo.Migrations
                         .HasDefaultValueSql("0");
 
                     b.Property<string>("IBAN")
-                        .IsRequired()
                         .HasMaxLength(40)
                         .HasColumnType("VARCHAR(40)");
 
