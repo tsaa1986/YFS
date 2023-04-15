@@ -13,25 +13,25 @@ namespace YFS.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class TransactionsController : BaseApiController
+    public class OperationsController : BaseApiController
     {
-        public TransactionsController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public OperationsController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
         }
 
         [HttpPost]
         [Authorize]
-        public async Task<IActionResult> CreateTransaction([FromBody] TransactionDto transaction)
+        public async Task<IActionResult> CreateOperation([FromBody] OperationDto operation)
         {
-            var transactionData = _mapper.Map<Transaction>(transaction);
+            var operationData = _mapper.Map<Operation>(operation);
 
             string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-            transactionData.UserId = userid;
-            await _repository.Transaction.CreateTransaction(transactionData);
+            operationData.UserId = userid;
+            await _repository.Operation.CreateOperation(operationData);
             await _repository.SaveAsync();
 
-            var transactionReturn = _mapper.Map<TransactionDto>(transactionData);
-            return Ok(transactionReturn);
+            var operationReturn = _mapper.Map<OperationDto>(operationData);
+            return Ok(operationReturn);
         }
 
         [HttpGet("{accountId}")]
@@ -41,9 +41,9 @@ namespace YFS.Controllers
             try
             {
                 string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var transactions = await _repository.Transaction.GetTransactionForAccount(userid, accountId, trackChanges: false);
-                var transactionDto = _mapper.Map<IEnumerable<TransactionDto>>(transactions);
-                return Ok(transactionDto);
+                var operations = await _repository.Operation.GetOperationsForAccount(userid, accountId, trackChanges: false);
+                var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
+                return Ok(operationsDto);
             }
             catch (Exception ex)
             {
@@ -53,12 +53,12 @@ namespace YFS.Controllers
 
         [HttpPut]
         [Authorize]
-        public async Task<IActionResult> UpdateTransaction([FromBody] TransactionDto transaction)
+        public async Task<IActionResult> UpdateOperation([FromBody] OperationDto operation)
         {
             //var accountData = HttpContext.Items["account"] as Account;
-            var transactionData = _mapper.Map<Transaction>(transaction);
-            _mapper.Map(transaction, transactionData);
-            await _repository.Transaction.UpdateTransaction(transactionData);
+            var operationData = _mapper.Map<Operation>(operation);
+            _mapper.Map(operation, operationData);
+            await _repository.Operation.UpdateOperation(operationData);
             await _repository.SaveAsync();
             return NoContent();
         }

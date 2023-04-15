@@ -12,8 +12,8 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230325073045_modify table accounts foreign keys")]
-    partial class modifytableaccountsforeignkeys
+    [Migration("20230415131002_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -169,6 +169,9 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountGroupId")
                         .HasColumnType("int");
 
+                    b.Property<int>("AccountStatus")
+                        .HasColumnType("int");
+
                     b.Property<int>("AccountTypeId")
                         .HasColumnType("int");
 
@@ -187,6 +190,11 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("Favorites")
                         .HasDefaultValueSql("0");
 
+                    b.Property<string>("IBAN")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("VARCHAR(40)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -198,6 +206,10 @@ namespace YFS.Repo.Migrations
 
                     b.Property<DateTime>("OpeningDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -340,20 +352,10 @@ namespace YFS.Repo.Migrations
                         {
                             TypeId = 4,
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NameEn = "Credit card",
-                            NameRu = "Кредитная карточка",
-                            NameUa = "Кредитна картка",
-                            NoteRu = "Кредитные карточки Visa, Mastercard и др.",
-                            TypeOrederBy = 0
-                        },
-                        new
-                        {
-                            TypeId = 5,
-                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            NameEn = "Debit card",
-                            NameRu = "Дебетная карта",
-                            NameUa = "Дебетна картка",
-                            NoteRu = "Дебетовые карты Visa, Mastercard и др.",
+                            NameEn = "Bank account",
+                            NameRu = "Банковский счет",
+                            NameUa = "Банківський рахунок",
+                            NoteRu = "Банковский счет",
                             TypeOrederBy = 0
                         });
                 });
@@ -375,6 +377,13 @@ namespace YFS.Repo.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Banks");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Demo Bank"
+                        });
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Category", b =>
@@ -386,7 +395,17 @@ namespace YFS.Repo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Name_ENG")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("Name_RU")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR(100)");
+
+                    b.Property<string>("Name_UA")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR(100)");
@@ -398,12 +417,167 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("RootId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Name_ENG = "Money Transfer",
+                            Name_RU = "Перевод",
+                            Name_UA = "Переказ",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 1,
+                            Name_ENG = "Wages",
+                            Name_RU = "Халтура",
+                            Name_UA = "Халтура",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name_ENG = "Salary",
+                            Name_RU = "Зарплата",
+                            Name_UA = "Зарплата",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name_ENG = "Vacation",
+                            Name_RU = "Отдых",
+                            Name_UA = "Відпочинок",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name_ENG = "Loans",
+                            Name_RU = "Долги",
+                            Name_UA = "Борги",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name_ENG = "Food",
+                            Name_RU = "Продукти питания",
+                            Name_UA = "Продукти харчування",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name_ENG = "Healthcare",
+                            Name_RU = "Медицинские расходы",
+                            Name_UA = "Медичні витрати",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name_ENG = "Food",
+                            Name_RU = "Продукти питания",
+                            Name_UA = "Продукти харчування",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name_ENG = "Education",
+                            Name_RU = "Образование",
+                            Name_UA = "Освіта",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name_ENG = "Other Income",
+                            Name_RU = "Другие доходы",
+                            Name_UA = "Інші прибутки",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name_ENG = "Communal payments",
+                            Name_RU = "Коммунальные платежи",
+                            Name_UA = "Комунальні платежі",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name_ENG = "Clothing",
+                            Name_RU = "Одежда",
+                            Name_UA = "Одяг",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name_ENG = "Personal Care",
+                            Name_RU = "Личная гигиена",
+                            Name_UA = "Особиста гігієна",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name_ENG = "Household",
+                            Name_RU = "Хозяйственные расходы",
+                            Name_UA = "Побутові видатки",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name_ENG = "Improvements",
+                            Name_RU = "Улучшения",
+                            Name_UA = "Покращення",
+                            Note = "",
+                            RootId = 13
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name_ENG = "Furnishings",
+                            Name_RU = "Мебель",
+                            Name_UA = "Меблі",
+                            Note = "",
+                            RootId = 13
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name_ENG = "Electronics",
+                            Name_RU = "Електроника",
+                            Name_UA = "Електроніка",
+                            Note = "",
+                            RootId = 13
+                        });
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Currency", b =>
@@ -466,6 +640,68 @@ namespace YFS.Repo.Migrations
                             Name_ua = "Євро",
                             ShortNameUs = "EUR"
                         });
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Operation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("CashbackAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("CurrencyAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("VARCHAR(200)");
+
+                    b.Property<decimal>("ExchangeRate")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("MCC")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("OperationAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("OperationCurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OperationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Tag")
+                        .HasMaxLength(200)
+                        .HasColumnType("VARCHAR(200)");
+
+                    b.Property<int>("TransferOperationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TypeOperation")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Operations");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.User", b =>

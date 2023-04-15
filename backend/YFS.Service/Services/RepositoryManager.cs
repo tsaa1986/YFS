@@ -17,7 +17,7 @@ namespace YFS.Service.Services
         private IAccountRepository _accountRepository;
         private ICurrencyRepository _currencyRepository;
         private ICategoryRepository _categoryRepository;
-        private ITransactionRepository _transactionRepository;
+        private IOperationRepository _operationRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -95,13 +95,13 @@ namespace YFS.Service.Services
             }
         }
 
-        public ITransactionRepository Transaction
+        public IOperationRepository Operation
         {
             get
             {
-                if (_transactionRepository is null)
-                    _transactionRepository = new TransactionRepository(_repositoryContext);
-                return _transactionRepository;
+                if (_operationRepository is null)
+                    _operationRepository = new OperationRepository(_repositoryContext);
+                return _operationRepository;
             }
         }
 
