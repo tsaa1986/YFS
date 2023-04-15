@@ -342,6 +342,7 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "CategoryId", "Name_ENG", "Name_RU", "Name_UA", "Note", "RootId", "UserId" },
                 values: new object[,]
                 {
+                    { -1, "Money Transfer", "Перевод", "Переказ", "", 0, null },
                     { 1, "Wages", "Халтура", "Халтура", "", 0, null },
                     { 2, "Salary", "Зарплата", "Зарплата", "", 0, null },
                     { 3, "Vacation", "Отдых", "Відпочинок", "", 0, null },

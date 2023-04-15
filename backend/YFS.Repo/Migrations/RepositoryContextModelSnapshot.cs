@@ -425,6 +425,15 @@ namespace YFS.Repo.Migrations
                     b.HasData(
                         new
                         {
+                            Id = -1,
+                            Name_ENG = "Money Transfer",
+                            Name_RU = "Перевод",
+                            Name_UA = "Переказ",
+                            Note = "",
+                            RootId = 0
+                        },
+                        new
+                        {
                             Id = 1,
                             Name_ENG = "Wages",
                             Name_RU = "Халтура",

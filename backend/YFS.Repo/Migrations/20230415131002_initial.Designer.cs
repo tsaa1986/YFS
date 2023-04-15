@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230415085707_initial")]
+    [Migration("20230415131002_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -425,6 +425,15 @@ namespace YFS.Repo.Migrations
                     b.ToTable("Categories");
 
                     b.HasData(
+                        new
+                        {
+                            Id = -1,
+                            Name_ENG = "Money Transfer",
+                            Name_RU = "Перевод",
+                            Name_UA = "Переказ",
+                            Note = "",
+                            RootId = 0
+                        },
                         new
                         {
                             Id = 1,

@@ -28,7 +28,7 @@ namespace YFS
             var connectionString =
                 Configuration.GetConnectionString("DefaultConnection");
 
-            services.AddDbContext<RepositoryContext>(options => options.UseSqlServer(connectionString));
+            services.AddDbContext<RepositoryContext>(options => options.UseSqlServer(connectionString),ServiceLifetime.Transient);
             ServiceExtension.ConfigureRepositoryManager(services);
             ServiceExtension.ConfigureIdentity(services);
             ServiceExtension.RegisterDependencies(services);
