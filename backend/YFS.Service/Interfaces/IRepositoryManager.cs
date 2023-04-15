@@ -8,7 +8,7 @@
         ICurrencyRepository Currency { get; }
         ICategoryRepository Category { get; }
         IUserAuthenticationRepository UserAuthentication { get; }
-        ITransactionRepository Transaction { get; }
+        IOperationRepository Operation { get; }
         Task SaveAsync();
     }
 }

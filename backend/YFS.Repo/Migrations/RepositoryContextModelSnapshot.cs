@@ -188,6 +188,11 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("Favorites")
                         .HasDefaultValueSql("0");
 
+                    b.Property<string>("IBAN")
+                        .IsRequired()
+                        .HasMaxLength(40)
+                        .HasColumnType("VARCHAR(40)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -626,7 +631,7 @@ namespace YFS.Repo.Migrations
                         });
                 });
 
-            modelBuilder.Entity("YFS.Core.Models.Transaction", b =>
+            modelBuilder.Entity("YFS.Core.Models.Operation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -634,40 +639,58 @@ namespace YFS.Repo.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<decimal?>("Amount")
-                        .IsRequired()
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<decimal>("CashbackAmount")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Note")
+                    b.Property<decimal>("CurrencyAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("VARCHAR(200)");
+
+                    b.Property<decimal>("ExchangeRate")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("MCC")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("OperationAmount")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("OperationCurrencyId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("OperationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Tag")
                         .HasMaxLength(200)
                         .HasColumnType("VARCHAR(200)");
 
-                    b.Property<int?>("TargetAccountId")
+                    b.Property<int>("TransferOperationId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TypeTransaction")
+                    b.Property<int>("TypeOperation")
                         .HasColumnType("int");
 
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("WithdrawFromAccountId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
-                    b.ToTable("Transactions");
+                    b.ToTable("Operations");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.User", b =>

@@ -189,7 +189,7 @@ namespace YFS.Repo.Data
                     {
                         await context.Accounts.AddAsync(account);
                     }
-                    await context.SaveChangesAsync();
+                    context.SaveChangesAsync();
                 }
 
             }

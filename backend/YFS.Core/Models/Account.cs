@@ -14,10 +14,12 @@ namespace YFS.Core.Models
         public string UserId { get; set; }
         [Required]
         public int AccountStatus { get; set; } //0-disabled,1-enabled
+        [Column(TypeName = "VARCHAR")]
+        [MaxLength(40, ErrorMessage = "Maximum length for the Name is 40 characters.")]
+        public string IBAN { get; set; }
+
         [Column("Favorites")]
         public int Favorites { get; set; }
-
-
         [ForeignKey(nameof(AccountGroup))]
         public int AccountGroupId { get; set; }
 
@@ -44,5 +46,7 @@ namespace YFS.Core.Models
 
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Balance { get; set; }
+
+        //public List<Operation> Operations { get; set; }
     }
 }
