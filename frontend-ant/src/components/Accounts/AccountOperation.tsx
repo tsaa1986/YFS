@@ -58,6 +58,10 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
     },[typeOperation])
 
     useEffect(()=>{
+      formOperation.resetFields();
+      formOperation.setFieldsValue({ radioTypeTransacion: selectTypeOperation, 
+        withdrawFromAccountId: selectedAccount?.id,
+        targetAccountId: selectedAccount?.id})
       console.log('selectedAccountFormOperation', selectedAccount)
     },[selectedAccount])
 
@@ -65,7 +69,10 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
       //console.log('effect:', typeTransaction)
       console.log('selectedType', selectTypeOperation)
       formOperation.resetFields();
-      formOperation.setFieldsValue({ radioTypeTransacion: selectTypeOperation, withdrawFromAccountId: selectedAccount?.id});
+      formOperation.setFieldsValue({ radioTypeTransacion: selectTypeOperation, 
+        withdrawFromAccountId: selectedAccount?.id,
+        targetAccountId: selectedAccount?.id
+      });
       //setSelectTypeTransaction(typeTransaction)
     },[selectTypeOperation])
 
@@ -96,7 +103,11 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
             layout="vertical"
             name="form_in_modal"
             size="small"
-            initialValues={{ radioTypeOperation: selectTypeOperation, withdrawFromAccountId: selectedAccount?.id, targetAccountId: selectedAccount?.id}}>
+            initialValues={{ 
+              radioTypeOperation: selectTypeOperation, 
+              withdrawFromAccountId: selectedAccount?.id, 
+              targetAccountId: selectedAccount?.id
+            }}>
 
             <Form.Item name="radioTypeOperation" className="collection-create-form_last-form-item">
               <Radio.Group 
@@ -111,7 +122,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
             <Form.Item 
             name="withdrawFromAccountId"
             label="WithdrawFromAccount"           
-            initialValue={selectedAccount?.id}
+            //initialValue={selectedAccount?.id}
             hidden={ ((selectTypeOperation == TypeOperation.Income)) ? true : false }
             rules={[{required: true, message: 'Please select WithdrawFromAccount'}]}>          
             <Select 
@@ -133,6 +144,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
             <Form.Item 
             name="targetAccountId"
             label="Target Account"
+            //initialValue={selectedAccount?.id}
             hidden={ ((selectTypeOperation == TypeOperation.Expense)) ? true : false }
             rules={[{required: true, message: 'Please select Target Account'}]}>
             <Select 
@@ -141,7 +153,6 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
                 //setSelectedAccountsType(e)}
                 //selectedAccountType = e;
               } }
-              //value={selectedAccountType} 
             >
               {
                   (openAccounts !== undefined) ? (openAccounts.map( item => {
