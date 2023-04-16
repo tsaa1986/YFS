@@ -5,7 +5,7 @@ import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
 import AccountSelectedPeriod from './AccountSelectedPeriod';
-import TransactionForm, { TypeTransaction } from './AccountTransaction';
+import OperationForm, { TypeOperation } from './AccountOperation';
 
 const { Panel } = Collapse;
 
@@ -43,20 +43,20 @@ const columns: ColumnsType<AccountDataType> = [
     width:100,
     render: () => {return(<div>
                   <button onClick={()=> {                      
-                      setSelectedTypeTransaction(TypeTransaction.Expense)
-                      setOpenTransactionForm(true)
+                      setSelectedTypeOperation(TypeOperation.Expense)
+                      setOpenOperationForm(true)
                     }
                   } 
                       title='Add expens'>-</button>
                   <button onClick={()=> {                      
-                      setSelectedTypeTransaction(TypeTransaction.Income)     
-                      setOpenTransactionForm(true)               
+                      setSelectedTypeOperation(TypeOperation.Income)     
+                      setOpenOperationForm(true)               
                       }
                   } 
                       title='Add income'>+</button>
                   <button onClick={()=> {                                           
-                      setSelectedTypeTransaction(TypeTransaction.Transfer)
-                      setOpenTransactionForm(true) 
+                      setSelectedTypeOperation(TypeOperation.Transfer)
+                      setOpenOperationForm(true) 
                     }
                   }   title='Add transfer'>-+</button>
                   </div>)
@@ -83,8 +83,8 @@ const columns: ColumnsType<AccountDataType> = [
     const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
     const [selectedAccount, setSelectedAccount] = useState<AccountDataType>();
     const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}})
-    const [selectedTypeTransaction, setSelectedTypeTransaction] = useState<TypeTransaction>(0)
-    const [openTransactionForm, setOpenTransactionForm] = useState<boolean>(false);
+    const [selectedTypeOperation, setSelectedTypeOperation] = useState<TypeOperation>(0)
+    const [openOperationForm, setOpenOperationForm] = useState<boolean>(false);
 
     const fetchAccountListSelectedTab = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
@@ -138,9 +138,9 @@ const columns: ColumnsType<AccountDataType> = [
               <AccountOperationsView selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount} selectedDateOption={selectedDateOption}/>
             </Panel>
           </Collapse>
-          <TransactionForm open={openTransactionForm} setOpenTransactionForm={setOpenTransactionForm}
+          <OperationForm open={openOperationForm} setOpenOperationForm={setOpenOperationForm}
               selectedAccount={selectedAccount}
-              typeTransaction={selectedTypeTransaction}/>
+              typeOperation={selectedTypeOperation}/>
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
         </div>
     </div>
