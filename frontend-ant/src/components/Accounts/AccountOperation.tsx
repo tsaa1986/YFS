@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select } from "antd";
 import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
-import { accountType, account } from "../../api/api";
+import { accountType, account, ICategory, category } from "../../api/api";
 import moment from "moment";
 const dateFormat = 'YYYY/MM/DD';
 
@@ -38,8 +38,17 @@ interface IOperationFormProps {
 const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setOpenOperationForm, selectedAccount, typeOperation}) => {
     const [formOperation] = Form.useForm();
     const [selectTypeOperation, setSelectTypeOperation] = useState<TypeOperation>(typeOperation);
-    const [selectedWithdrawFromAccounts, setSelectedWithDrawFromAccounts] = useState()
     const [openAccounts, setOpenAccounts2] = useState<accountType[]>([]);
+    const [categoryList, setCategoryList] = useState<ICategory[] | null>([]);
+
+    useEffect(()=>{
+      category.getCategoryListByUserId().then( res => {
+        if (res != undefined) {
+          setCategoryList(res)
+          //console.log('category operationForm', res);
+        }
+      })
+    },[])
 
     useEffect(() => {
       account.getListOpenAccountByUserId().then(res => {
@@ -106,7 +115,8 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
             initialValues={{ 
               radioTypeOperation: selectTypeOperation, 
               withdrawFromAccountId: selectedAccount?.id, 
-              targetAccountId: selectedAccount?.id
+              targetAccountId: selectedAccount?.id,
+              categoryId: 1
             }}>
 
             <Form.Item name="radioTypeOperation" className="collection-create-form_last-form-item">
@@ -173,9 +183,8 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
               } }
               //value={selectedAccountType} 
             >
-              {/* (props.itemsAccountsGroup !== undefined) ? (props.itemsAccountsGroup.map( item => {
-                return (item.key !== "0") ? <Select.Option value={item.key}>{item.label}</Select.Option> : ''}
-                  )) : (<Select.Option value={''}>{''}</Select.Option>)*/
+              { (categoryList !== null) ? (categoryList.map( item => 
+                  { return <Select.Option value={item.id}>{item.name_ENG}</Select.Option>})) : ""  
               }
             </Select>
             </Form.Item>

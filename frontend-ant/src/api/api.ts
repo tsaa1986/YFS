@@ -150,6 +150,48 @@ export const account = {
     }*/
 }
 
+export interface ICategory {
+    id: number,
+    rootId: number | null,
+    userId: string,
+    name_UA: string | null,
+    name_ENG: string | null,
+    name_RU: string | null,
+    note: string
+}
+
+interface ICategoryResponseType {
+    data: Array<ICategory> | null
+}
+
+export const category = {
+    getCategoryListByUserId() {
+        return instancePrivate.get<ICategory[]>(`${BASE_URL}/Category`)
+        .then( res=> {
+            //debugger
+            //console.log(res.data)
+            return res.data} )
+        .catch((err) => {
+            console.log(err)
+            return null
+        })
+    },
+}
+
+export const operationAccount = {
+    /*getListOpenAccountByUserId() {
+        return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/openAccountsByUserId`)
+        .then( res=> {
+            //debugger
+            //console.log(res.data)
+            return res.data} )
+        .catch((err) => {
+            console.log(err)
+            return undefined
+        })
+    },*/
+} 
+
 export type currencyType = [{   
         id: number,
         shortNameUs: string,
