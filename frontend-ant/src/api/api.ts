@@ -178,7 +178,23 @@ export const category = {
     },
 }
 
+interface IOperation {
+    id: number,
+    categoryId: number,
+    typeOperation: number,
+    accountId: number,
+    operationCurrencyId: number,
+    operationAmount: number,
+    operationDate: Date,
+    description: string | null,
+    tag: string | null
+}
+
 export const operationAccount = {
+    add(operation: IOperation, targetAccountId: number) {
+    return instancePrivate.post<IOperation>(`${BASE_URL}/Operations/${targetAccountId}`,
+        operation)
+    },
     /*getListOpenAccountByUserId() {
         return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/openAccountsByUserId`)
         .then( res=> {

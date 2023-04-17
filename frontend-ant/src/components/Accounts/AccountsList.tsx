@@ -58,7 +58,7 @@ const columns: ColumnsType<AccountDataType> = [
                       setSelectedTypeOperation(TypeOperation.Transfer)
                       setOpenOperationForm(true) 
                     }
-                  }   title='Add transfer'>-+</button>
+                  }   title='Add transfer'>=</button>
                   </div>)
     },
   },
@@ -78,8 +78,6 @@ const columns: ColumnsType<AccountDataType> = [
     key: 'id'
   },
 ];
-    const [accountListGroupId, setAccountListGroupId] = useState('0')
-    //const [activeTab, setActiveTab] = useState<AccountGroupType>();
     const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
     const [selectedAccount, setSelectedAccount] = useState<AccountDataType>();
     const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}})

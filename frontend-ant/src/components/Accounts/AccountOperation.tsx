@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select } from "antd";
 import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
-import { accountType, account, ICategory, category } from "../../api/api";
+import { accountType, account, ICategory, category, operationAccount } from "../../api/api";
 import moment from "moment";
 const dateFormat = 'YYYY/MM/DD';
 
@@ -35,10 +35,10 @@ interface IOperationFormProps {
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
   }
 
-const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setOpenOperationForm, selectedAccount, typeOperation}) => {
+const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation}) => {
     const [formOperation] = Form.useForm();
     const [selectTypeOperation, setSelectTypeOperation] = useState<TypeOperation>(typeOperation);
-    const [openAccounts, setOpenAccounts2] = useState<accountType[]>([]);
+    const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
     const [categoryList, setCategoryList] = useState<ICategory[] | null>([]);
 
     useEffect(()=>{
@@ -54,9 +54,8 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
       account.getListOpenAccountByUserId().then(res => {
             if (res != undefined)
               {                
-                setOpenAccounts2(res);
+                setOpenAccounts(res);
               }
-              //return []
        })
     }, [])
 
@@ -68,9 +67,11 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
 
     useEffect(()=>{
       formOperation.resetFields();
-      formOperation.setFieldsValue({ radioTypeTransacion: selectTypeOperation, 
+      formOperation.setFieldsValue({ 
+        radioTypeTransacion: selectTypeOperation, 
         withdrawFromAccountId: selectedAccount?.id,
-        targetAccountId: selectedAccount?.id})
+        targetAccountId: selectedAccount?.id
+      })
       console.log('selectedAccountFormOperation', selectedAccount)
     },[selectedAccount])
 
@@ -78,12 +79,51 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
       //console.log('effect:', typeTransaction)
       console.log('selectedType', selectTypeOperation)
       formOperation.resetFields();
-      formOperation.setFieldsValue({ radioTypeTransacion: selectTypeOperation, 
+      formOperation.setFieldsValue({ 
+        radioTypeTransacion: selectTypeOperation, 
         withdrawFromAccountId: selectedAccount?.id,
         targetAccountId: selectedAccount?.id
       });
       //setSelectTypeTransaction(typeTransaction)
     },[selectTypeOperation])
+
+    const handleSubmitAddOperationForm = () => {
+      console.log('handle add operation'
+      );
+      //console.log(formOperation.getFieldValue('nameAccount'));
+      let accountId = 0;
+      switch (selectTypeOperation)  {
+        case TypeOperation.Income: accountId = formOperation.getFieldValue('targetAccountId');
+          break;
+        case TypeOperation.Expense: accountId = formOperation.getFieldValue('withdrawFromAccountId');
+          break;
+        case TypeOperation.Transfer: accountId = formOperation.getFieldValue('withdrawFromAccountId');
+      }
+      //let currencyId = openAccounts?.find(element => element.id)?.currencyId;
+      //currencyId = currencyId != undefined ? currencyId : 0;
+    
+      operationAccount.add({
+        "id": 0,
+        "categoryId": formOperation.getFieldValue('categoryId'),
+        "typeOperation": selectTypeOperation,
+        "accountId": accountId,
+        "operationCurrencyId": 0,
+        "operationAmount": formOperation.getFieldValue('amount'),
+        "operationDate": formOperation.getFieldValue('operationDate'),
+        "description": formOperation.getFieldValue('description'),
+        "tag": formOperation.getFieldValue('tag')
+      }, 0).then(response => {
+          if (response.status === 200)
+              {
+                  debugger
+                  console.log(response.data)
+                  //addAccount(response.data)
+                  formOperation.resetFields()
+                  setOpenOperationForm(false)
+              }
+      });  
+    
+    }
 
     return(
     <Modal
@@ -93,13 +133,13 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
       cancelText="Cancel"
       onCancel={()=>{
         formOperation.resetFields()
-        //setSelectTypeTransaction(0)
         setOpenOperationForm(false)
       }}
       onOk={() => {
         formOperation
           .validateFields()
-          .then((values) => {
+          .then(() => {
+            handleSubmitAddOperationForm();
             formOperation.resetFields();
             //onCreate(values);
           })
@@ -116,7 +156,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open,/*, onCreate,*/ setO
               radioTypeOperation: selectTypeOperation, 
               withdrawFromAccountId: selectedAccount?.id, 
               targetAccountId: selectedAccount?.id,
-              categoryId: 1
+              categoryId: 2
             }}>
 
             <Form.Item name="radioTypeOperation" className="collection-create-form_last-form-item">
