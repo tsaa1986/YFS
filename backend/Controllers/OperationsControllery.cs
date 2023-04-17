@@ -28,12 +28,15 @@ namespace YFS.Controllers
             string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
             operationData.UserId = userid;
             
-            var account = await _repository.Account.GetAccount(operationData.AccountId).GetAwaiter;
+            Account account = await _repository.Account.GetAccount(operationData.AccountId);
             
-           // operationData.OperationCurrencyId = account.CurrencyId;
-            //operationData.Balance = acc.Balance + operationData.Balance;
+            operationData.OperationCurrencyId = account.CurrencyId;
+            operationData.CurrencyAmount = operationData.OperationAmount;
+            operationData.Balance = account.Balance + operationData.CurrencyAmount;
+            account.Balance = operationData.CurrencyAmount + account.Balance;
 
             await _repository.Operation.CreateOperation(operationData);
+            await _repository.Account.UpdateAccount(account);
             await _repository.SaveAsync();
 
             var operationReturn = _mapper.Map<OperationDto>(operationData);

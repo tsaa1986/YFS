@@ -6,6 +6,7 @@ namespace YFS.Repo.GenericRepository.Interfaces
     {
         Task<IQueryable<T>> FindAllAsync(bool trackChanges);
         Task<IQueryable<T>> FindByConditionAsync(Expression<Func<T, bool>> expression, bool trackChanges);
+        //Task<T> GetOwnerByIdAsync(int _id);
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
         Task RemoveAsync(T entity);
