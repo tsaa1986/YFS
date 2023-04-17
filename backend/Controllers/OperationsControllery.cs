@@ -19,7 +19,7 @@ namespace YFS.Controllers
         {
         }
 
-        [HttpPost]
+        [HttpPost("{targetAccountId}")]
         [Authorize]
         public async Task<IActionResult> CreateOperation([FromBody] OperationDto operation)
         {
@@ -27,6 +27,12 @@ namespace YFS.Controllers
 
             string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
             operationData.UserId = userid;
+            
+            var account = await _repository.Account.GetAccount(operationData.AccountId).GetAwaiter;
+            
+           // operationData.OperationCurrencyId = account.CurrencyId;
+            //operationData.Balance = acc.Balance + operationData.Balance;
+
             await _repository.Operation.CreateOperation(operationData);
             await _repository.SaveAsync();
 

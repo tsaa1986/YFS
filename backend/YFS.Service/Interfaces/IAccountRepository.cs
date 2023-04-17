@@ -9,6 +9,6 @@ namespace YFS.Service.Interfaces
         Task<IEnumerable<Account>> GetAccountsByGroup(int accountGroupId, string userId, bool trackChanges);
         Task<IEnumerable<Account>> GetAccountsByFavorites(string userId, bool trackChanges);
         Task<IEnumerable<Account>> GetOpenAccountsByUserId(string userId, bool trackChanges);
-        Task<Account> GetAccount(Account account);
+        Task<IEnumerable<Account>> GetAccount(int _accountId);
     }
 }

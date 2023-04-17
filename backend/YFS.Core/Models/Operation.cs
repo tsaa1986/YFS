@@ -51,7 +51,7 @@ namespace YFS.Core.Models
 
         [Column(TypeName = "VARCHAR")]
         [MaxLength(200, ErrorMessage = "Maximum length for the Description is 200.")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
         [Column(TypeName = "VARCHAR")]
         [MaxLength(200, ErrorMessage = "Maximum length for the GroupName is 200.")]
         public string? Tag { get; set; }        
