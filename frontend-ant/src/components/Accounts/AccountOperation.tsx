@@ -37,7 +37,7 @@ interface IOperationFormProps {
 
 const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation}) => {
     const [formOperation] = Form.useForm();
-    const [selectTypeOperation, setSelectTypeOperation] = useState<TypeOperation>(typeOperation);
+    const [selectedTypeOperation, setSelectTypeOperation] = useState<TypeOperation>(typeOperation);
     const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
     const [categoryList, setCategoryList] = useState<ICategory[] | null>([]);
 
@@ -68,7 +68,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     useEffect(()=>{
       formOperation.resetFields();
       formOperation.setFieldsValue({ 
-        radioTypeTransacion: selectTypeOperation, 
+        radioTypeTransacion: selectedTypeOperation, 
         withdrawFromAccountId: selectedAccount?.id,
         targetAccountId: selectedAccount?.id
       })
@@ -77,27 +77,30 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
 
     useEffect (()=>{
       //console.log('effect:', typeTransaction)
-      console.log('selectedType', selectTypeOperation)
+      console.log('selectedType', selectedTypeOperation)
       formOperation.resetFields();
       formOperation.setFieldsValue({ 
-        radioTypeTransacion: selectTypeOperation, 
+        radioTypeTransacion: selectedTypeOperation, 
         withdrawFromAccountId: selectedAccount?.id,
         targetAccountId: selectedAccount?.id
       });
       //setSelectTypeTransaction(typeTransaction)
-    },[selectTypeOperation])
+    },[selectedTypeOperation])
 
     const handleSubmitAddOperationForm = () => {
       console.log('handle add operation'
       );
       //console.log(formOperation.getFieldValue('nameAccount'));
       let accountId = 0;
-      switch (selectTypeOperation)  {
+      let targetAccountId = 0;
+      switch (selectedTypeOperation)  {
         case TypeOperation.Income: accountId = formOperation.getFieldValue('targetAccountId');
           break;
         case TypeOperation.Expense: accountId = formOperation.getFieldValue('withdrawFromAccountId');
           break;
         case TypeOperation.Transfer: accountId = formOperation.getFieldValue('withdrawFromAccountId');
+          targetAccountId = formOperation.getFieldValue('targetAccountId');
+          break;
       }
       //let currencyId = openAccounts?.find(element => element.id)?.currencyId;
       //currencyId = currencyId != undefined ? currencyId : 0;
@@ -105,17 +108,17 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
       operationAccount.add({
         "id": 0,
         "categoryId": formOperation.getFieldValue('categoryId'),
-        "typeOperation": selectTypeOperation,
+        "typeOperation": selectedTypeOperation,
         "accountId": accountId,
         "operationCurrencyId": 0,
         "operationAmount": formOperation.getFieldValue('amount'),
         "operationDate": formOperation.getFieldValue('operationDate'),
         "description": formOperation.getFieldValue('description'),
         "tag": formOperation.getFieldValue('tag')
-      }, 0).then(response => {
+      }, targetAccountId).then(response => {
           if (response.status === 200)
               {
-                  debugger
+                  //debugger
                   console.log(response.data)
                   //addAccount(response.data)
                   formOperation.resetFields()
@@ -153,15 +156,15 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             name="form_in_modal"
             size="small"
             initialValues={{ 
-              radioTypeOperation: selectTypeOperation, 
+              radioTypeOperation: selectedTypeOperation, 
               withdrawFromAccountId: selectedAccount?.id, 
               targetAccountId: selectedAccount?.id,
-              categoryId: 2
+              categoryId: selectedTypeOperation == 1 ? 5 : selectedTypeOperation == 2 ? 2 : -1
             }}>
 
             <Form.Item name="radioTypeOperation" className="collection-create-form_last-form-item">
               <Radio.Group 
-                value={selectTypeOperation} 
+                value={selectedTypeOperation} 
                 onChange={(e: RadioChangeEvent) => {setSelectTypeOperation(e.target.value)}}>
                   <Radio value={TypeOperation.Expense} >Expense</Radio>
                   <Radio value={TypeOperation.Income} >Income</Radio>
@@ -173,7 +176,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             name="withdrawFromAccountId"
             label="WithdrawFromAccount"           
             //initialValue={selectedAccount?.id}
-            hidden={ ((selectTypeOperation == TypeOperation.Income)) ? true : false }
+            hidden={ ((selectedTypeOperation == TypeOperation.Income)) ? true : false }
             rules={[{required: true, message: 'Please select WithdrawFromAccount'}]}>          
             <Select 
               //value={account?.key}
@@ -195,7 +198,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             name="targetAccountId"
             label="Target Account"
             //initialValue={selectedAccount?.id}
-            hidden={ ((selectTypeOperation == TypeOperation.Expense)) ? true : false }
+            hidden={ ((selectedTypeOperation == TypeOperation.Expense)) ? true : false }
             rules={[{required: true, message: 'Please select Target Account'}]}>
             <Select 
               onChange={(e:any)=> {
@@ -217,11 +220,12 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             rules={[{required: true, message: 'Please select Category'}]}>
             <Select 
               onChange={(e:any)=> {
-                console.log(e)
+                console.log(e)                
                 //setSelectedAccountsType(e)}
                 //selectedAccountType = e;
-              } }
-              //value={selectedAccountType} 
+              } 
+            }
+              disabled = {selectedTypeOperation == 3 ? true : false }
             >
               { (categoryList !== null) ? (categoryList.map( item => 
                   { return <Select.Option value={item.id}>{item.name_ENG}</Select.Option>})) : ""  
@@ -236,8 +240,10 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             </Form.Item>
             <Form.Item  
                name="operationDate"
-               label="Date">
-              <DatePicker format={dateFormat} />
+               label="Date"
+               initialValue={moment()}
+               >
+              <DatePicker format={dateFormat}/>
             </Form.Item>
 
             {/*<Form.Item>
