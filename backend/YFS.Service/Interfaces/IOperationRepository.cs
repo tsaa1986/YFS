@@ -6,7 +6,7 @@ namespace YFS.Service.Interfaces
     {
         Task CreateOperation(Operation operation);
         Task UpdateOperation(Operation operation);
-        Task<IEnumerable<Operation>> GetOperationsForAccount(string userId, int accountId, bool trackChanges);
-        Task<IEnumerable<Operation>> GetOperationsForAccountGroup(string userId, int accountGroupId, bool trackChanges);
+        Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(string userId, int accountId, DateTime startDate, DateTime endDate, bool trackChanges);
+        Task<IEnumerable<Operation>> GetOperationsForAccountGroupForPeriod(string userId, int accountGroupId, bool trackChanges);
     }
 }

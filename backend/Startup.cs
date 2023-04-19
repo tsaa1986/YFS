@@ -42,7 +42,8 @@ namespace YFS
                           //.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
                           //.SetIsOriginAllowed("http://localhost:3000")
                           //.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
-                          .WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001").AllowAnyMethod().AllowAnyHeader().AllowCredentials();                          
+                          .WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001", 
+                                "http://localhost:5001", "http://localhost:5000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();                          
                       }));
             ServiceExtension.ConfigureMapping(services);
             ServiceExtension.ConfigureJWT(services, Configuration);

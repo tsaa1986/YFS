@@ -78,14 +78,15 @@ namespace YFS.Controllers
             return Ok(operationReturn);
         }
 
-        [HttpGet("{accountId}")]
+        [HttpGet("{accountId:int}/{startDate:datetime}/{endDate:datetime}")]
+        //[Route("date/{*pubdate:datetime:regex(\\d{{4}}/\\d{{2}}/\\d{{2}})}")]
         [Authorize]
-        public async Task<IActionResult> GetAccountsByGroup(int accountId)
+        public async Task<IActionResult> GetOperationsAccountForPeriod(int accountId, DateTime startDate, DateTime endDate)
         {
             try
             {
                 string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var operations = await _repository.Operation.GetOperationsForAccount(userid, accountId, trackChanges: false);
+                var operations = await _repository.Operation.GetOperationsForAccountForPeriod(userid, accountId, startDate, endDate, trackChanges: false);
                 var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
                 return Ok(operationsDto);
             }
