@@ -1,5 +1,7 @@
 import axios from "axios";
+import moment from "moment";
 import { getMaxListeners } from "process";
+import { start } from "repl";
 import CookieService from "../services/CookieService";
 
 const BASE_URL = 'https://localhost:5001/api';
@@ -26,8 +28,10 @@ const instance = axios.create({
 const instancePrivate = axios.create({
     baseURL: BASE_URL,
     headers: {
+        'Authorization': "JWT_TOKEN",
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*/*',
+        'Access-Control-Allow-Origin': '*',
+        //'Access-Control-Allow-Credentials': 'true'
     },
     withCredentials: true,
 })
@@ -178,7 +182,7 @@ export const category = {
     },
 }
 
-interface IOperation {
+export interface IOperation {
     id: number,
     categoryId: number,
     typeOperation: number,
@@ -195,17 +199,18 @@ export const operationAccount = {
     return instancePrivate.post<IOperation>(`${BASE_URL}/Operations/${targetAccountId}`,
         operation)
     },
-    /*getListOpenAccountByUserId() {
-        return instancePrivate.get<accountListType>(`${BASE_URL}/Accounts/openAccountsByUserId`)
+    getOperationsAccountForPeriod(accountId: number, startDate: Date, endDate: Date) {
+        let sDate: string = moment(startDate).format('YYYY-MM-DD');
+        let eDate: string = moment(endDate).format('YYYY-MM-DD');
+        return instancePrivate.get<Array<IOperation>>(`${BASE_URL}/Operations/${accountId}/${sDate}/${eDate}`)
         .then( res=> {
-            //debugger
-            //console.log(res.data)
+            debugger
             return res.data} )
         .catch((err) => {
             console.log(err)
             return undefined
         })
-    },*/
+    }
 } 
 
 export type currencyType = [{   

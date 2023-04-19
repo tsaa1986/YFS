@@ -184,7 +184,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
                 console.log(e)
                 //setSelectedAccountsType(e)}
                 //selectedAccountType = e;
-              }}//value={selectedAccountType} 
+              }}
             >
               {
                   (openAccounts !== undefined) ? (openAccounts.map( item => {
@@ -197,14 +197,11 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             <Form.Item 
             name="targetAccountId"
             label="Target Account"
-            //initialValue={selectedAccount?.id}
             hidden={ ((selectedTypeOperation == TypeOperation.Expense)) ? true : false }
             rules={[{required: true, message: 'Please select Target Account'}]}>
             <Select 
               onChange={(e:any)=> {
                 console.log(e)
-                //setSelectedAccountsType(e)}
-                //selectedAccountType = e;
               } }
             >
               {
@@ -266,40 +263,3 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
 )
 }
 export default OperationForm;
-
-
-const AccountTransaction: React.FC<IAccountOperationProps> = ({typeOperation}) => {
-    const [typeOeration, setTypeOperation] = useState<TypeOperation>(typeOperation)
-    const [open, setOpen] = useState(false);
-
-    const onCreate = (values: any) => {
-        console.log('Received values of form: ', values);
-        setOpen(false);
-      };
-
-
-    const [formAccountTransaction] = Form.useForm();
-    return(
-    <div>
-    { /* <Button
-        type="primary"
-        onClick={() => {
-          setOpen(true);
-        }}
-      >
-        New Collection
-      </Button>
-      <TransactionForm
-        open={open}
-        //onCreate={onCreate}
-        onCancel={() => {
-         setOpen(false);
-        }}
-      />*/}
-    </div>
-    )
-}
-
-function dayjs(arg0: string) {
-  throw new Error("Function not implemented.");
-}

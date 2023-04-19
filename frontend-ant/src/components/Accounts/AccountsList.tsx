@@ -1,6 +1,6 @@
-import React, { Dispatch, SetStateAction, useEffect, useRef, useState } from 'react';
-import { Button, Space,Table, Divider, FormInstance } from "antd";
-import { account, AccountGroupType, accountListType, accountType } from '../../api/api';
+import React, { useEffect, useState } from 'react';
+import { Table, Divider } from "antd";
+import { account, AccountGroupType, accountListType } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
@@ -100,8 +100,6 @@ const columns: ColumnsType<AccountDataType> = [
                   setAccountListSelectedTab(res)
                   })
             }            
-        //setAccountListSelectedTab(tempAcc);
-        //console.log('useeffect fetch accountlist:',accountListDataSource)
       }
     }  
     
