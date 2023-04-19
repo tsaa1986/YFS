@@ -24,19 +24,24 @@ interface IOperationDataType {
 const operationColumns: ColumnsType<IOperationDataType> = [
     {
         title: 'Date Operation',
-        dataIndex: 'dateOperation',
-        key: 'dateOperation',
+        dataIndex: 'operationDate',
+        key: 'operatioDate',
         render: (text) => <a>{text}</a>,
       },
       {
         title: 'Category',
-        dataIndex: 'categoryName',
+        dataIndex: 'categoryId',
         key: 'categoryId'
       },
       {
         title: 'Amount',
-        dataIndex: 'currencyAmount',
-        key: 'currencyAmount',
+        dataIndex: 'CurrencyAmount',
+        key: 'CurrencyAmount',
+      },
+      {
+        title: 'Description',
+        dataIndex: 'description',
+        key: 'description',
       }
     ]
 

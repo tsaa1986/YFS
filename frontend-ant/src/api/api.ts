@@ -204,7 +204,7 @@ export const operationAccount = {
         let eDate: string = moment(endDate).format('YYYY-MM-DD');
         return instancePrivate.get<Array<IOperation>>(`${BASE_URL}/Operations/${accountId}/${sDate}/${eDate}`)
         .then( res=> {
-            debugger
+            //debugger
             return res.data} )
         .catch((err) => {
             console.log(err)
