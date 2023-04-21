@@ -4,7 +4,7 @@ import { account, AccountGroupType, accountListType } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
-import AccountSelectedPeriod from './AccountSelectedPeriod';
+import AccountSelectedPeriod, { SelectedVariantPeriod } from './AccountSelectedPeriod';
 import OperationForm, { TypeOperation } from './AccountOperation';
 
 const { Panel } = Collapse;
@@ -30,7 +30,8 @@ export interface ISelectedDate {
   endDate: Date
 }
 export interface IDateOption {
-  period: ISelectedDate
+  period: ISelectedDate,
+  dataOption: SelectedVariantPeriod
 }
 
 export const AccountsList = (props: accountListPropsType) => {
@@ -80,14 +81,15 @@ const columns: ColumnsType<AccountDataType> = [
 ];
     const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
     const [selectedAccount, setSelectedAccount] = useState<AccountDataType>();
-    const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}})
+    const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}, dataOption: SelectedVariantPeriod.lastOperation10})
     const [selectedTypeOperation, setSelectedTypeOperation] = useState<TypeOperation>(0)
     const [openOperationForm, setOpenOperationForm] = useState<boolean>(false);
 
     const fetchAccountListSelectedTab = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
             let tabId = props.accountGroupData.accountGroupId.toString();
-            let tempAcc:accountListType
+            let tempAcc: accountListType
+
             if (props.accountGroupData.accountGroupId.toString() =='0') {
               account.getListByFavorites().then(
                 res => { console.log(res)

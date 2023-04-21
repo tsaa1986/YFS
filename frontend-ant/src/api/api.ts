@@ -202,9 +202,19 @@ export const operationAccount = {
     getOperationsAccountForPeriod(accountId: number, startDate: Date, endDate: Date) {
         let sDate: string = moment(startDate).format('YYYY-MM-DD');
         let eDate: string = moment(endDate).format('YYYY-MM-DD');
-        return instancePrivate.get<Array<IOperation>>(`${BASE_URL}/Operations/${accountId}/${sDate}/${eDate}`)
+        return instancePrivate.get<Array<IOperation>>(`${BASE_URL}/Operations/period/${accountId}/${sDate}/${eDate}`)
         .then( res=> {
             //debugger
+            return res.data} )
+        .catch((err) => {
+            console.log(err)
+            return undefined
+        })
+    },
+    getLast10OperationsAccount(accountId: number) {
+        return instancePrivate.get<Array<IOperation>>(`${BASE_URL}/Operations/last10/${accountId}`)
+        .then( res=> {
+            
             return res.data} )
         .catch((err) => {
             console.log(err)

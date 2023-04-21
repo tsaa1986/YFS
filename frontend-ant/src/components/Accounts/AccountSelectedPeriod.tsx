@@ -46,23 +46,25 @@ const AccountSelectedPeriod: React.FC<IAccountSelectedPeriod> = ({selectedDateOp
     useEffect( ()=> {
         let firstDate, lastDate: Date;
         switch(selectOption) {
+            case 1: setSelectedDateOption( {period: { startDate: new Date(), endDate: new Date()}, dataOption: SelectedVariantPeriod.lastOperation10})
+                break;
             case 2: 
                 firstDate = new Date(today.getFullYear(), today.getMonth(), 1);
                 lastDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                setSelectedDateOption( {period: {startDate: firstDate, endDate: lastDate}})
+                setSelectedDateOption( {period: {startDate: firstDate, endDate: lastDate}, dataOption: SelectedVariantPeriod.currentMonth})
                 break
             case 3: 
                 firstDate = new Date(today.getFullYear(), today.getMonth() - 1, 1);
                 lastDate = new Date(today.getFullYear(), today.getMonth(), 0);
-                setSelectedDateOption( {period: { startDate: firstDate, endDate: lastDate}})
+                setSelectedDateOption( {period: { startDate: firstDate, endDate: lastDate}, dataOption: SelectedVariantPeriod.previousMonth})
                 break
             case 4: 
                 firstDate = new Date(today.getFullYear(), today.getMonth() - 2, 1);
                 lastDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-                setSelectedDateOption( {period: { startDate: firstDate, endDate: lastDate}})
+                setSelectedDateOption( {period: { startDate: firstDate, endDate: lastDate}, dataOption: SelectedVariantPeriod.last3Month})
                 break
             case 5:
-                setSelectedDateOption( {period: { startDate: new Date(), endDate: new Date()}})
+                setSelectedDateOption( {period: { startDate: new Date(), endDate: new Date()}, dataOption: SelectedVariantPeriod.rangeDates})
                 break
             default:
                 firstDate = new Date()

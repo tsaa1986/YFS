@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Collapse, Layout, Space, Table } from 'antd';
-import AccountSelectedPeriod from "./AccountSelectedPeriod";
+import { Layout, Space, Table } from 'antd';
+import { SelectedVariantPeriod } from "./AccountSelectedPeriod";
 import { AccountGroupType, IOperation, operationAccount } from "../../api/api";
 import { AccountDataType, IDateOption } from "./AccountsList";
 import { StringGradients } from "antd/es/progress/progress";
 import type { ColumnsType } from "antd/es/table";
+import moment from "moment";
 
 interface IAccountOperationViewProps {
     selectedAccountGroupData: AccountGroupType | null
@@ -26,17 +27,24 @@ const operationColumns: ColumnsType<IOperationDataType> = [
         title: 'Date Operation',
         dataIndex: 'operationDate',
         key: 'operatioDate',
-        render: (text) => <a>{text}</a>,
+        //render: (text) => <a>{text}</a>,
+        render: (text) => moment(text).format('DD.MM.YYYY'),
+        width: 100,
+        align: 'center',
       },
       {
         title: 'Category',
         dataIndex: 'categoryId',
-        key: 'categoryId'
+        key: 'categoryId',
+        width: 400
+        
       },
       {
         title: 'Amount',
-        dataIndex: 'CurrencyAmount',
-        key: 'CurrencyAmount',
+        dataIndex: 'currencyAmount',
+        key: 'currencyAmount',
+        width: 140,
+        align: 'center',
       },
       {
         title: 'Description',
@@ -61,14 +69,32 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             }
     }
 
+    const fetchOperationsForAccount = () => {
+        if ((account != null) && (selectedDateOption.dataOption == SelectedVariantPeriod.lastOperation10))
+        {
+             operationAccount.getLast10OperationsAccount(account.id)
+            .then(res => {
+                console.log('fetch-Last10-Operations', res)
+                setOperationList(res);
+            })
+        }
+    }
+
     useEffect(()=>{
-        //console.log('seekcted account:', account)
         setAccount(selectedAccount)
     },[selectedAccount])
 
     useEffect(()=> {
-        fetchOperationsForAccountForPeriod();
+        if (selectedDateOption.dataOption == SelectedVariantPeriod.lastOperation10)
+            fetchOperationsForAccount()
+            else fetchOperationsForAccountForPeriod();
     },[account])
+
+    useEffect(() => {
+        if (selectedDateOption.dataOption == SelectedVariantPeriod.lastOperation10)
+            fetchOperationsForAccount()
+            else fetchOperationsForAccountForPeriod();
+    }, [selectedDateOption])
 
     return (
         <Layout>
@@ -77,7 +103,11 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             <div>{account?.balance}</div>
             <div>{selectedDateOption.period.startDate.toDateString()}</div>
         </Space>
-        <Table columns={operationColumns} dataSource={operationsList} />
+        <Table  size="small"  
+                columns={operationColumns} dataSource={operationsList} 
+                pagination={{ position: ["bottomLeft"] }}
+                //scroll={{ y: 2000 }}
+                />
 
         </Layout>
     )
