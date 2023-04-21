@@ -24,17 +24,17 @@ namespace YFS.Service.Services
             await UpdateAsync(operation);
 
         public async Task<IEnumerable<Operation>> GetOperationsForAccount(string userId, int accountId, bool trackChanges)
-                => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderBy(op => op.OperationDate).ToListAsync();
+                => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderByDescending(op => op.OperationDate).ToListAsync();
 
         public async Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(string userId, int accountId, DateTime startDate, DateTime endDate, bool trackChanges)
-            => await FindByConditionAsync(op => ((op.AccountId == accountId) && (op.OperationDate >= startDate && op.OperationDate <= endDate) ), trackChanges).Result.OrderBy(op => op.OperationDate).ToListAsync();
+            => await FindByConditionAsync(op => ((op.AccountId == accountId) && (op.OperationDate >= startDate && op.OperationDate <= endDate) ), trackChanges).Result.OrderByDescending(op => op.OperationDate).ToListAsync();
 
         public Task<IEnumerable<Operation>> GetOperationsForAccountGroupForPeriod(string userId, int accountGroupId, bool trackChanges)
         {
             throw new NotImplementedException();
         }
         public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(string userId, int accountId, bool trackChanges)
-            => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderBy(op => op.OperationDate).Take(10).ToListAsync();
+            => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderByDescending(op => op. OperationDate).Take(10).ToListAsync();
 
     }
 }
