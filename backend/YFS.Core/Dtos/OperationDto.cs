@@ -15,7 +15,7 @@ namespace YFS.Core.Dtos
                                                //
         public int AccountId { get; set; }
         public int OperationCurrencyId { get; set; }
-        //public decimal CurrencyAmount { get; set; }
+        public decimal CurrencyAmount { get; set; }
         public decimal OperationAmount { get; set; }
         public DateTime OperationDate { get; set; }
         //public decimal ExchangeRate { get; set; }

@@ -33,5 +33,8 @@ namespace YFS.Service.Services
         {
             throw new NotImplementedException();
         }
+        public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(string userId, int accountId, bool trackChanges)
+            => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderBy(op => op.OperationDate).Take(10).ToListAsync();
+
     }
 }
