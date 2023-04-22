@@ -123,5 +123,29 @@ namespace YFS.Controllers
             await _repository.SaveAsync();
             return NoContent();
         }
+
+        [HttpDelete("{operationId:int}")]
+        [Authorize]
+        public async Task<ActionResult> RemoveOperation(int operationId)
+        {
+            try
+            {
+                var operationData = await _repository.Operation.GetOperationById(operationId);
+
+                if (operationData == null)
+                {
+                    return NotFound($"Operation with Id = {operationId} not found");
+                }
+                //check if transfer before delete operation, remove child/parent operation
+                //change ballance account after remove operation
+                await _repository.Operation.RemoveOperation(operationData);
+                await _repository.SaveAsync();
+            }
+            catch (Exception ex)
+            {
+
+            }
+                return Ok();
+        }
     }
 }

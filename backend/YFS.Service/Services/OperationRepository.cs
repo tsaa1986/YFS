@@ -22,7 +22,8 @@ namespace YFS.Service.Services
         //review sleect account from group
         public async Task UpdateOperation(Operation operation) =>
             await UpdateAsync(operation);
-
+        public async Task RemoveOperation(Operation operation) =>
+            await RemoveAsync(operation);
         public async Task<IEnumerable<Operation>> GetOperationsForAccount(string userId, int accountId, bool trackChanges)
                 => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderByDescending(op => op.OperationDate).ToListAsync();
 
@@ -36,5 +37,7 @@ namespace YFS.Service.Services
         public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(string userId, int accountId, bool trackChanges)
             => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderByDescending(op => op. OperationDate).Take(10).ToListAsync();
 
+        public async Task<Operation?> GetOperationById(int operationId)
+            => await FindByConditionAsync(op => op.Id.Equals(operationId), false).Result.SingleOrDefaultAsync();
     }
 }
