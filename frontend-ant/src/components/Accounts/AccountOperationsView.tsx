@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Layout, Space, Table } from 'antd';
+import { Layout, Popconfirm, Space, Table } from 'antd';
 import { SelectedVariantPeriod } from "./AccountSelectedPeriod";
 import { AccountGroupType, IOperation, operationAccount } from "../../api/api";
 import { AccountDataType, IDateOption } from "./AccountsList";
@@ -22,40 +22,59 @@ interface IOperationDataType {
     tag: string;
 }
 
-const operationColumns: ColumnsType<IOperationDataType> = [
-    {
-        title: 'Date Operation',
-        dataIndex: 'operationDate',
-        key: 'operatioDate',
-        //render: (text) => <a>{text}</a>,
-        render: (text) => moment(text).format('DD.MM.YYYY'),
-        width: 100,
-        align: 'center',
-      },
-      {
-        title: 'Category',
-        dataIndex: 'categoryId',
-        key: 'categoryId',
-        width: 400
-        
-      },
-      {
-        title: 'Amount',
-        dataIndex: 'currencyAmount',
-        key: 'currencyAmount',
-        width: 140,
-        align: 'center',
-      },
-      {
-        title: 'Description',
-        dataIndex: 'description',
-        key: 'description',
-      }
-    ]
-
 const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAccountGroupData, selectedAccount, selectedDateOption}) => {
     const [account, setAccount] = useState(selectedAccount);
     const [operationsList, setOperationList] = useState<any>([]);
+
+    const operationColumns: ColumnsType<IOperationDataType> = [
+        {
+            title: 'Date Operation',
+            dataIndex: 'operationDate',
+            key: 'operatioDate',
+            //render: (text) => <a>{text}</a>,
+            render: (text) => moment(text).format('DD.MM.YYYY'),
+            width: 100,
+            align: 'center',
+          },
+          {
+            title: 'Category',
+            dataIndex: 'categoryId',
+            key: 'categoryId',
+            width: 400
+            
+          },
+          {
+            title: 'Amount',
+            dataIndex: 'currencyAmount',
+            key: 'currencyAmount',
+            width: 140,
+            align: 'center',
+          },
+          {
+            title: 'Description',
+            dataIndex: 'description',
+            key: 'description',
+            width: 200,
+          },
+          {
+            title: 'action',
+            dataIndex: 'action',
+            render: (_, record) => (
+                operationsList.length >= 1 ? (
+                <Space size="small">
+                  <a>Edit {}</a>
+                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDeleteOperation(record.key)}>
+                        <a>Delete</a>
+                    </Popconfirm>
+                </Space>
+              ) : null),
+          }
+        ]
+
+    const handleDeleteOperation = (key: React.Key) => {
+            //const newData = dataSource.filter((item) => item.key !== key);
+            //setDataSource(newData);
+          };
 
     const fetchOperationsForAccountForPeriod = () => {
         if (account != null)
