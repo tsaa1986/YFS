@@ -31,7 +31,6 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             title: 'Date Operation',
             dataIndex: 'operationDate',
             key: 'operatioDate',
-            //render: (text) => <a>{text}</a>,
             render: (text) => moment(text).format('DD.MM.YYYY'),
             width: 100,
             align: 'center',
@@ -41,7 +40,6 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             dataIndex: 'categoryId',
             key: 'categoryId',
             width: 400
-            
           },
           {
             title: 'Amount',
@@ -49,6 +47,10 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             key: 'currencyAmount',
             width: 140,
             align: 'center',
+            render: (text) => { return (
+                Intl.NumberFormat('en-US').format(text)
+            )
+            }
           },
           {
             title: 'Description',
