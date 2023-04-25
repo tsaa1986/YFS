@@ -199,6 +199,9 @@ export const operationAccount = {
     return instancePrivate.post<IOperation>(`${BASE_URL}/Operations/${targetAccountId}`,
         operation)
     },
+    remove(id: number) {
+        return instancePrivate.delete<IOperation>(`${BASE_URL}/Operations/${id}`)
+    },
     getOperationsAccountForPeriod(accountId: number, startDate: Date, endDate: Date) {
         let sDate: string = moment(startDate).format('YYYY-MM-DD');
         let eDate: string = moment(endDate).format('YYYY-MM-DD');

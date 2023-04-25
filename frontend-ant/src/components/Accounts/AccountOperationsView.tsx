@@ -6,6 +6,8 @@ import { AccountDataType, IDateOption } from "./AccountsList";
 import { StringGradients } from "antd/es/progress/progress";
 import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
+import { appendFile } from "fs";
+import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
 
 interface IAccountOperationViewProps {
     selectedAccountGroupData: AccountGroupType | null
@@ -14,7 +16,8 @@ interface IAccountOperationViewProps {
 }
 
 interface IOperationDataType {
-    key: string;
+    key: React.Key;
+    id: number;
     dateOperation: Date;
     categoryName: string;
     currencyAmount: number;
@@ -30,52 +33,52 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         {
             title: 'Date Operation',
             dataIndex: 'operationDate',
-            key: 'operatioDate',
             render: (text) => moment(text).format('DD.MM.YYYY'),
             width: 100,
             align: 'center',
-          },
-          {
+        },
+        {
             title: 'Category',
             dataIndex: 'categoryId',
-            key: 'categoryId',
             width: 400
-          },
-          {
+        },
+        {
             title: 'Amount',
             dataIndex: 'currencyAmount',
-            key: 'currencyAmount',
             width: 140,
             align: 'center',
             render: (text) => { return (
                 Intl.NumberFormat('en-US').format(text)
             )
             }
-          },
-          {
+        },
+        {
             title: 'Description',
             dataIndex: 'description',
-            key: 'description',
             width: 200,
-          },
-          {
-            title: 'action',
+        },
+        {
+            title: 'Action',
             dataIndex: 'action',
-            render: (_, record) => (
+            key: 'x',
+            //render: (_, record) => (<div>{record.id}</div>),
+            render: (_: any, record) => (                
                 operationsList.length >= 1 ? (
                 <Space size="small">
-                  <a>Edit {}</a>
-                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDeleteOperation(record.key)}>
+                  <a>Edit {record.key}</a>
+                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDeleteOperation(record.id)}>
                         <a>Delete</a>
                     </Popconfirm>
                 </Space>
               ) : null),
-          }
+        },
         ]
 
-    const handleDeleteOperation = (key: React.Key) => {
-            //const newData = dataSource.filter((item) => item.key !== key);
+    const handleDeleteOperation = (id: number) => {
+            //const newData = operationsList.filter((item: any) => item.key !== key);
             //setDataSource(newData);
+            console.log(id);
+            operationAccount.remove(id)
           };
 
     const fetchOperationsForAccountForPeriod = () => {
@@ -126,7 +129,9 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         </Space>
         <Table  size="small"  
                 columns={operationColumns} dataSource={operationsList} 
+                rowKey={record => record.id}
                 pagination={{ position: ["bottomLeft"] }}
+                
                 //scroll={{ y: 2000 }}
                 />
 
