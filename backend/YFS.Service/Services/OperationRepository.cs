@@ -39,5 +39,8 @@ namespace YFS.Service.Services
 
         public async Task<Operation?> GetOperationById(int operationId)
             => await FindByConditionAsync(op => op.Id.Equals(operationId), false).Result.SingleOrDefaultAsync();
+
+        public async Task<Operation?> GetTransferOperationById(int transferOperationId)
+            => await FindByConditionAsync(op => op.TransferOperationId.Equals(transferOperationId), false).Result.SingleOrDefaultAsync();
     }
 }

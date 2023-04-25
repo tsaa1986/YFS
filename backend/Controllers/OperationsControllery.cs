@@ -138,14 +138,68 @@ namespace YFS.Controllers
                 }
                 //check if transfer before delete operation, remove child/parent operation
                 //change ballance account after remove operation
-                await _repository.Operation.RemoveOperation(operationData);
-                await _repository.SaveAsync();
+                Account withdrawAccount, targetAccount = null;
+
+                var operationWithdrawData = (Operation)null;
+                var operationIncomeData = (Operation)null;
+
+                if (operationData.CategoryId == -1)
+                {                
+                    if (operationData.TransferOperationId > 0)
+                    {                       
+                        operationWithdrawData = await _repository.Operation.GetOperationById(operationData.TransferOperationId);
+                        operationIncomeData = operationData;
+
+                        if (operationWithdrawData != null)
+                        {
+                            withdrawAccount = await _repository.Account.GetAccount(operationWithdrawData.AccountId);
+                            targetAccount = await _repository.Account.GetAccount(operationIncomeData.AccountId);
+                            decimal temp_CurrencyAmount = operationWithdrawData.CurrencyAmount;
+                            decimal temp_CurrencyIncomeAmount = operationIncomeData.CurrencyAmount;
+
+                            targetAccount.Balance = targetAccount.Balance - temp_CurrencyIncomeAmount;
+                            withdrawAccount.Balance = withdrawAccount.Balance - temp_CurrencyAmount;
+                        }
+                        else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
+                    }
+                    else
+                    {
+                        operationWithdrawData = operationData;
+                        operationIncomeData = await _repository.Operation.GetTransferOperationById(operationWithdrawData.Id);
+
+                        if (operationIncomeData != null)
+                        {
+                            withdrawAccount = await _repository.Account.GetAccount(operationWithdrawData.AccountId);
+                            targetAccount = await _repository.Account.GetAccount(operationIncomeData.AccountId);
+                            decimal temp_CurrencyAmount = operationWithdrawData.CurrencyAmount;
+                            decimal temp_CurrencyIncomeAmount = operationIncomeData.CurrencyAmount;
+                            targetAccount.Balance = targetAccount.Balance - temp_CurrencyIncomeAmount;
+                            withdrawAccount.Balance = withdrawAccount.Balance - temp_CurrencyAmount;
+                        }
+                        else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
+                    }
+
+                    await _repository.Operation.RemoveOperation(operationWithdrawData);
+                    await _repository.Operation.RemoveOperation(operationIncomeData);                    
+
+                    await _repository.Account.UpdateAccount(targetAccount);
+                    await _repository.Account.UpdateAccount(withdrawAccount);
+
+                    await _repository.SaveAsync();
+                }
             }
             catch (Exception ex)
             {
-
+                return  BadRequest(ex.Message);
             }
                 return Ok();
         }
+
+        private async Task<Account> ChangeAccountBalance(Account account, int operationId, int transferOperationId)
+        {
+            //Account accountTarget = await _repository.Account.GetAccount(targetAccountId);
+            return null;
+        }
     }
+
 }
