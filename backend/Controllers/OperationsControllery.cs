@@ -47,9 +47,9 @@ namespace YFS.Controllers
             await _repository.Account.UpdateAccount(account);
             await _repository.SaveAsync();
 
-            var operationReturn = _mapper.Map<OperationDto>(operationData);
+            List<Operation> listOperationReturn= new List<Operation>();
+            listOperationReturn.Add(operationData);         
 
-            int transferOperationIdFromAccount = 0;
             if (operationData.TypeOperation == 3) //transfer Money
             {
                 if (targetAccountId > 0)
@@ -73,8 +73,11 @@ namespace YFS.Controllers
                     await _repository.Operation.CreateOperation(transferOperaitonData);
                     await _repository.Account.UpdateAccount(accountTarget);
                     await _repository.SaveAsync();
+                    listOperationReturn.Add(transferOperaitonData);
                 } 
-            }          
+            }
+
+            var operationReturn = _mapper.Map<List<OperationDto>>(listOperationReturn);
 
             return Ok(operationReturn);
         }
@@ -186,7 +189,15 @@ namespace YFS.Controllers
                     await _repository.Account.UpdateAccount(targetAccount);
                     await _repository.Account.UpdateAccount(withdrawAccount);
 
+                    List<Account> accountList = new List<Account>();
+                    accountList.Add(targetAccount);
+                    accountList.Add(withdrawAccount);
+
+                    var accountResult = _mapper.Map<List<Account>>(accountList);
+
                     await _repository.SaveAsync();
+
+                    return Ok(accountResult);
                 }
                 else
                 {
