@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select } from "antd";
 import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
-import { accountType, account, ICategory, category, operationAccount } from "../../api/api";
+import { accountType, account, ICategory, category, operationAccount, IOperation } from "../../api/api";
 import moment from "moment";
 const dateFormat = 'YYYY/MM/DD';
 
@@ -28,14 +28,15 @@ interface IOperationFormProps {
     //onCreate: (values: Values) => void;
     //onCancel: () => void;
     setOpenOperationForm: React.Dispatch<React.SetStateAction<boolean>>
-    selectedAccount: AccountDataType | undefined
+    selectedAccount: accountType | undefined
     typeOperation: TypeOperation
+    setAddedOperation: React.Dispatch<React.SetStateAction<IOperation | undefined>>
     //accountGroup: AccountGroupType
     //typeTransaction: TypeTransaction;
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
   }
 
-const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation}) => {
+const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation, setAddedOperation}) => {
     const [formOperation] = Form.useForm();
     const [selectedTypeOperation, setSelectTypeOperation] = useState<TypeOperation>(typeOperation);
     const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
@@ -113,6 +114,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
         "operationCurrencyId": 0,
         "operationAmount": formOperation.getFieldValue('amount'),
         "operationDate": formOperation.getFieldValue('operationDate'),
+        "balance": 0,
         "description": formOperation.getFieldValue('description'),
         "tag": formOperation.getFieldValue('tag')
       }, targetAccountId).then(response => {
@@ -122,6 +124,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
                   console.log(response.data)
                   //addAccount(response.data)
                   formOperation.resetFields()
+                  setAddedOperation(response.data)
                   setOpenOperationForm(false)
               }
       });  

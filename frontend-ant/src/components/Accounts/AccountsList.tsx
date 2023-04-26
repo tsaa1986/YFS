@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Divider } from "antd";
-import { account, AccountGroupType, accountListType } from '../../api/api';
+import { account, AccountGroupType, accountListType, accountType, IOperation } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
@@ -36,7 +36,7 @@ export interface IDateOption {
 
 export const AccountsList = (props: accountListPropsType) => {
 
-const columns: ColumnsType<AccountDataType> = [
+const columns: ColumnsType<accountType> = [
   {
     title: 'action',
     dataIndex: '',
@@ -79,11 +79,12 @@ const columns: ColumnsType<AccountDataType> = [
     key: 'id'
   },
 ];
-    const [accountListDataSource, setAccountListSelectedTab] = useState<any>();
-    const [selectedAccount, setSelectedAccount] = useState<AccountDataType>();
+    const [accountListDataSource, setAccountListSelectedTab] = useState<accountType[]>([]);
+    const [selectedAccount, setSelectedAccount] = useState<accountType>();
     const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}, dataOption: SelectedVariantPeriod.lastOperation10})
     const [selectedTypeOperation, setSelectedTypeOperation] = useState<TypeOperation>(0)
     const [openOperationForm, setOpenOperationForm] = useState<boolean>(false);
+    const [addedOperation, setAddedOperation] = useState<IOperation | undefined>();
 
     const fetchAccountListSelectedTab = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
@@ -93,13 +94,15 @@ const columns: ColumnsType<AccountDataType> = [
             if (props.accountGroupData.accountGroupId.toString() =='0') {
               account.getListByFavorites().then(
                 res => { console.log(res)
-                  setAccountListSelectedTab(res)
+                  if (res != null && res != undefined)
+                    setAccountListSelectedTab(res)
                   })
             }
             else {
               account.getListByGroupId(tabId).then(
-                res => { console.log(res)
-                  setAccountListSelectedTab(res)
+                res => { //console.log(res)
+                  if (res != null && res != undefined)
+                    setAccountListSelectedTab(res)
                   })
             }            
       }
@@ -120,7 +123,8 @@ const columns: ColumnsType<AccountDataType> = [
           onRow={(record, rowIndex) => {
               return {
                 onClick: (e) => { 
-                  setSelectedAccount(record);
+                  //if (record != undefined)
+                    setSelectedAccount(record);
                 } 
               } 
             }
@@ -133,12 +137,22 @@ const columns: ColumnsType<AccountDataType> = [
           <Collapse defaultActiveKey={['1']} ghost>
             <Panel header={`This is panel header ${selectedAccount?.name}`} key="1">
               <AccountSelectedPeriod selectedDateOption={selectedDateOption} setSelectedDateOption={setSelectedDateOption}/>  
-              <AccountOperationsView selectedAccountGroupData={props.accountGroupData} selectedAccount={selectedAccount} selectedDateOption={selectedDateOption}/>
+              <AccountOperationsView 
+                selectedAccountGroupData={props.accountGroupData} 
+                selectedAccount={selectedAccount} 
+                selectedDateOption={selectedDateOption}
+                accountListDataSource={accountListDataSource}
+                setAccountListSelectedTab={setAccountListSelectedTab}
+                addedOperation={addedOperation}
+              />
             </Panel>
           </Collapse>
-          <OperationForm open={openOperationForm} setOpenOperationForm={setOpenOperationForm}
+          <OperationForm open={openOperationForm} 
+              setOpenOperationForm={setOpenOperationForm}
               selectedAccount={selectedAccount}
-              typeOperation={selectedTypeOperation}/>
+              typeOperation={selectedTypeOperation}
+              setAddedOperation={setAddedOperation}    
+          />
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
         </div>
     </div>

@@ -1,22 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Layout, Popconfirm, Space, Table } from 'antd';
 import { SelectedVariantPeriod } from "./AccountSelectedPeriod";
-import { AccountGroupType, IOperation, operationAccount } from "../../api/api";
+import { AccountGroupType, accountType, IOperation, operationAccount } from "../../api/api";
 import { AccountDataType, IDateOption } from "./AccountsList";
 import { StringGradients } from "antd/es/progress/progress";
 import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
 import { appendFile } from "fs";
 import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
+import { Item } from "rc-menu";
 
 interface IAccountOperationViewProps {
     selectedAccountGroupData: AccountGroupType | null
-    selectedAccount: AccountDataType | undefined
+    selectedAccount: accountType | undefined
     selectedDateOption: IDateOption
+    accountListDataSource: accountType[]
+    setAccountListSelectedTab: Dispatch<SetStateAction<any>>
+    addedOperation: IOperation | undefined
 }
 
 interface IOperationDataType {
-    key: React.Key;
     id: number;
     dateOperation: Date;
     categoryName: string;
@@ -25,11 +28,14 @@ interface IOperationDataType {
     tag: string;
 }
 
-const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAccountGroupData, selectedAccount, selectedDateOption}) => {
+const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAccountGroupData, selectedAccount, selectedDateOption, 
+    accountListDataSource, 
+    setAccountListSelectedTab,
+    addedOperation}) => {
     const [account, setAccount] = useState(selectedAccount);
-    const [operationsList, setOperationList] = useState<any>([]);
+    const [operationsList, setOperationList] = useState<Array<IOperation>>([]);
 
-    const operationColumns: ColumnsType<IOperationDataType> = [
+    const operationColumns: ColumnsType<IOperation> = [
         {
             title: 'Date Operation',
             dataIndex: 'operationDate',
@@ -65,7 +71,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             render: (_: any, record) => (                
                 operationsList.length >= 1 ? (
                 <Space size="small">
-                  <a>Edit {record.key}</a>
+                  <a>Edit</a>
                     <Popconfirm title="Sure to delete?" onConfirm={() => handleDeleteOperation(record.id)}>
                         <a>Delete</a>
                     </Popconfirm>
@@ -78,8 +84,46 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             //const newData = operationsList.filter((item: any) => item.key !== key);
             //setDataSource(newData);
             console.log(id);
-            operationAccount.remove(id)
-          };
+            operationAccount.remove(id).then(
+                res => {
+                    if (res.status == 200) {
+                        console.log('account change balance',res.data.id)
+                        console.log('remove operation success: ', id)
+
+                        removeOperation(id);
+                        changeAccountBalance(res.data.id, res.data.balance);
+                        //refresh table account and operation(before check record included range)
+                    }
+                }
+            )
+    };
+
+    const handleAddOperation = (operation: IOperation) => {
+        //debugger
+        const items = [...operationsList];    
+        items.push(operation)
+        setOperationList(items);
+        changeAccountBalance(operation.accountId, operation.balance);
+    }
+
+    const removeOperation = (id: number) => {
+        const items = operationsList;
+
+        if (operationsList.length > 0)
+        {
+            setOperationList(items.filter(o => o.id != id));
+        }
+    }
+
+
+    const changeAccountBalance = (accountId: number, accountBalance: number) =>{
+        const items = [...accountListDataSource];
+        const findAccount = items.find(a => a.id === accountId);
+        if (findAccount != null) {
+            findAccount.balance = accountBalance;
+        }
+        setAccountListSelectedTab(items);
+    }
 
     const fetchOperationsForAccountForPeriod = () => {
         if (account != null)
@@ -88,7 +132,8 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
                  operationAccount.getOperationsAccountForPeriod(account.id, selectedDateOption.period.startDate, selectedDateOption.period.endDate)
                 .then(res => {
                     console.log('fetchOperations', res)
-                    setOperationList(res);
+                    if (res != undefined)
+                        setOperationList(res);
                 })
             }
     }
@@ -98,8 +143,10 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         {
              operationAccount.getLast10OperationsAccount(account.id)
             .then(res => {
+                if (res != undefined) {
                 console.log('fetch-Last10-Operations', res)
                 setOperationList(res);
+                }
             })
         }
     }
@@ -120,6 +167,11 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             else fetchOperationsForAccountForPeriod();
     }, [selectedDateOption])
 
+    useEffect(()=>{
+        if (addedOperation != undefined && addedOperation != null)
+            handleAddOperation(addedOperation)
+    },[addedOperation])
+
     return (
         <Layout>
         <Space wrap>
@@ -130,8 +182,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         <Table  size="small"  
                 columns={operationColumns} dataSource={operationsList} 
                 rowKey={record => record.id}
-                pagination={{ position: ["bottomLeft"] }}
-                
+                pagination={{ position: ["bottomLeft"] }}                
                 //scroll={{ y: 2000 }}
                 />
 
