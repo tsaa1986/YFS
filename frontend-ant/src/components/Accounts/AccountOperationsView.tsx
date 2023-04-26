@@ -86,8 +86,8 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             console.log(id);
             operationAccount.remove(id).then(
                 res => {
-                    if (res.status == 200) {
-                        removeOperation(id);
+                    if (res.status === 200) {
+                         removeOperation(id);
                         res.data.forEach(element => {
                             changeAccountBalance(element.id, element.balance);
                         });                        
@@ -99,18 +99,23 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
 
     const handleAddOperation = (operation: IOperation[]) => {
         const items = [...operationsList];
+
         operation.forEach(element => {
-            if (element.categoryId == -1 && element.operationAmount > 0)
+            if (element.categoryId === -1 && element.operationAmount > 0)
                 {
                     items.push(element)
                     setOperationList(items);
                     changeAccountBalance(element.accountId, element.balance);
                 }
-            if (element.categoryId == -1 && element.operationAmount < 0)
+            if (element.categoryId === -1 && element.operationAmount < 0)
                 {
                     changeAccountBalance(element.accountId, element.balance);
                 }
-
+            if (element.categoryId !== -1) {
+                items.push(element)
+                setOperationList(items);
+                changeAccountBalance(element.accountId, element.balance);
+            }
         });    
 
     }
@@ -120,7 +125,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
 
         if (operationsList.length > 0)
         {
-            setOperationList(items.filter(o => o.id != id));
+            setOperationList(items.filter(o => o.id !== id));
         }
     }
 
