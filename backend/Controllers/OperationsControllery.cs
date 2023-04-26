@@ -187,6 +187,17 @@ namespace YFS.Controllers
 
                     await _repository.SaveAsync();
                 }
+                else
+                {
+                    if (operationData != null) { 
+                        targetAccount = await _repository.Account.GetAccount(operationData.AccountId);
+                        decimal temp_CurrencyAmount = operationData.CurrencyAmount;
+                        targetAccount.Balance = targetAccount.Balance - temp_CurrencyAmount;
+                        await _repository.Operation.RemoveOperation(operationData);
+                        await _repository.Account.UpdateAccount(targetAccount);
+                        await _repository.SaveAsync();
+                    }
+                }
             }
             catch (Exception ex)
             {
