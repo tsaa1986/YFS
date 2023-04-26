@@ -16,7 +16,7 @@ interface IAccountOperationViewProps {
     selectedDateOption: IDateOption
     accountListDataSource: accountType[]
     setAccountListSelectedTab: Dispatch<SetStateAction<any>>
-    addedOperation: IOperation | undefined
+    addedOperation: IOperation[] | undefined
 }
 
 interface IOperationDataType {
@@ -87,23 +87,32 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             operationAccount.remove(id).then(
                 res => {
                     if (res.status == 200) {
-                        console.log('account change balance',res.data.id)
-                        console.log('remove operation success: ', id)
-
                         removeOperation(id);
-                        changeAccountBalance(res.data.id, res.data.balance);
+                        res.data.forEach(element => {
+                            changeAccountBalance(element.id, element.balance);
+                        });                        
                         //refresh table account and operation(before check record included range)
                     }
                 }
             )
     };
 
-    const handleAddOperation = (operation: IOperation) => {
-        //debugger
-        const items = [...operationsList];    
-        items.push(operation)
-        setOperationList(items);
-        changeAccountBalance(operation.accountId, operation.balance);
+    const handleAddOperation = (operation: IOperation[]) => {
+        const items = [...operationsList];
+        operation.forEach(element => {
+            if (element.categoryId == -1 && element.operationAmount > 0)
+                {
+                    items.push(element)
+                    setOperationList(items);
+                    changeAccountBalance(element.accountId, element.balance);
+                }
+            if (element.categoryId == -1 && element.operationAmount < 0)
+                {
+                    changeAccountBalance(element.accountId, element.balance);
+                }
+
+        });    
+
     }
 
     const removeOperation = (id: number) => {

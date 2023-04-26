@@ -84,7 +84,7 @@ const columns: ColumnsType<accountType> = [
     const [selectedDateOption, setSelectedDateOption] = useState<IDateOption>({period: {startDate: new Date(), endDate: new Date()}, dataOption: SelectedVariantPeriod.lastOperation10})
     const [selectedTypeOperation, setSelectedTypeOperation] = useState<TypeOperation>(0)
     const [openOperationForm, setOpenOperationForm] = useState<boolean>(false);
-    const [addedOperation, setAddedOperation] = useState<IOperation | undefined>();
+    const [addedOperation, setAddedOperation] = useState<IOperation[] | undefined>();
 
     const fetchAccountListSelectedTab = () => {
         if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){

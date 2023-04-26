@@ -197,11 +197,11 @@ export interface IOperation {
 
 export const operationAccount = {
     add(operation: IOperation, targetAccountId: number) {
-    return instancePrivate.post<IOperation>(`${BASE_URL}/Operations/${targetAccountId}`,
+    return instancePrivate.post<IOperation[]>(`${BASE_URL}/Operations/${targetAccountId}`,
         operation)
     },
     remove(id: number) {
-        return instancePrivate.delete<accountType>(`${BASE_URL}/Operations/${id}`)
+        return instancePrivate.delete<accountType[]>(`${BASE_URL}/Operations/${id}`)
     },
     getOperationsAccountForPeriod(accountId: number, startDate: Date, endDate: Date) {
         let sDate: string = moment(startDate).format('YYYY-MM-DD');

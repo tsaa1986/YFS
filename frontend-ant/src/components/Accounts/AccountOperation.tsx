@@ -30,7 +30,7 @@ interface IOperationFormProps {
     setOpenOperationForm: React.Dispatch<React.SetStateAction<boolean>>
     selectedAccount: accountType | undefined
     typeOperation: TypeOperation
-    setAddedOperation: React.Dispatch<React.SetStateAction<IOperation | undefined>>
+    setAddedOperation: React.Dispatch<React.SetStateAction<IOperation[] | undefined>>
     //accountGroup: AccountGroupType
     //typeTransaction: TypeTransaction;
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
@@ -124,7 +124,11 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
                   console.log(response.data)
                   //addAccount(response.data)
                   formOperation.resetFields()
-                  setAddedOperation(response.data)
+                  if (response.data != undefined)
+                    {
+                      setAddedOperation(response.data)
+                    };   
+                                 
                   setOpenOperationForm(false)
               }
       });  
