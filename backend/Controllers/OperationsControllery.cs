@@ -207,13 +207,18 @@ namespace YFS.Controllers
                         targetAccount.Balance = targetAccount.Balance - temp_CurrencyAmount;
                         await _repository.Operation.RemoveOperation(operationData);
                         await _repository.Account.UpdateAccount(targetAccount);
-                        var accountData = _mapper.Map<Account>(targetAccount);
-                        var accountReturn = _mapper.Map<AccountDto>(accountData);
+
+                        List<Account> accountList = new List<Account>();
+                        accountList.Add(targetAccount);
+
+                        //var accountData = _mapper.Map<Account>(targetAccount);
+                        var accountResult = _mapper.Map<List<Account>>(accountList);
+                        //var accountReturn = _mapper.Map<AccountDto>(accountData);
 
                         await _repository.SaveAsync();
 
 
-                        return Ok(accountReturn);
+                        return Ok(accountResult);
                     }
                 }
             }
