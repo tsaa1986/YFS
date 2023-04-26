@@ -20,7 +20,7 @@ namespace YFS.Core.Dtos
         public DateTime OperationDate { get; set; }
         //public decimal ExchangeRate { get; set; }
         //public decimal CashbackAmount { get; set; }
-        //public decimal Balance { get; set; }
+        public decimal Balance { get; set; }
         //public int MCC { get; set; }
         public string? Description { get; set; }
         public string? Tag { get; set; }

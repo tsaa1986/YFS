@@ -8,6 +8,7 @@ using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Principal;
 
 namespace YFS.Controllers
 {
@@ -195,7 +196,13 @@ namespace YFS.Controllers
                         targetAccount.Balance = targetAccount.Balance - temp_CurrencyAmount;
                         await _repository.Operation.RemoveOperation(operationData);
                         await _repository.Account.UpdateAccount(targetAccount);
+                        var accountData = _mapper.Map<Account>(targetAccount);
+                        var accountReturn = _mapper.Map<AccountDto>(accountData);
+
                         await _repository.SaveAsync();
+
+
+                        return Ok(accountReturn);
                     }
                 }
             }
