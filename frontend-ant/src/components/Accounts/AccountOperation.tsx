@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select } from "antd";
+import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select, TreeSelect } from "antd";
 import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
 import { accountType, account, ICategory, category, operationAccount, IOperation } from "../../api/api";
 import moment from "moment";
+import { TreeNode } from "antd/es/tree-select";
+import { stringify } from "querystring";
 const dateFormat = 'YYYY/MM/DD';
 
 export enum TypeOperation {
@@ -36,34 +38,47 @@ interface IOperationFormProps {
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
   }
 
+interface ICategoryTree {
+  title: string,
+  value: number,
+  key: number
+}
+
 const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation, setAddedOperation}) => {
     const [formOperation] = Form.useForm();
     const [selectedTypeOperation, setSelectTypeOperation] = useState<TypeOperation>(typeOperation);
     const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
     const [categoryList, setCategoryList] = useState<ICategory[] | null>([]);
+    const [selectedCatagoryId, setSelectedCategoryId] = useState<number>(0);
+    const [categoryTreeData, setCategoryTreeData] = useState<ICategoryTree[]>([]);
 
     useEffect(()=>{
       category.getCategoryListByUserId().then( res => {
         if (res != undefined) {
-          setCategoryList(res)
-          //console.log('category operationForm', res);
+          buildCategoryTreeData(res)
+          setCategoryList(res)        
         }
       })
     },[])
 
+
+
+    useEffect(() => {
+      //treeCategoryData = [{ title: '', value: 0,  key: 0}]
+     // buildCategoryTreeData();
+    }, [])
+
     useEffect(() => {
       account.getListOpenAccountByUserId().then(res => {
-            if (res != undefined)
-              {                
-                setOpenAccounts(res);
-              }
+        if (res != undefined)
+          {                
+            setOpenAccounts(res);
+          }
        })
     }, [])
 
     useEffect (()=>{
-      console.log('effect:', typeOperation)
       setSelectTypeOperation(typeOperation)
-      console.log('accountOperation',openAccounts)
     },[typeOperation])
 
     useEffect(()=>{
@@ -77,7 +92,6 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     },[selectedAccount])
 
     useEffect (()=>{
-      //console.log('effect:', typeTransaction)
       console.log('selectedType', selectedTypeOperation)
       formOperation.resetFields();
       formOperation.setFieldsValue({ 
@@ -85,7 +99,6 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
         withdrawFromAccountId: selectedAccount?.id,
         targetAccountId: selectedAccount?.id
       });
-      //setSelectTypeTransaction(typeTransaction)
     },[selectedTypeOperation])
 
     const handleSubmitAddOperationForm = () => {
@@ -103,9 +116,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
           targetAccountId = formOperation.getFieldValue('targetAccountId');
           break;
       }
-      //let currencyId = openAccounts?.find(element => element.id)?.currencyId;
-      //currencyId = currencyId != undefined ? currencyId : 0;
-    
+
       operationAccount.add({
         "id": 0,
         "categoryId": formOperation.getFieldValue('categoryId'),
@@ -134,6 +145,48 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
       });  
     
     }
+
+    const buildCategoryTreeData = (_category: ICategory[]) => {
+      let tempCategoryTree: ICategoryTree[] = [{ title: '', value: 0,  key: 0}];
+      if (_category !== null) {
+        _category.map( item => {
+          { 
+            if (item.rootId === 0)
+                tempCategoryTree.push({title: item.name_ENG !== null ? item.name_ENG : 'empty',
+                value: item.id,
+                key: item.id})}
+          }
+        )
+        setCategoryTreeData(tempCategoryTree)
+      }
+    }
+
+    const treeData = [
+      {
+        title: 'Node1',
+        value: '0-0',
+        key: '0-0',
+        children: [
+          {
+            title: 'Child Node1',
+            value: '0-0-1',
+            key: '0-0-1',
+          },
+          {
+            title: 'Child Node2',
+            value: '0-0-2',
+            key: '0-0-2',
+          },
+        ],
+      },
+      {
+        title: 'Node2',
+        value: '0-1',
+        key: '0-1',
+      },
+    ];
+
+    const [value, setValue] = useState<string>();
 
     return(
     <Modal
@@ -202,39 +255,68 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             </Form.Item>
 
             <Form.Item 
-            name="targetAccountId"
-            label="Target Account"
-            hidden={ ((selectedTypeOperation == TypeOperation.Expense)) ? true : false }
-            rules={[{required: true, message: 'Please select Target Account'}]}>
-            <Select 
-              onChange={(e:any)=> {
-                console.log(e)
-              } }
-            >
-              {
-                  (openAccounts !== undefined) ? (openAccounts.map( item => {
-                    return (item.id != 0) ? <Select.Option value={item.id}>{`GroupName: ${item.accountGroupId}  ${item.name}` + ` Balance = `+`${item.balance}`}</Select.Option> : ''}
-                      )) : (<Select.Option value={0}>{'Select Account'}</Select.Option>)
-              }
-            </Select>
+              name="targetAccountId"
+              label="Target Account"
+              hidden={ ((selectedTypeOperation == TypeOperation.Expense)) ? true : false }
+              rules={[{required: true, message: 'Please select Target Account'}]}>
+              <Select 
+                onChange={(e:any)=> {
+                  console.log(e)
+                } }
+              >
+                {
+                    (openAccounts !== undefined) ? (openAccounts.map( item => {
+                      return (item.id != 0) ? <Select.Option value={item.id}>{`GroupName: ${item.accountGroupId}  ${item.name}` + ` Balance = `+`${item.balance}`}</Select.Option> : ''}
+                        )) : (<Select.Option value={0}>{'Select Account'}</Select.Option>)
+                }
+              </Select>
             </Form.Item>
             <Form.Item 
             name="categoryId"
             label="Category"
             rules={[{required: true, message: 'Please select Category'}]}>
-            <Select 
-              onChange={(e:any)=> {
-                console.log(e)                
-                //setSelectedAccountsType(e)}
-                //selectedAccountType = e;
+
+            <TreeSelect 
+              showSearch
+              style={{width: '100%'}}
+              value={selectedCatagoryId}
+              treeNodeFilterProp='title'
+              //key={selectedCatagoryId}
+              dropdownMatchSelectWidth={false}
+              dropdownStyle={{ maxHeight:400, overflow: 'auto'}}
+              allowClear
+              treeDefaultExpandAll
+              treeData={categoryTreeData}     
+              //treeData={treeData}          
+              onChange={(e:any, labelList: React.ReactNode[], ee)=> {     
+                setSelectedCategoryId(e);
+                //setValue(e)        
+                console.log(e)
+                //console.log(selectedCatagoryId)
+                console.log(labelList)
+                console.log(ee)
               } 
             }
               disabled = {selectedTypeOperation == 3 ? true : false }
             >
-              { (categoryList !== null) ? (categoryList.map( item => 
-                  { return <Select.Option value={item.id}>{item.name_ENG}</Select.Option>})) : ""  
+              { /*(categoryList !== null) ? (categoryList.map( item =>
+                <TreeNode
+                  value={item.id}
+                  title={item.name_ENG}
+                  key={item.id}
+                  disabled
+                >
+                {//map(optGroup.data, (option) => (
+                  //<TreeNode value={option} title={option} key={option} />
+                  //))
+                }
+                </TreeNode>)) : ""*/
               }
-            </Select>
+
+              {/* (categoryList !== null) ? (categoryList.map( item => 
+                  { return <Select.Option value={item.id}>{item.name_ENG}</Select.Option>})) : ""  
+              */}
+            </TreeSelect>
             </Form.Item>
             <Form.Item 
             name="amount"
