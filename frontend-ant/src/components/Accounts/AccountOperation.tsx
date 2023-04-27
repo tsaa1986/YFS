@@ -6,6 +6,7 @@ import { accountType, account, ICategory, category, operationAccount, IOperation
 import moment from "moment";
 import { TreeNode } from "antd/es/tree-select";
 import { stringify } from "querystring";
+import { TreeNodeNormal } from "antd/es/tree/Tree";
 const dateFormat = 'YYYY/MM/DD';
 
 export enum TypeOperation {
@@ -41,7 +42,9 @@ interface IOperationFormProps {
 interface ICategoryTree {
   title: string,
   value: number,
-  key: number
+  key: number,
+  rootId: number,
+  children?: TreeNodeNormal[];
 }
 
 const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation, setAddedOperation}) => {
@@ -50,12 +53,14 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
     const [categoryList, setCategoryList] = useState<ICategory[] | null>([]);
     const [selectedCatagoryId, setSelectedCategoryId] = useState<number>(0);
-    const [categoryTreeData, setCategoryTreeData] = useState<ICategoryTree[]>([]);
+    const [categoryTreeData, setCategoryTreeData] = useState<[]>([]);//useState<ICategoryTree[]>([]);
 
     useEffect(()=>{
       category.getCategoryListByUserId().then( res => {
         if (res != undefined) {
-          buildCategoryTreeData(res)
+          let list:any
+          res.map(r=>list.push(r));
+          buildCategoryTreeData(list)
           setCategoryList(res)        
         }
       })
@@ -146,8 +151,31 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     
     }
 
-    const buildCategoryTreeData = (_category: ICategory[]) => {
-      let tempCategoryTree: ICategoryTree[] = [{ title: '', value: 0,  key: 0}];
+    const buildCategoryTreeData = (_category: []) => {
+      let list:any = []
+      _category.map( item => list.push(item));//{ title: item.name_ENG, value: item.id,  key: item.id, rootId: item.rootId, children: []}));
+
+      let map: any = {}, node, roots:any = [];
+
+      for (let i = 0; i < list.length; i+=1) {
+        map[list[i].id] = i;
+        list[i].children = [];
+      }
+
+      for (let i=0; i < list.length; i+= 1) {
+        node = list[i];
+        if (node.rootId !== 0) {
+          // if you have dangling branches check that map[node.parentId] exists
+          list[map[node.rootId]].children.push(node)//({ title: node.title, value: node.value,  key: node.value, rootId: node.rootId});
+        } else {
+          roots.push(node)//({ title: node.title, value: node.value,  key: node.value, rootId: node.rootId});
+        }
+      }
+      //debugger
+      //let list2:ICategoryTree[] = [];
+      //roots.map(r => list2.map( {title: name_ENG, value: item.id,  key: item.id, rootId: item.rootId }))
+      setCategoryTreeData(roots)
+      /*let tempCategoryTree: ICategoryTree[] = [{ title: '', value: 0,  key: 0}];
       if (_category !== null) {
         _category.map( item => {
           { 
@@ -158,7 +186,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
           }
         )
         setCategoryTreeData(tempCategoryTree)
-      }
+      }*/
     }
 
     const treeData = [
@@ -287,7 +315,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
               allowClear
               treeDefaultExpandAll
               treeData={categoryTreeData}     
-              //treeData={treeData}          
+              //treeData={}          
               onChange={(e:any, labelList: React.ReactNode[], ee)=> {     
                 setSelectedCategoryId(e);
                 //setValue(e)        
