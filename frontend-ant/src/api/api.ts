@@ -171,7 +171,7 @@ interface ICategoryResponseType {
 export const category = {
     getCategoryListByUserId() {
         return instancePrivate.get<ICategory[]>(`${BASE_URL}/Category`)
-        .then( res=> {
+        .then( res => {
             //debugger
             //console.log(res.data)
             return res.data} )

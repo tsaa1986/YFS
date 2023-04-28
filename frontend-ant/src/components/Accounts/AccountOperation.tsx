@@ -4,9 +4,6 @@ import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
 import { accountType, account, ICategory, category, operationAccount, IOperation } from "../../api/api";
 import moment from "moment";
-import { TreeNode } from "antd/es/tree-select";
-import { stringify } from "querystring";
-import { TreeNodeNormal } from "antd/es/tree/Tree";
 const dateFormat = 'YYYY/MM/DD';
 
 export enum TypeOperation {
@@ -39,13 +36,24 @@ interface IOperationFormProps {
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
   }
 
-interface ICategoryTree {
+interface ICategoryTreeNode {
   title: string,
   value: number,
   key: number,
   rootId: number,
-  children?: TreeNodeNormal[];
 }
+
+type categoryTreeType = {
+  //node: ICategoryTreeNode
+  title: string,
+  value: number,
+  key: number,
+  rootId: number,
+  children: Array<ICategoryTreeNode>
+}
+
+
+
 
 const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation, setAddedOperation}) => {
     const [formOperation] = Form.useForm();
@@ -53,25 +61,16 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
     const [categoryList, setCategoryList] = useState<ICategory[] | null>([]);
     const [selectedCatagoryId, setSelectedCategoryId] = useState<number>(0);
-    const [categoryTreeData, setCategoryTreeData] = useState<[]>([]);//useState<ICategoryTree[]>([]);
+    const [categoryTreeData, setCategoryTreeData] = useState<Array<categoryTreeType>>([]);//useState<ICategoryTree[]>([]);
 
     useEffect(()=>{
       category.getCategoryListByUserId().then( res => {
         if (res != undefined) {
-          let list:any
-          res.map(r=>list.push(r));
-          buildCategoryTreeData(list)
+          buildCategoryTreeData(res)
           setCategoryList(res)        
         }
       })
     },[])
-
-
-
-    useEffect(() => {
-      //treeCategoryData = [{ title: '', value: 0,  key: 0}]
-     // buildCategoryTreeData();
-    }, [])
 
     useEffect(() => {
       account.getListOpenAccountByUserId().then(res => {
@@ -151,14 +150,15 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     
     }
 
-    const buildCategoryTreeData = (_category: []) => {
-      let list:any = []
-      _category.map( item => list.push(item));//{ title: item.name_ENG, value: item.id,  key: item.id, rootId: item.rootId, children: []}));
+    const buildCategoryTreeData = (_categoryList: ICategory[]) => {
+      let list: categoryTreeType[] = [];
+      _categoryList.map( item => list.push({title: (item.name_ENG !== null) ? item.name_ENG : 'none', value: item.id,  key: item.id, rootId: item.rootId !== null ? item.rootId : 0, children: []}));
 
       let map: any = {}, node, roots:any = [];
 
       for (let i = 0; i < list.length; i+=1) {
-        map[list[i].id] = i;
+        //map[list[i].id] = i;
+        map[list[i].value] = i;
         list[i].children = [];
       }
 
