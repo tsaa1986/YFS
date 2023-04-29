@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
@@ -34,8 +35,11 @@ namespace YFS.Service.Services
         {
             throw new NotImplementedException();
         }
+        //public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(string userId, int accountId, bool trackChanges)
+        //    => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderByDescending(op => op. OperationDate).Take(10).ToListAsync();
         public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(string userId, int accountId, bool trackChanges)
-            => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderByDescending(op => op. OperationDate).Take(10).ToListAsync();
+            => await Task.Run(() => RepositoryContext.Operations.Where(op => op.UserId.Equals(userId) && (op.AccountId == accountId))
+            .Include(p => p.Account).AsNoTracking());
 
         public async Task<Operation?> GetOperationById(int operationId)
             => await FindByConditionAsync(op => op.Id.Equals(operationId), false).Result.SingleOrDefaultAsync();

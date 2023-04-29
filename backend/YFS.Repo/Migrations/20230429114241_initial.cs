@@ -118,33 +118,6 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Operations",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TransferOperationId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    TypeOperation = table.Column<int>(type: "int", nullable: false),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    OperationCurrencyId = table.Column<int>(type: "int", nullable: false),
-                    CurrencyAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    OperationAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    OperationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExchangeRate = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    CashbackAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    MCC = table.Column<int>(type: "int", nullable: false),
-                    Description = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: false),
-                    Tag = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Operations", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -321,6 +294,39 @@ namespace YFS.Repo.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Operations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    TransferOperationId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CategoryId = table.Column<int>(type: "int", nullable: false),
+                    TypeOperation = table.Column<int>(type: "int", nullable: false),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    OperationCurrencyId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    OperationAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    OperationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExchangeRate = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    CashbackAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
+                    MCC = table.Column<int>(type: "int", nullable: false),
+                    Description = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: true),
+                    Tag = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Operations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Operations_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.InsertData(
                 table: "AccountTypes",
                 columns: new[] { "TypeId", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
@@ -448,13 +454,15 @@ namespace YFS.Repo.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Operations_AccountId",
+                table: "Operations",
+                column: "AccountId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropTable(
-                name: "Accounts");
-
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
@@ -477,6 +485,12 @@ namespace YFS.Repo.Migrations
                 name: "Operations");
 
             migrationBuilder.DropTable(
+                name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Accounts");
+
+            migrationBuilder.DropTable(
                 name: "AccountGroups");
 
             migrationBuilder.DropTable(
@@ -487,9 +501,6 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.DropTable(
                 name: "Currencies");
-
-            migrationBuilder.DropTable(
-                name: "AspNetRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

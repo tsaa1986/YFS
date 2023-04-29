@@ -14,6 +14,7 @@ namespace YFS.Core.Dtos
         public int TypeOperation { get; set; } //1-income,2-expense,3-transfer
                                                //
         public int AccountId { get; set; }
+        public string? AccountName { get; set; }
         public int OperationCurrencyId { get; set; }
         public decimal CurrencyAmount { get; set; }
         public decimal OperationAmount { get; set; }

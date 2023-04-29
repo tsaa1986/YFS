@@ -48,6 +48,6 @@ namespace YFS.Core.Models
         [Column(TypeName = "decimal(10, 2)")]
         public decimal Balance { get; set; }
 
-        //public List<Operation> Operations { get; set; }
+        public List<Operation> Operations { get; set; } = new List<Operation>();
     }
 }

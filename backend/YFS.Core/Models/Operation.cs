@@ -20,12 +20,15 @@ namespace YFS.Core.Models
         public string UserId { get; set; }
         [Required]
         public int CategoryId { get; set; }
-        //public Category Category { get; set; }
+        //public Category? Category { get; set; }
 
         [Required]
         public int TypeOperation { get; set; } //1-income,2-expense,3-transfer
+
         [Required]
-        public int AccountId { get; set; }
+        public int AccountId { get; set; }  //foreign key
+        public Account Account { get; set; }   //nav property
+        //public string AccountName { get { return Account != null ? Account.Name : ""; } }
 
         //[ForeignKey("Currency")]
         public int OperationCurrencyId { get; set; }

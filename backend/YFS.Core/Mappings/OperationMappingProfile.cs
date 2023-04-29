@@ -9,7 +9,9 @@ namespace YFS.Core.Mappings
         public OperationMappingProfile()
         {
             CreateMap<OperationDto, Operation>();
-            CreateMap<Operation, OperationDto>();
+            CreateMap<Operation, OperationDto>()
+               .ForMember(dest => dest.AccountName, conf => conf.MapFrom(opt => opt.Account.Name)); 
+               
         }
     }
 }
