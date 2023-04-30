@@ -22,7 +22,11 @@ namespace YFS.Repo.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            modelBuilder.Entity<Account>().Property(b => b.Favorites).HasDefaultValueSql("0");
+            modelBuilder.Entity<Account>()
+                //.HasMany(a => a.User).WithOne(a => a.Id)//.HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
+                .Property(b => b.Favorites).HasDefaultValueSql("0");
+        
+            //modelBuilder.Entity<Bank>().
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameRu }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();

@@ -18,20 +18,21 @@ namespace YFS.Core.Models
         [Required]
         [ForeignKey("AspNetUser")]
         public string UserId { get; set; }
+        //public User User { get; set; }
         [Required]
         public int CategoryId { get; set; }
-        //public Category? Category { get; set; }
+        public Category? Category { get; set; }
 
         [Required]
         public int TypeOperation { get; set; } //1-income,2-expense,3-transfer
 
         [Required]
         public int AccountId { get; set; }  //foreign key
-        public Account Account { get; set; }   //nav property
-        //public string AccountName { get { return Account != null ? Account.Name : ""; } }
+        public Account? Account { get; set; }   //nav property
 
-        //[ForeignKey("Currency")]
+        [Required]
         public int OperationCurrencyId { get; set; }
+        public Currency? Currency { get; set; }
 
         [Required]
         [Column(TypeName = "decimal(10,2)")]

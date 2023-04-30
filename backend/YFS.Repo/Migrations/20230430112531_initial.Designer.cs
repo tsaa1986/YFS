@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230429114241_initial")]
+    [Migration("20230430112531_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -664,6 +664,9 @@ namespace YFS.Repo.Migrations
                     b.Property<decimal>("CurrencyAmount")
                         .HasColumnType("decimal(10,2)");
 
+                    b.Property<int?>("CurrencyId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .HasMaxLength(200)
                         .HasColumnType("VARCHAR(200)");
@@ -700,6 +703,10 @@ namespace YFS.Repo.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("AccountId");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CurrencyId");
 
                     b.ToTable("Operations");
                 });
@@ -881,7 +888,21 @@ namespace YFS.Repo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("YFS.Core.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("YFS.Core.Models.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId");
+
                     b.Navigation("Account");
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Currency");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Account", b =>

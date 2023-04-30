@@ -306,6 +306,7 @@ namespace YFS.Repo.Migrations
                     TypeOperation = table.Column<int>(type: "int", nullable: false),
                     AccountId = table.Column<int>(type: "int", nullable: false),
                     OperationCurrencyId = table.Column<int>(type: "int", nullable: false),
+                    CurrencyId = table.Column<int>(type: "int", nullable: true),
                     CurrencyAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     OperationAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     OperationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -325,6 +326,17 @@ namespace YFS.Repo.Migrations
                         principalTable: "Accounts",
                         principalColumn: "AccountId",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Operations_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "CategoryId",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Operations_Currencies_CurrencyId",
+                        column: x => x.CurrencyId,
+                        principalTable: "Currencies",
+                        principalColumn: "CurrencyId");
                 });
 
             migrationBuilder.InsertData(
@@ -459,6 +471,16 @@ namespace YFS.Repo.Migrations
                 name: "IX_Operations_AccountId",
                 table: "Operations",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Operations_CategoryId",
+                table: "Operations",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Operations_CurrencyId",
+                table: "Operations",
+                column: "CurrencyId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -479,9 +501,6 @@ namespace YFS.Repo.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Categories");
-
-            migrationBuilder.DropTable(
                 name: "Operations");
 
             migrationBuilder.DropTable(
@@ -489,6 +508,9 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.DropTable(
                 name: "Accounts");
+
+            migrationBuilder.DropTable(
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "AccountGroups");
