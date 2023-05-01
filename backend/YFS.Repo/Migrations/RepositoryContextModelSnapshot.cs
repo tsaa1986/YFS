@@ -185,7 +185,6 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("Favorites")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("Favorites")
                         .HasDefaultValueSql("0");
 
                     b.Property<string>("IBAN")
@@ -267,11 +266,11 @@ namespace YFS.Repo.Migrations
 
             modelBuilder.Entity("YFS.Core.Models.AccountType", b =>
                 {
-                    b.Property<int>("TypeId")
+                    b.Property<int>("AccountTypeId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TypeId"), 1L, 1);
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountTypeId"), 1L, 1);
 
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
@@ -310,14 +309,14 @@ namespace YFS.Repo.Migrations
                         .HasColumnType("int")
                         .HasDefaultValueSql("0");
 
-                    b.HasKey("TypeId");
+                    b.HasKey("AccountTypeId");
 
                     b.ToTable("AccountTypes");
 
                     b.HasData(
                         new
                         {
-                            TypeId = 1,
+                            AccountTypeId = 1,
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
@@ -327,7 +326,7 @@ namespace YFS.Repo.Migrations
                         },
                         new
                         {
-                            TypeId = 2,
+                            AccountTypeId = 2,
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
@@ -337,7 +336,7 @@ namespace YFS.Repo.Migrations
                         },
                         new
                         {
-                            TypeId = 3,
+                            AccountTypeId = 3,
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
@@ -347,7 +346,7 @@ namespace YFS.Repo.Migrations
                         },
                         new
                         {
-                            TypeId = 4,
+                            AccountTypeId = 4,
                             CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
@@ -841,32 +840,26 @@ namespace YFS.Repo.Migrations
                     b.HasOne("YFS.Core.Models.AccountGroup", null)
                         .WithMany("Accounts")
                         .HasForeignKey("AccountGroupId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.AccountType", "AccountType")
-                        .WithMany()
+                    b.HasOne("YFS.Core.Models.AccountType", null)
+                        .WithMany("Accounts")
                         .HasForeignKey("AccountTypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.Bank", "Bank")
-                        .WithMany()
+                    b.HasOne("YFS.Core.Models.Bank", null)
+                        .WithMany("Accounts")
                         .HasForeignKey("BankId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.Currency", "Currency")
-                        .WithMany()
+                    b.HasOne("YFS.Core.Models.Currency", null)
+                        .WithMany("Accounts")
                         .HasForeignKey("CurrencyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
-
-                    b.Navigation("AccountType");
-
-                    b.Navigation("Bank");
-
-                    b.Navigation("Currency");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
@@ -909,6 +902,21 @@ namespace YFS.Repo.Migrations
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
+                {
+                    b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.AccountType", b =>
+                {
+                    b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Bank", b =>
+                {
+                    b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Currency", b =>
                 {
                     b.Navigation("Accounts");
                 });

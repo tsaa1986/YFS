@@ -13,7 +13,7 @@ namespace YFS.Repo.Migrations
                 name: "AccountTypes",
                 columns: table => new
                 {
-                    TypeId = table.Column<int>(type: "int", nullable: false)
+                    AccountTypeId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     NameUa = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
                     NameRu = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
@@ -26,7 +26,7 @@ namespace YFS.Repo.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AccountTypes", x => x.TypeId);
+                    table.PrimaryKey("PK_AccountTypes", x => x.AccountTypeId);
                 });
 
             migrationBuilder.CreateTable(
@@ -272,26 +272,22 @@ namespace YFS.Repo.Migrations
                         name: "FK_Accounts_AccountGroups_AccountGroupId",
                         column: x => x.AccountGroupId,
                         principalTable: "AccountGroups",
-                        principalColumn: "AccountGroupId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "AccountGroupId");
                     table.ForeignKey(
                         name: "FK_Accounts_AccountTypes_AccountTypeId",
                         column: x => x.AccountTypeId,
                         principalTable: "AccountTypes",
-                        principalColumn: "TypeId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "AccountTypeId");
                     table.ForeignKey(
                         name: "FK_Accounts_Banks_BankId",
                         column: x => x.BankId,
                         principalTable: "Banks",
-                        principalColumn: "BankId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "BankId");
                     table.ForeignKey(
                         name: "FK_Accounts_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
                         principalTable: "Currencies",
-                        principalColumn: "CurrencyId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "CurrencyId");
                 });
 
             migrationBuilder.CreateTable(
@@ -341,7 +337,7 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.InsertData(
                 table: "AccountTypes",
-                columns: new[] { "TypeId", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
+                columns: new[] { "AccountTypeId", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
                     { 1, "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },

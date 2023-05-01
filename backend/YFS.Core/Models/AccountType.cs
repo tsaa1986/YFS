@@ -12,7 +12,7 @@ namespace YFS.Core.Models
     public class AccountType
     {        
         [Key]
-        public int TypeId { get; set; }
+        public int AccountTypeId { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "AccountType's name is a required field")]
@@ -45,6 +45,8 @@ namespace YFS.Core.Models
 
         [Required]
         public DateTime CreatedOn { get; set; }
+
+        public ICollection<Account> Accounts { get; set; } = new List<Account>();
 
     }
 }

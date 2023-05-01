@@ -25,16 +25,21 @@ namespace YFS.Repo.Data
             modelBuilder.Entity<Account>()
                 //.HasMany(a => a.User).WithOne(a => a.Id)//.HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
                 .Property(b => b.Favorites).HasDefaultValueSql("0");
-        
-            //modelBuilder.Entity<Bank>().
+             
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameRu }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();
+            modelBuilder.Entity<AccountGroup>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<Bank>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<AccountType>().Property(b => b.CreatedOn).HasDefaultValueSql("getdate()");
             modelBuilder.Entity<AccountType>().Property(b => b.TypeOrederBy).HasDefaultValueSql("0");
+            modelBuilder.Entity<AccountType>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Currency>().Property(p => p.Id).ValueGeneratedNever();
+            modelBuilder.Entity<Currency>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
+
 
             modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("getdate()");
 

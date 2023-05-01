@@ -25,6 +25,6 @@ namespace YFS.Core.Models
         [MaxLength(100, ErrorMessage = "Maximum length for the GroupName is 100.")]
         public string? Name_en { get; set; }
 
-
+        public ICollection<Account> Accounts { get; set; } = new List<Account>();
     }
 }

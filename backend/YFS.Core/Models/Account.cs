@@ -17,23 +17,16 @@ namespace YFS.Core.Models
         [Column(TypeName = "VARCHAR")]
         [MaxLength(40, ErrorMessage = "Maximum length for the Name is 40 characters.")]
         public string ?IBAN { get; set; }
-
-        [Column("Favorites")]
         public int Favorites { get; set; }
-        //[ForeignKey(nameof(AccountGroup))]
         public int AccountGroupId { get; set; }
 
-        [ForeignKey(nameof(AccountTypeId))]
+        //[ForeignKey(nameof(AccountTypeId))]
+        [Required]
         public int AccountTypeId { get; set; }
-        public AccountType AccountType { get; set; }
-
-        [ForeignKey(nameof(Currency))]
+        [Required]
         public int CurrencyId { get; set; }
-        public Currency? Currency { get; set; }
-
-        [ForeignKey(nameof(Bank))]
+        [Required]
         public int BankId { get; set; }
-        public Bank? Bank { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "Acount's name is a required field")]
