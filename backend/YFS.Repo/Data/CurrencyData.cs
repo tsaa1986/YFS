@@ -10,7 +10,7 @@ namespace YFS.Repo.Data
         {
             builder.HasData(
                 new Currency {
-                    Id = 036,
+                    CurrencyId = 036,
                     ShortNameUs = "AUD",
                     Name_ua = "Австралійський Долар",     
                     Name_ru = "Австралийский доллар",
@@ -18,7 +18,7 @@ namespace YFS.Repo.Data
                 },
                 new Currency
                 {
-                    Id = 980,
+                    CurrencyId = 980,
                     ShortNameUs = "UAH",
                     Name_ua = "Гривня",
                     Name_ru = "Гривня",
@@ -26,7 +26,7 @@ namespace YFS.Repo.Data
                 },
                 new Currency
                 {
-                    Id = 840,
+                    CurrencyId = 840,
                     ShortNameUs = "USD",
                     Name_ua = "Долар США",
                     Name_ru = "Доллар США",
@@ -34,7 +34,7 @@ namespace YFS.Repo.Data
                 },
                 new Currency
                 {
-                    Id = 978,
+                    CurrencyId = 978,
                     ShortNameUs = "EUR",
                     Name_ua = "Євро",
                     Name_ru = "Евро",

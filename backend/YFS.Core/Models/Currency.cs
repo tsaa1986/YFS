@@ -5,8 +5,7 @@ namespace YFS.Core.Models
 {
     public class Currency
     {
-        [Column("CurrencyId")]
-        public int Id { get; set; }
+        public int CurrencyId { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [MaxLength(10, ErrorMessage = "Maximum length for the GroupName is 10.")]

@@ -578,9 +578,8 @@ namespace YFS.Repo.Migrations
 
             modelBuilder.Entity("YFS.Core.Models.Currency", b =>
                 {
-                    b.Property<int>("Id")
-                        .HasColumnType("int")
-                        .HasColumnName("CurrencyId");
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name_en")
                         .HasMaxLength(100)
@@ -599,14 +598,14 @@ namespace YFS.Repo.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("VARCHAR(10)");
 
-                    b.HasKey("Id");
+                    b.HasKey("CurrencyId");
 
                     b.ToTable("Currencies");
 
                     b.HasData(
                         new
                         {
-                            Id = 36,
+                            CurrencyId = 36,
                             Name_en = "Australian dollar",
                             Name_ru = "Австралийский доллар",
                             Name_ua = "Австралійський Долар",
@@ -614,7 +613,7 @@ namespace YFS.Repo.Migrations
                         },
                         new
                         {
-                            Id = 980,
+                            CurrencyId = 980,
                             Name_en = "Hryvnia",
                             Name_ru = "Гривня",
                             Name_ua = "Гривня",
@@ -622,7 +621,7 @@ namespace YFS.Repo.Migrations
                         },
                         new
                         {
-                            Id = 840,
+                            CurrencyId = 840,
                             Name_en = "US Dollar",
                             Name_ru = "Доллар США",
                             Name_ua = "Долар США",
@@ -630,7 +629,7 @@ namespace YFS.Repo.Migrations
                         },
                         new
                         {
-                            Id = 978,
+                            CurrencyId = 978,
                             Name_en = "Euro",
                             Name_ru = "Евро",
                             Name_ua = "Євро",
@@ -849,17 +848,21 @@ namespace YFS.Repo.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.Bank", null)
+                    b.HasOne("YFS.Core.Models.Bank", "Bank")
                         .WithMany("Accounts")
                         .HasForeignKey("BankId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.Currency", null)
+                    b.HasOne("YFS.Core.Models.Currency", "Currency")
                         .WithMany("Accounts")
                         .HasForeignKey("CurrencyId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.Navigation("Bank");
+
+                    b.Navigation("Currency");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>

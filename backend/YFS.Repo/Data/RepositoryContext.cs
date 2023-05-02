@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Migrations;
 using YFS.Core.Models;
 
 namespace YFS.Repo.Data
@@ -31,21 +32,19 @@ namespace YFS.Repo.Data
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<Bank>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Bank>().HasMany(ac => ac.Accounts).WithOne(b => b.Bank).OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<AccountType>().Property(b => b.CreatedOn).HasDefaultValueSql("getdate()");
-            modelBuilder.Entity<AccountType>().Property(b => b.TypeOrederBy).HasDefaultValueSql("0");
+            modelBuilder.Entity<AccountType>().Property(at => at.CreatedOn).HasDefaultValueSql("getdate()");
+            modelBuilder.Entity<AccountType>().Property(at => at.TypeOrederBy).HasDefaultValueSql("0");
             modelBuilder.Entity<AccountType>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
-
-            modelBuilder.Entity<Currency>().Property(p => p.Id).ValueGeneratedNever();
-            modelBuilder.Entity<Currency>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
-
+            modelBuilder.Entity<Currency>().HasMany(a => a.Accounts).WithOne(c => c.Currency).OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Currency>().Property(c => c.CurrencyId).ValueGeneratedNever();
 
             modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("getdate()");
 
             //modelBuilder.ApplyConfiguration(new UserData());
-            modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CurrencyData());
+            modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CategoryData());
             modelBuilder.ApplyConfiguration(new BankData());
 
