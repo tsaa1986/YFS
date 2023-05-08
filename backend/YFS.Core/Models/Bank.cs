@@ -13,6 +13,6 @@ namespace YFS.Core.Models
         [Required(ErrorMessage = "Acount's name is a required field")]
         [MaxLength(255, ErrorMessage = "Maximum length for the Name is 255 characters.")]
         public string Name { get; set; }
-        public ICollection<Account> Accounts { get; set; } = new List<Account>();
+        public ICollection<Account> Accounts { get; set; }
     }
 }

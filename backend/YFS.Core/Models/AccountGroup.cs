@@ -10,7 +10,8 @@ namespace YFS.Core.Models
 
         [Required]
         [ForeignKey("AspNetUser")]
-        public string? UserId { get; set; }
+        public string UserId { get; set; }
+        public User User { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [MaxLength(100, ErrorMessage = "Maximum length for the GroupName is 100.")]

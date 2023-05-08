@@ -11,6 +11,7 @@ namespace YFS.Core.Models
 
         [Required]
         public string UserId { get; set; }
+        public User User { get; set; }
         [Required]
         public int AccountStatus { get; set; } //0-disabled,1-enabled
 
@@ -19,19 +20,13 @@ namespace YFS.Core.Models
         public string ?IBAN { get; set; }
         public int Favorites { get; set; }
         public int AccountGroupId { get; set; }
-
-        //[ForeignKey(nameof(AccountTypeId))]
-       // [Required]
         public int AccountTypeId { get; set; }
-        //public AccountType? AccountType { get; set; }
 
         [Required]
         public int CurrencyId { get; set; }
         public Currency? Currency { get; set; }
-
-        [Required]
         public int BankId { get; set; }
-        public Bank Bank { get; set; }
+        public Bank? Bank { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "Acount's name is a required field")]

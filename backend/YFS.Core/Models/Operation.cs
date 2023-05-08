@@ -16,7 +16,6 @@ namespace YFS.Core.Models
         [Required]
         public int TransferOperationId { get; set; } //for transfer operation between accounts
         [Required]
-        [ForeignKey("AspNetUser")]
         public string UserId { get; set; }
         //public User User { get; set; }
         [Required]

@@ -252,7 +252,7 @@ namespace YFS.Repo.Migrations
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AccountStatus = table.Column<int>(type: "int", nullable: false),
                     IBAN = table.Column<string>(type: "VARCHAR(40)", maxLength: 40, nullable: true),
                     Favorites = table.Column<int>(type: "int", nullable: false, defaultValueSql: "0"),
@@ -278,6 +278,12 @@ namespace YFS.Repo.Migrations
                         column: x => x.AccountTypeId,
                         principalTable: "AccountTypes",
                         principalColumn: "AccountTypeId");
+                    table.ForeignKey(
+                        name: "FK_Accounts_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Accounts_Banks_BankId",
                         column: x => x.BankId,
@@ -423,6 +429,12 @@ namespace YFS.Repo.Migrations
                 name: "IX_Accounts_CurrencyId",
                 table: "Accounts",
                 column: "CurrencyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Accounts_UserId",
+                table: "Accounts",
+                column: "UserId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

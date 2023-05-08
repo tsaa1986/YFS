@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230502052202_initial")]
+    [Migration("20230502063605_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -207,7 +207,7 @@ namespace YFS.Repo.Migrations
 
                     b.Property<string>("UserId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
@@ -218,6 +218,9 @@ namespace YFS.Repo.Migrations
                     b.HasIndex("BankId");
 
                     b.HasIndex("CurrencyId");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
 
                     b.ToTable("Accounts");
                 });
@@ -862,18 +865,28 @@ namespace YFS.Repo.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("YFS.Core.Models.User", "User")
+                        .WithOne()
+                        .HasForeignKey("YFS.Core.Models.Account", "UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Bank");
 
                     b.Navigation("Currency");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
                 {
-                    b.HasOne("YFS.Core.Models.User", null)
+                    b.HasOne("YFS.Core.Models.User", "User")
                         .WithMany("AccountsGroup")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Operation", b =>
