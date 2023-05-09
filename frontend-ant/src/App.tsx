@@ -19,6 +19,7 @@ import { BudgetLayout } from './components/Budget/BudgetLayout';
 import { DepositsLayout } from './components/Deposits/DepositsLayout';
 import { AccountsLayout } from './components/Accounts/AccountsLayout';
 import { HomeLayout } from './components/Home/HomeLayout';
+import { WelcomeLayout } from './components/Welcome/WelcomeLayout';
 //import { Header }  from './components/Header/Header';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -42,7 +43,7 @@ function getItem(
   }
 
 const items: MenuItem[] = [
-  getItem("/", <Link to={"/"}>{'Home Page'}</Link>, '1', <PieChartOutlined />),
+  getItem("/", <Link to={"/home"}>{'Home Page'}</Link>, '1', <PieChartOutlined />),
   getItem("/accounts", <Link to={"/accounts"}>{'Accounts'}</Link>, '2', <DesktopOutlined />),
   getItem("/deposits",<Link to={"/deposits"}>{'Deposits'}</Link>, '3', <DesktopOutlined />),
   getItem("/budget",<Link to={"/budget"}>{'Budget'}</Link>, '4', <UserOutlined />, ),
@@ -89,6 +90,7 @@ const App: React.FC = () => {
       setisLoggedIn(true)
     })
   });
+
   const handleLogin = () => 
     setUser( () => { 
       let res = authAPI.me()
@@ -108,15 +110,15 @@ const App: React.FC = () => {
     //console.log('effect nav=' + isLoggedIn + ' key:' + selectedKey  )
       if(selectedKey === '/') {
           if (isLoggedIn) {
-            navigate("/");
+            navigate("/home");
           } else {
-            navigate("/login");
+            navigate("/");
             return
           }
       } 
       if(selectedKey === '/login'){
         if (isLoggedIn){
-          navigate("/")
+          navigate("/home")
           return
         }
       }
@@ -133,12 +135,13 @@ const App: React.FC = () => {
 
 {/* переделать при логине устанавливать пользователя*/}
     <Routes>
+    <Route path="/" element={<WelcomeLayout />}/>
       <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
       <Route path="/register" element={<Register />}/>
 
       <Route element={
         <ProtectedRoute isAllowed={ isLoggedIn } />}>
-          <Route path="/" element={<MainLayout children={HomeLayout} />} />
+          <Route path="/home" element={<MainLayout children={HomeLayout} />} />
           <Route path="/accounts" element={<MainLayout children={AccountsLayout} />} />
           <Route path="/budget" element={<MainLayout children={BudgetLayout} />} />
           <Route path="/reports" element={<MainLayout children={ReportsLayout} />} />
@@ -154,9 +157,9 @@ const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
 
   return(
     <Layout style={{ minHeight: '100vh' }}>
-        <SideMenu />
+      <SideMenu />
       <Layout className="site-layout">
-        <Header style={{ padding: 0, background: "colorBgContainer" }} />
+        {<Header style={{ padding: 0, background: "colorBgContainer" }} />}
         <Content style={{ margin: "24px 16px",
               padding: 24,
               background: "#fff",
@@ -165,7 +168,7 @@ const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
         </Content>
 
         <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ton@</Footer>
-        </Layout>
+      </Layout>
     </Layout>
   )
 }

@@ -29,7 +29,7 @@ export const Login: React.FC<any> = ({setisLoggedIn}) => {
             if (res != false) {
                 console.log(res)
                 setisLoggedIn(true);
-                navigate("/");
+                navigate("/home");
             } else console.log(res);
         }
     )
@@ -41,7 +41,7 @@ const logInDemoUser = () => {
         res => { 
             if (res != false) {
                 setisLoggedIn(true);
-                navigate("/");
+                navigate("/home");
             } 
         }
     )
@@ -52,7 +52,7 @@ const handlePasswordReminder = (values:any) => {
 }
 
 return( 
-    <Layout>
+<Layout>
 <Card className="login-container">
     {
         state.display === "login" &&
@@ -124,10 +124,7 @@ return(
                 </div>
             </Form>          
         </div>
-
     }
-
-
     </Card>
 </Layout>
 );
