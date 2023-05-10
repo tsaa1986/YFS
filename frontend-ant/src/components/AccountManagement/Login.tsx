@@ -56,7 +56,7 @@ const handlePasswordReminder = (values:any) => {
 
 return( 
 <Layout>
-<HeaderLayout />
+<HeaderLayout isLoggedIn={false}/>
 <Card className="login-container">
     {
         state.display === "login" &&

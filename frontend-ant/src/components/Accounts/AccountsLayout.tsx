@@ -103,7 +103,7 @@ export const AccountsTab: React.FC = () => {
         if (accData.data[0] !== null)
           {
             newActiveKey = accData.data[0].accountGroupId.toString();
-            accData.data.map( (m:AccountGroupType) => {
+            accData.data.map( (m: AccountGroupType) => {
               newPanes.push({ label: m.accountGroupNameEn, 
                 children: <TabDetails key={m.accountGroupNameEn} accountGroupData={m} openAccounts={openAccounts} />, 
                 key: m.accountGroupId.toString(), closable: false });

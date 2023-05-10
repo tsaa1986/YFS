@@ -19,10 +19,11 @@ import { BudgetLayout } from './components/Budget/BudgetLayout';
 import { DepositsLayout } from './components/Deposits/DepositsLayout';
 import { AccountsLayout } from './components/Accounts/AccountsLayout';
 import { HomeLayout } from './components/Home/HomeLayout';
-import { WelcomeLayout } from './components/Welcome/WelcomeLayout';
-//import { Header }  from './components/Header/Header';
+import { Header } from 'antd/es/layout/layout';
+import { HeaderLayout } from './components/Header/HeaderLayout';
 
-const { Header, Content, Footer, Sider } = Layout;
+
+const { Content, Footer, Sider } = Layout;
 
 type MenuItem = Required<MenuProps>['items'][number];
 
@@ -159,7 +160,8 @@ const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
     <Layout style={{ minHeight: '100vh' }}>
       <SideMenu />
       <Layout className="site-layout">
-        {<Header style={{ padding: 0, background: "colorBgContainer" }} />}
+        <HeaderLayout isLoggedIn={true}/>
+        {/*<Header style={{ padding: 0, background: "colorBgContainer" }} />*/}
         <Content style={{ margin: "24px 16px",
               padding: 24,
               background: "#fff",
@@ -167,7 +169,7 @@ const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
                 <Component/>
         </Content>
 
-        <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by Ton@</Footer>
+        <Footer style={{ textAlign: 'center' }}>Ant Design ©2023 Created by <span style={{color: "red"}}>Ton@</span></Footer>
       </Layout>
     </Layout>
   )
