@@ -6,8 +6,8 @@ import { Header } from "antd/es/layout/layout";
 export const WelcomeLayout: React.FC = () => {
     return (
         <Layout>
-            <Header title="Your Financial Space" style={{ padding: 0, background: "colorBgContainer" }} />
-            <h4> Welcome Layout </h4>
+            <Header style={{ padding: 0, background: "colorBgContainer" }} />
+            <h4 > Welcome to Your Financial Space </h4>
         </Layout>
     );
 }

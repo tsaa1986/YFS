@@ -3,6 +3,9 @@ import { NavLink,redirect,useNavigate} from 'react-router-dom';
 import { Layout, Form, Button, Input, Typography, Alert, Card } from "antd";
 import { authAPI } from "../../api/api";
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Header } from "antd/es/layout/layout";
+import { WelcomeLayout } from "../Welcome/WelcomeLayout";
+import { HeaderLayout } from "../Header/HeaderLayout";
 
 const { Title } = Typography;
 
@@ -53,6 +56,7 @@ const handlePasswordReminder = (values:any) => {
 
 return( 
 <Layout>
+<HeaderLayout />
 <Card className="login-container">
     {
         state.display === "login" &&

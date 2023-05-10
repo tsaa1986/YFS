@@ -135,7 +135,7 @@ const App: React.FC = () => {
 
 {/* переделать при логине устанавливать пользователя*/}
     <Routes>
-    <Route path="/" element={<WelcomeLayout />}/>
+    <Route path="/" element={<Login setisLoggedIn={setisLoggedIn} />}/>
       <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
       <Route path="/register" element={<Register />}/>
 
