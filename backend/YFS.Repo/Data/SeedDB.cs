@@ -33,7 +33,7 @@ namespace YFS.Repo.Data
                 foreach (AccountGroup accGroup in _accountGroups)
                 {
                     if (accGroup.AccountGroupNameEn == "Cash") {
-                        accounts.Add(new Account { UserId = _userid, AccountStatus=1, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
+                         accounts.Add(new Account { UserId = _userid, AccountStatus=1, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
                             CurrencyId = 980, BankId = 1, Name = "Wallet UAH", OpeningDate = new DateTime(),
                             Note = "wallet uah", Balance = 0 });
                         accounts.Add(new Account
@@ -188,11 +188,12 @@ namespace YFS.Repo.Data
                 //create default accounts
                 if (accounts.Count == 0)
                 {
-                    foreach (Account account in InitializeAccountsDefault(demoUser.Id, accountGroupUser))
+                    List<Account> la = InitializeAccountsDefault(demoUser.Id, accountGroupUser);
+                    foreach (Account account in la)
                     {
                         await context.Accounts.AddAsync(account);
                     }
-                    context.SaveChangesAsync();
+                    await context.SaveChangesAsync();
                 }
 
             }
