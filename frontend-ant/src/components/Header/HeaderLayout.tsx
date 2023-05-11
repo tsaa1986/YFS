@@ -6,6 +6,7 @@ import { MailOutlined, LogoutOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined } from "@ant-design/icons";
 import { Dispatch, SetStateAction, useState } from 'react';
+import { authAPI } from '../../api/api';
 //import { ReactComponent as Img } from "./images/user.svg";
 
 type HeaderTypeProps = {
@@ -17,10 +18,16 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
     const [collapsed, setCollapsed] = useState<Boolean>(false)
     const [drawerVisible, setDrawerVisible] = useState<Boolean>(false)
 
+    const handleLogout = () => {
+        authAPI.logOut();
+        //setUser();
+        //setisLoggedIn(false);
+    }
+
     let userMenu = (
         <Menu>
             <Menu.Item>         
-                <a className="dropdown-item text-muted" href="/" /*onClick={userSignOut}*/>      
+                <a className="dropdown-item text-muted" href="/" onClick={handleLogout}>      
                     <LogoutOutlined className="mr-1" />
                     Logout
                 </a>
@@ -28,6 +35,8 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
         </Menu>
     )
     let thumbnail = <Avatar size={50} icon={<UserOutlined />} />
+
+
     
     return(
     <Layout>
@@ -44,6 +53,14 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
                      <NavLink to={"/"} className="navbar-logo-container">
                         Logo Here
                      </NavLink>
+                </Col>
+                <Col>   
+                   {!isLoggedIn && <NavLink style={{
+                        color:"red"                        
+                        }} to={"/login"} className="navbar-logo-container">
+                        Login to
+                     </NavLink>
+                    }
                 </Col>
 
                 <Col flex={2} style={{color: "red", fontSize: "26px", fontFamily: "cursive"}}>
@@ -79,8 +96,7 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
                     </div>
                 }
 
-            </Row>
-        
+            </Row>        
         </HeaderAntd>
     </Layout>
     )

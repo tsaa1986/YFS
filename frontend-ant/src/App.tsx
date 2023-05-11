@@ -19,8 +19,8 @@ import { BudgetLayout } from './components/Budget/BudgetLayout';
 import { DepositsLayout } from './components/Deposits/DepositsLayout';
 import { AccountsLayout } from './components/Accounts/AccountsLayout';
 import { HomeLayout } from './components/Home/HomeLayout';
-import { Header } from 'antd/es/layout/layout';
 import { HeaderLayout } from './components/Header/HeaderLayout';
+import { WelcomeLayout } from './components/Welcome/WelcomeLayout';
 
 
 const { Content, Footer, Sider } = Layout;
@@ -100,7 +100,11 @@ const App: React.FC = () => {
         else return res
     });
 
-  const handleLogout = () => setUser();
+  const handleLogout = () => {
+    authAPI.logOut();
+    //setUser();
+    setisLoggedIn(false);
+  }
 
   console.log('loggedin: ' + isLoggedIn)
   console.log('RENDER')
@@ -136,8 +140,8 @@ const App: React.FC = () => {
 
 {/* переделать при логине устанавливать пользователя*/}
     <Routes>
-    <Route path="/" element={<Login setisLoggedIn={setisLoggedIn} />}/>
-      <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} />}/>
+    <Route path="/" element={<WelcomeLayout />} /> {/*//<Login setisLoggedIn={setisLoggedIn} />}/>*/}
+      <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} loginDisplay="login"/>}/>
       <Route path="/register" element={<Register />}/>
 
       <Route element={

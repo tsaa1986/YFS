@@ -3,7 +3,7 @@ import Cookies from "universal-cookie/es6/Cookies";
 
 const cookie = new Cookies();
 
-class CookieSercise {
+class CookieServise {
     get(key: string) {
         let jwt = cookie.get(key);
         if (jwt === undefined)
@@ -20,4 +20,4 @@ class CookieSercise {
     }
 }
 
-export default new CookieSercise();
+export default new CookieServise();

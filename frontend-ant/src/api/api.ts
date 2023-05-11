@@ -328,8 +328,8 @@ export const authAPI = {
                 }
             )
         )
+    },
+    logOut () {
+        return CookieService.remove('jwtAccess_token');//instan.delete(`Authentication/sign-in`)
     }
-    /*logout () {
-        return instan.delete(`Authentication/sign-in`)
-    }*/
 }

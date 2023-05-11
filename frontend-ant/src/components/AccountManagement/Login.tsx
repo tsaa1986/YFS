@@ -1,11 +1,10 @@
-import React, {useState, useEffect} from "react";
-import { NavLink,redirect,useNavigate} from 'react-router-dom';
+import React, {useState, useEffect, Dispatch} from "react";
+import { NavLink,redirect, useNavigate} from 'react-router-dom';
 import { Layout, Form, Button, Input, Typography, Alert, Card } from "antd";
 import { authAPI } from "../../api/api";
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
-import { Header } from "antd/es/layout/layout";
-import { WelcomeLayout } from "../Welcome/WelcomeLayout";
 import { HeaderLayout } from "../Header/HeaderLayout";
+
 
 const { Title } = Typography;
 
@@ -20,9 +19,23 @@ type handleFinishTypeProps = {
     password: "string"
 }
 
-export const Login: React.FC<any> = ({setisLoggedIn}) => {
+type LoginTypeProps = {
+    loginDisplay: string,
+    setisLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+}
+
+export const Login: React.FC<LoginTypeProps> = ({setisLoggedIn}, {loginDisplay}) => {
  const navigate = useNavigate();
  const [state, setState] = useState<StateTypeProps>({showError: false, errorMsg: "", display: "login"})
+
+useEffect( ()=> {
+      let newState: StateTypeProps;
+        if (state.display !== null)
+        {
+            newState = {...state, display: loginDisplay}
+            //setState(newState)
+        }
+    }, [loginDisplay])
 
  const handleFinish = (values: handleFinishTypeProps) => {        
     //this.loginUser(values);
