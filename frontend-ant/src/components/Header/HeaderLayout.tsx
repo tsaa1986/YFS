@@ -10,7 +10,7 @@ import { authAPI } from '../../api/api';
 //import { ReactComponent as Img } from "./images/user.svg";
 
 type HeaderTypeProps = {
-    isLoggedIn: Boolean, 
+    isLoggedIn: Boolean
     //setisLoggedIn: Dispatch<SetStateAction<any>>
 }
 
@@ -36,16 +36,15 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
     )
     let thumbnail = <Avatar size={50} icon={<UserOutlined />} />
 
-
-    
+  
     return(
-    <Layout>
         <HeaderAntd 
             style={{           
                 padding: 0, 
                 height: 50,
                 paddingBottom: 0,
                 width: "100%" }}> {/*//background: "colorBgContainer" }} />*/}
+                
             <Row
                 align="middle"
             >                
@@ -98,6 +97,5 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
 
             </Row>        
         </HeaderAntd>
-    </Layout>
     )
 }

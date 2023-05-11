@@ -7,8 +7,6 @@ import { Login } from "../AccountManagement/Login";
 
 export const WelcomeLayout: React.FC = () => {
     return (
-        <Layout>
-            <HeaderLayout isLoggedIn={false}/>     
-        </Layout>
+       <HeaderLayout isLoggedIn={false}/>     
     );
 }
