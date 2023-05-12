@@ -41,14 +41,17 @@ type Workplace = Person[]*/
 
 const initialItemsAccountsGroup: initialItemsType = [
     { label: 'Favorites', 
-    children:  <TabDetails key={'0'} accountGroupData={ {accountGroupId:0,   
-      userId: '',
-      accountGroupNameRu:	'',
-      accountGroupNameEn:	'',
-      accountGroupNameUa:	'',
-      groupOrederBy:	0}}
-      openAccounts={undefined}
-      />,//<TabDetails accountData={null}/>, //() => {return(<div>dvi</div>)},//'Content of Tab 1', 
+      children: <TabDetails key={'0'} 
+                          accountGroupData={ {accountGroupId:0,   
+                                                userId: '',
+                                                accountGroupNameRu:	'',
+                                                accountGroupNameEn:	'',
+                                                accountGroupNameUa:	'',
+                                                groupOrederBy:	0} }
+                          activeTabKey={"0"}
+                          openAccounts={undefined}
+                          setOpenAccounts={undefined}
+      />,
     key: '0', 
     closable: false,
     }
@@ -61,58 +64,75 @@ export const AccountsTab: React.FC = () => {
   //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
   //const newTabIndex = useRef(0);
   const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>();
-  const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
-  /*const [testAcc, setTetAcc] = useState<accountType[]>( () => {
-    return account.getListOpenAccountByUserId().then(res => {if (res != undefined) {return res } else { return [] }})
-  })*/
+  const [openAccounts, setOpenAccounts] = useState<accountType[]>([])
+
+
+  useEffect(() => {
+    account.getListOpenAccountByUserId().then(res => {
+          if (res != undefined)
+            {                
+              //debugger
+              setOpenAccounts(res);
+            }
+            //return []
+     })
+  }, [])
 
   useEffect(()=>{
       console.log('SYNC_EFFECT_TABS');      
       getAccountGroups();
   }, [])
 
-  useEffect(() => {
-      account.getListOpenAccountByUserId().then(res => {
-            if (res != undefined)
-              {                
-                setOpenAccounts(res);
-              }
-              //return []
-       })
-  }, [])
+  useEffect(()=>{
+    console.log("change acive tab", activeTabKey)
+  }, [activeTabKey])
+
 
   useEffect(()=> console.log('useeffect openaccout', openAccounts), [openAccounts])
 
-    const onChange = (newActiveKey: string) => {
+  const onChangeActiveTab = (newActiveKey: string) => {
        setActiveTabKey(newActiveKey);
-     };
-    const addTabAccountGroup = (accountGroupItem: AccountGroupType) => {
+    };
+
+  const addTabAccountGroup = (accountGroupItem: AccountGroupType) => {
         const newActiveKey = accountGroupItem.accountGroupId.toString()//`newTab${newTabIndex.current++}`;
         const newPanes = [...itemsAccountsGroup];
         newPanes.push({ label: accountGroupItem.accountGroupNameEn, 
-          children: <TabDetails key={accountGroupItem.accountGroupNameEn} accountGroupData={accountGroupItem} openAccounts={openAccounts}/>, 
-          key: accountGroupItem.accountGroupId.toString(), 
+          children: <TabDetails key={accountGroupItem.accountGroupNameEn} 
+                                accountGroupData={accountGroupItem} 
+                                activeTabKey={activeTabKey}
+                                openAccounts={openAccounts} 
+                                setOpenAccounts={setOpenAccounts}
+                                />, 
+          key: accountGroupItem.accountGroupId.toString(),
           closable: false });
         setItems(newPanes);
         setActiveTabKey(newActiveKey);
     };
-    const buildTabAccountsGroup = (accData:any) => {
+  const buildTabAccountsGroup = (accData:any) => {
         let newActiveKey = '';//`newTab${newTabIndex.current++}`;
-        const newPanes: any = [...initialItemsAccountsGroup]//[...itemsAccountsGroup];
+        //if (initialItemsAccountsGroup[0].key === '0')
+            
+        const newPanes: any = []//[...initialItemsAccountsGroup]//[...itemsAccountsGroup];
         //debugger
         if (accData.data[0] !== null)
           {
             newActiveKey = accData.data[0].accountGroupId.toString();
             accData.data.map( (m: AccountGroupType) => {
               newPanes.push({ label: m.accountGroupNameEn, 
-                children: <TabDetails key={m.accountGroupNameEn} accountGroupData={m} openAccounts={openAccounts} />, 
+                children: <TabDetails key={m.accountGroupNameEn} 
+                                      accountGroupData={m} 
+                                      openAccounts={openAccounts} 
+                                      activeTabKey={activeTabKey}
+                                      setOpenAccounts={setOpenAccounts}
+                                      />, 
                 key: m.accountGroupId.toString(), closable: false });
             })
         } //);
         setItems(newPanes);
         setActiveTabKey(newActiveKey);
 }
-const remove = (targetKey: TargetKey) => {
+  const remove = (targetKey: TargetKey) => {
     let newActiveKey = activeTabKey;
     let lastIndex = -1;
     itemsAccountsGroup.forEach((item, i) => {
@@ -132,7 +152,8 @@ const newPanes = itemsAccountsGroup.filter((item) => item.key !== targetKey);
     setItems(newPanes);
     setActiveTabKey(newActiveKey);
 };
-const onEdit = (
+
+  const onEdit = (
     targetKey: React.MouseEvent | React.KeyboardEvent | string,
     action: 'add' | 'remove',
   ) => {
@@ -143,10 +164,11 @@ const onEdit = (
       remove(targetKey);
     }
 };
-const getAccountGroups = () => {
+  const getAccountGroups = () => {
     accountGroups.get().then(
         res => {
             if (res != null ) {
+              //debugger
               buildTabAccountsGroup(res)
         }});
 }
@@ -241,11 +263,12 @@ return(<div>
         <div className="accountsTab">
         <Tabs 
             type="editable-card"
-            onChange={onChange}
+            onChange={onChangeActiveTab}
             activeKey={activeTabKey}
             onEdit={onEdit}
             tabBarExtraContent={AccountTabButton}
             items={itemsAccountsGroup}/>
+
         <AddAccountGroupForm 
             visible={visibleAddGroupForm}
             onCancel={handleCancelAddGroupForm}

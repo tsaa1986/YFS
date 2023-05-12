@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Divider } from "antd";
-import { account, AccountGroupType, accountListType, accountType, IOperation } from '../../api/api';
+import { account, accountGroups, AccountGroupType, accountListType, accountType, IOperation } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
@@ -11,6 +11,9 @@ const { Panel } = Collapse;
 
 type accountListPropsType = {
   accountGroupData: AccountGroupType | null
+  openAccounts: accountType[] | undefined
+  setOpenAccounts: React.Dispatch<React.SetStateAction<accountType[]>> | undefined
+  activeTabKey: string
   //setSelectedAccount: Dispatch<SetStateAction<DataType>>;
   //accountListSelectedTab: accountListType
   //onChange: (account: DataType) => void
@@ -107,11 +110,30 @@ const columns: ColumnsType<accountType> = [
             }            
       }
     }  
+
+    const fetchAccountListSelectedTabNew = () => {
+      if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
+        let tabId = props.accountGroupData.accountGroupId;
+        let accountsFiltered: accountType[] = [];
+        //debugger
+        if (props.openAccounts !== undefined && props.openAccounts.length > 0)  {          
+          accountsFiltered = props.openAccounts.filter( acc => {
+            return acc.accountGroupId === tabId})
+          setAccountListSelectedTab(accountsFiltered);
+          console.log("filtered", accountsFiltered);
+        }
+      
+      }
+    }
     
     useEffect(()=>{
       //debugger
-      fetchAccountListSelectedTab();
-    }, [props.accountGroupData?.accountGroupId])
+
+      //fetchAccountListSelectedTab();
+
+      fetchAccountListSelectedTabNew();
+      console.log("test", props.accountGroupData)
+    }, [props.accountGroupData])//[props.accountGroupData?.accountGroupId])
 
     useEffect(()=> {
       console.log(selectedDateOption)

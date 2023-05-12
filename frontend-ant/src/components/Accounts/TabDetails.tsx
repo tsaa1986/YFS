@@ -13,22 +13,26 @@ type tabDetailsPropsType = {
 
 interface tabDetailsPropsType1 {
     accountGroupData: AccountGroupType | null
+    activeTabKey: string
     openAccounts: accountType[] | undefined
+    setOpenAccounts: React.Dispatch<React.SetStateAction<accountType[]>> | undefined
 }
 
-const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData, openAccounts}) => {
-    const [activeTabKey, setActiveTabKey] = useState('0')
-    const [selectedAccount, setSelectedAccount] = useState();
+const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData, activeTabKey , openAccounts, setOpenAccounts}) => {
 
     useEffect(()=>{
       console.log('tabdetails: ', accountGroupData)
-      console.log('tabdetails: ', openAccounts)
+      console.log('tabdetails: openAccounts', openAccounts)
+      console.log('tabdetails: activetabkey change', activeTabKey)
       //setActiveTabKey('')
-    },[accountGroupData])
+    },[activeTabKey])
   
     return (           
         <div>
-            <AccountsList accountGroupData={accountGroupData}/>  
+            <AccountsList   accountGroupData= {accountGroupData} 
+                            openAccounts= {openAccounts} 
+                            setOpenAccounts={setOpenAccounts} 
+                            activeTabKey= {activeTabKey} />  
         </div>
     );
 }
