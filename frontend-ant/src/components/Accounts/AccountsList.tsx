@@ -89,36 +89,21 @@ const columns: ColumnsType<accountType> = [
     const [openOperationForm, setOpenOperationForm] = useState<boolean>(false);
     const [addedOperation, setAddedOperation] = useState<IOperation[] | undefined>();
 
-    const fetchAccountListSelectedTab = () => {
-        if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
-            let tabId = props.accountGroupData.accountGroupId.toString();
-            let tempAcc: accountListType
-
-            if (props.accountGroupData.accountGroupId.toString() =='0') {
-              account.getListByFavorites().then(
-                res => { console.log(res)
-                  if (res != null && res != undefined)
-                    setAccountListSelectedTab(res)
-                  })
-            }
-            else {
-              account.getListByGroupId(tabId).then(
-                res => { //console.log(res)
-                  if (res != null && res != undefined)
-                    setAccountListSelectedTab(res)
-                  })
-            }            
-      }
-    }  
-
     const fetchAccountListSelectedTabNew = () => {
       if ((props.accountGroupData !== null) && (props.accountGroupData !== undefined)){
         let tabId = props.accountGroupData.accountGroupId;
         let accountsFiltered: accountType[] = [];
         //debugger
         if (props.openAccounts !== undefined && props.openAccounts.length > 0)  {          
+          if (tabId === 0) {
+            accountsFiltered = props.openAccounts.filter( acc => {
+              return acc.favorites === 1})
+          }
+          else {
           accountsFiltered = props.openAccounts.filter( acc => {
             return acc.accountGroupId === tabId})
+          }
+          
           setAccountListSelectedTab(accountsFiltered);
           console.log("filtered", accountsFiltered);
         }
@@ -127,13 +112,9 @@ const columns: ColumnsType<accountType> = [
     }
     
     useEffect(()=>{
-      //debugger
-
-      //fetchAccountListSelectedTab();
-
       fetchAccountListSelectedTabNew();
       console.log("test", props.accountGroupData)
-    }, [props.accountGroupData])//[props.accountGroupData?.accountGroupId])
+    }, [props.accountGroupData])
 
     useEffect(()=> {
       console.log(selectedDateOption)

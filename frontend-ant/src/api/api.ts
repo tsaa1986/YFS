@@ -22,7 +22,7 @@ const instance = axios.create({
     headers: {
         'Authorization': "JWT_TOKEN",
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': 'origin-list',
+        'Access-Control-Allow-Origin': '*',
       },
 });
 const instancePrivate = axios.create({
@@ -306,6 +306,10 @@ export const authAPI = {
                 if (response.status === 200){
                     saveJwtCookie(token); 
                     console.log("function get saved token from cookie:" + CookieService.get('jwtAccess_token'));
+                    instancePrivate.interceptors.request.use ( config => {
+                        config.headers.Authorization = `Bearer ${token}`;
+                        return config;
+                    });
                     return token;
                     }
                     else return false;
