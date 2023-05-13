@@ -39,7 +39,13 @@ interface Person {
 }
 type Workplace = Person[]*/ 
 
-const initialItemsAccountsGroup: initialItemsType = [
+export const AccountsTab: React.FC = () => { 
+  const [activeTabKey, setActiveTabKey] = useState('0');
+  //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
+  //const newTabIndex = useRef(0);
+  const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>();
+  const [openAccounts, setOpenAccounts] = useState<accountType[]>([])
+  const initialItemsAccountsGroup: initialItemsType = [
     { label: 'Favorites', 
       children: <TabDetails key={'0'} 
                           accountGroupData={ {accountGroupId:0,   
@@ -49,23 +55,14 @@ const initialItemsAccountsGroup: initialItemsType = [
                                                 accountGroupNameUa:	'',
                                                 groupOrederBy:	0} }
                           activeTabKey={"0"}
-                          openAccounts={undefined}
-                          setOpenAccounts={undefined}
+                          openAccounts={openAccounts}
+                          setOpenAccounts={setOpenAccounts}
       />,
     key: '0', 
     closable: false,
     }
   ];
-
-
-export const AccountsTab: React.FC = () => { 
-  const [activeTabKey, setActiveTabKey] = useState('0');
-  const [itemsAccountsGroup, setItems] = useState<initialItemsType>([]);//(initialItemsAccountsGroup);
-  //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
-  //const newTabIndex = useRef(0);
-  const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>();
-  const [openAccounts, setOpenAccounts] = useState<accountType[]>([])
-
+  const [itemsAccountsGroup, setItems] = useState<initialItemsType>(initialItemsAccountsGroup);
 
   useEffect(() => {
     account.getListOpenAccountByUserId().then(res => {
@@ -81,7 +78,7 @@ export const AccountsTab: React.FC = () => {
   useEffect(()=>{
       console.log('SYNC_EFFECT_TABS');      
       getAccountGroups();
-  }, [])
+  }, [openAccounts])
 
   useEffect(()=>{
     console.log("change acive tab", activeTabKey)
@@ -113,7 +110,7 @@ export const AccountsTab: React.FC = () => {
         let newActiveKey = '';//`newTab${newTabIndex.current++}`;
         //if (initialItemsAccountsGroup[0].key === '0')
             
-        const newPanes: any = []//[...initialItemsAccountsGroup]//[...itemsAccountsGroup];
+        const newPanes: any = [...initialItemsAccountsGroup]//[...itemsAccountsGroup];
         //debugger
         if (accData.data[0] !== null)
           {
@@ -264,10 +261,12 @@ return(<div>
         <Tabs 
             type="editable-card"
             onChange={onChangeActiveTab}
-            activeKey={activeTabKey}
+            //activeKey={activeTabKey}
+            accessKey={activeTabKey}
             onEdit={onEdit}
             tabBarExtraContent={AccountTabButton}
-            items={itemsAccountsGroup}/>
+            items={itemsAccountsGroup}
+            />
 
         <AddAccountGroupForm 
             visible={visibleAddGroupForm}
