@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230502063605_initial")]
+    [Migration("20230513053602_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -219,8 +219,7 @@ namespace YFS.Repo.Migrations
 
                     b.HasIndex("CurrencyId");
 
-                    b.HasIndex("UserId")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("Accounts");
                 });
@@ -866,8 +865,8 @@ namespace YFS.Repo.Migrations
                         .IsRequired();
 
                     b.HasOne("YFS.Core.Models.User", "User")
-                        .WithOne()
-                        .HasForeignKey("YFS.Core.Models.Account", "UserId")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
