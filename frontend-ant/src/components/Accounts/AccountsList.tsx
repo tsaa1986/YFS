@@ -12,7 +12,7 @@ const { Panel } = Collapse;
 type accountListPropsType = {
   accountGroupData: AccountGroupType | null
   openAccounts: accountType[] | undefined
-  setOpenAccounts: React.Dispatch<React.SetStateAction<accountType[]>> | undefined
+  setOpenAccounts: React.Dispatch<React.SetStateAction<accountType[]>>
   activeTabKey: string
   //setSelectedAccount: Dispatch<SetStateAction<DataType>>;
   //accountListSelectedTab: accountListType
@@ -110,6 +110,31 @@ const columns: ColumnsType<accountType> = [
       
       }
     }
+
+    const onChangeBalanceAccount = (accountId: number, newBalance: number) => {
+      if (props.openAccounts != undefined)
+      {
+        let tempAccounts = props.openAccounts.map( account => {
+          if (account.id === accountId) {
+            {
+              return {...account, balance: newBalance}
+            }
+          }
+          return account;
+        })
+        props.setOpenAccounts(tempAccounts)
+        //let findedAccount = tempAccounts.find(acc => acc.id = accountId);
+      }
+    }
+
+    useEffect( () => {
+      if (addedOperation !== undefined)
+      {
+        addedOperation.forEach(o => {
+          onChangeBalanceAccount(o.accountId, o.balance);
+        })
+      }
+    }, [addedOperation])
     
     useEffect(()=>{
       fetchAccountListSelectedTabNew();
@@ -147,6 +172,7 @@ const columns: ColumnsType<accountType> = [
                 accountListDataSource={accountListDataSource}
                 setAccountListSelectedTab={setAccountListSelectedTab}
                 addedOperation={addedOperation}
+                onChangeBalanceAccount={onChangeBalanceAccount}
               />
             </Panel>
           </Collapse>

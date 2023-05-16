@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useDebugValue, useEffect, useState } from "react";
 import { Layout, Popconfirm, Space, Table } from 'antd';
 import { SelectedVariantPeriod } from "./AccountSelectedPeriod";
 import { AccountGroupType, accountType, IOperation, operationAccount } from "../../api/api";
@@ -17,6 +17,7 @@ interface IAccountOperationViewProps {
     accountListDataSource: accountType[]
     setAccountListSelectedTab: Dispatch<SetStateAction<any>>
     addedOperation: IOperation[] | undefined
+    onChangeBalanceAccount: (accountId: number, operationAmount: number) => void
 }
 
 interface IOperationDataType {
@@ -31,7 +32,8 @@ interface IOperationDataType {
 const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAccountGroupData, selectedAccount, selectedDateOption, 
     accountListDataSource, 
     setAccountListSelectedTab,
-    addedOperation}) => {
+    addedOperation,
+    onChangeBalanceAccount}) => {
     const [account, setAccount] = useState(selectedAccount);
     const [operationsList, setOperationList] = useState<Array<IOperation>>([]);
 
@@ -52,6 +54,16 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             title: 'Amount',
             dataIndex: 'currencyAmount',
             width: 140,
+            align: 'center',
+            render: (text) => { return (
+                Intl.NumberFormat('en-US').format(text)
+            )
+            }
+        },
+        {
+            title: 'Balance',
+            dataIndex: 'balance',
+            width: 100,
             align: 'center',
             render: (text) => { return (
                 Intl.NumberFormat('en-US').format(text)
@@ -87,9 +99,13 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             operationAccount.remove(id).then(
                 res => {
                     if (res.status === 200) {
-                         removeOperation(id);
+  
+                        removeOperation(id);
+                        
                         res.data.forEach(element => {
-                            changeAccountBalance(element.id, element.balance);
+                            //changeAccountBalance(element.id, element.balance);   
+
+                            onChangeBalanceAccount(element.id, 0);                     
                         });                        
                         //refresh table account and operation(before check record included range)
                     }
@@ -99,22 +115,22 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
 
     const handleAddOperation = (operation: IOperation[]) => {
         const items = [...operationsList];
-
         operation.forEach(element => {
             if (element.categoryId === -1 && element.operationAmount > 0)
                 {
                     items.push(element)
                     setOperationList(items);
-                    changeAccountBalance(element.accountId, element.balance);
+                    onChangeBalanceAccount(element.accountId, element.balance);
                 }
             if (element.categoryId === -1 && element.operationAmount < 0)
                 {
-                    changeAccountBalance(element.accountId, element.balance);
+                    onChangeBalanceAccount(element.accountId, element.balance);
                 }
             if (element.categoryId !== -1) {
                 items.push(element)
                 setOperationList(items);
-                changeAccountBalance(element.accountId, element.balance);
+                //changeAccountBalance(element.accountId, element.balance);
+                onChangeBalanceAccount(element.accountId, element.balance);
             }
         });    
 
@@ -124,20 +140,11 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         const items = operationsList;
 
         if (operationsList.length > 0)
-        {
+        {        
             setOperationList(items.filter(o => o.id !== id));
         }
     }
 
-
-    const changeAccountBalance = (accountId: number, accountBalance: number) =>{
-        const items = [...accountListDataSource];
-        const findAccount = items.find(a => a.id === accountId);
-        if (findAccount != null) {
-            findAccount.balance = accountBalance;
-        }
-        setAccountListSelectedTab(items);
-    }
 
     const fetchOperationsForAccountForPeriod = () => {
         if (account != null)

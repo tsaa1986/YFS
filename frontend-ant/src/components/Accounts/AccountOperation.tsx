@@ -135,7 +135,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
       }, targetAccountId).then(response => {
           if (response.status === 200)
               {
-                  //debugger
+                  debugger
                   console.log(response.data)
                   //addAccount(response.data)
                   formOperation.resetFields()

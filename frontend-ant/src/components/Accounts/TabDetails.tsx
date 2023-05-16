@@ -15,7 +15,7 @@ interface tabDetailsPropsType1 {
     accountGroupData: AccountGroupType | null
     activeTabKey: string
     openAccounts: accountType[] | undefined
-    setOpenAccounts: React.Dispatch<React.SetStateAction<accountType[]>> | undefined
+    setOpenAccounts: React.Dispatch<React.SetStateAction<accountType[]>>
 }
 
 const TabDetails: React.FC<tabDetailsPropsType1> = ({accountGroupData, activeTabKey , openAccounts, setOpenAccounts}) => {
