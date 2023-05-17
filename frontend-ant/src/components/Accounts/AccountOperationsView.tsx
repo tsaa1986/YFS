@@ -204,9 +204,8 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
                 columns={operationColumns} dataSource={operationsList} 
                 rowKey={record => record.id}
                 pagination={{ position: ["bottomLeft"] }}                
-                //scroll={{ y: 2000 }}
+                scroll={{ x: 250, y: 300 }}
                 />
-
         </Layout>
     )
 }

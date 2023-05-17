@@ -127,11 +127,27 @@ const columns: ColumnsType<accountType> = [
       }
     }
 
+    const onChangeBalanceAccount2 = (accountId: number, newBalance: number) => {
+      if (props.openAccounts != undefined)
+      {
+        let tempAccounts = props.openAccounts.map( account => {
+          if (account.id === accountId) {
+            {
+              return {...account, balance: newBalance}
+            }
+          }
+          return account;
+        })
+        props.setOpenAccounts(tempAccounts)
+        //let findedAccount = tempAccounts.find(acc => acc.id = accountId);
+      }
+    }
+
     useEffect( () => {
       if (addedOperation !== undefined)
       {
         addedOperation.forEach(o => {
-          onChangeBalanceAccount(o.accountId, o.balance);
+          onChangeBalanceAccount(o.accountId, o.balance)
         })
       }
     }, [addedOperation])
@@ -158,7 +174,10 @@ const columns: ColumnsType<accountType> = [
             }
           }
           columns={columns} 
-          dataSource={accountListDataSource}/>
+          dataSource={accountListDataSource}
+          //bordered
+          
+          />
           
     <div>
           <Divider />
