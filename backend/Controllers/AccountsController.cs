@@ -27,7 +27,10 @@ namespace YFS.Controllers
 
             string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
             accountData.UserId = userid;
+            accountData.AccountBalance = new AccountBalance { Balance = account.Balance };
             await _repository.Account.CreateAccount(accountData);
+            //await _repository.AccountBalance.CreateBalance(new AccountBalance());
+            //await _repository.Acc .CreateAccount(accountData);
             await _repository.SaveAsync();
 
             var accountReturn = _mapper.Map<AccountDto>(accountData);

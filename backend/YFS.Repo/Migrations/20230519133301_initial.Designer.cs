@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230519082901_initial")]
+    [Migration("20230519133301_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -173,9 +173,6 @@ namespace YFS.Repo.Migrations
                         .HasColumnType("int");
 
                     b.Property<int>("AccountTypeId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("BalanceId")
                         .HasColumnType("int");
 
                     b.Property<int>("BankId")

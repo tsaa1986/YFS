@@ -35,7 +35,7 @@ namespace YFS.Repo.Data
                     if (accGroup.AccountGroupNameEn == "Cash") {
                          accounts.Add(new Account { UserId = _userid, AccountStatus=1, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
                             CurrencyId = 980, BankId = 1, Name = "Wallet UAH", OpeningDate = new DateTime(),
-                            Note = "wallet uah", AccountBalance = new AccountBalance()
+                            Note = "wallet uah", AccountBalance = new AccountBalance { Balance = 2000 }
                          });
                         accounts.Add(new Account
                         {

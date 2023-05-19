@@ -15,11 +15,11 @@ namespace YFS.Core.Models
         [Required]
         [ForeignKey("Account")]
         public int AccountId { get; set; }
+        public virtual Account? Account { get; set; }
         [Required]
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Balance { get; set; }
         public DateTime LastUpdateTime { get; set; }
-        public virtual Account? Account { get; set; }
 
     }
 }

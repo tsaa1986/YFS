@@ -252,7 +252,6 @@ namespace YFS.Repo.Migrations
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    BalanceId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AccountStatus = table.Column<int>(type: "int", nullable: false),
                     IBAN = table.Column<string>(type: "VARCHAR(40)", maxLength: 40, nullable: true),

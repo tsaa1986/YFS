@@ -173,9 +173,6 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountTypeId")
                         .HasColumnType("int");
 
-                    b.Property<int>("BalanceId")
-                        .HasColumnType("int");
-
                     b.Property<int>("BankId")
                         .HasColumnType("int");
 

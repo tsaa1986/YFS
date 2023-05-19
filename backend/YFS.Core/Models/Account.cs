@@ -8,8 +8,6 @@ namespace YFS.Core.Models
     {
         [Column("AccountId")]
         public int Id { get; set; }
-        [Required]
-        public int BalanceId { get; set; }
         public AccountBalance AccountBalance { get; set; }
 
         [Required]

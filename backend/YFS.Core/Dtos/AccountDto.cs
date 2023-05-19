@@ -1,4 +1,6 @@
-﻿namespace YFS.Core.Dtos
+﻿using YFS.Core.Models;
+
+namespace YFS.Core.Dtos
 {
     public class AccountDto
     {
