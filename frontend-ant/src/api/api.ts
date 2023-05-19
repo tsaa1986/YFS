@@ -74,7 +74,7 @@ export const accountGroups = {
 }
 
 export type accountTypesResponseType = [{
-    typeId: number
+    accountTypeId: number
     nameUa: string
     nameRu: string
     nameEn: string
@@ -228,7 +228,7 @@ export const operationAccount = {
 } 
 
 export type currencyType = [{   
-        id: number,
+        currencyId: number,
         shortNameUs: string,
         name_ru: string,
         name_ua: string,
