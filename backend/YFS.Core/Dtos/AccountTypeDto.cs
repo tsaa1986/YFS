@@ -2,7 +2,7 @@
 {
     public class AccountTypeDto
     {
-        public int TypeId { get; set; }
+        public int AccountTypeId { get; set; }
         public string? NameUa { get; set; }
         public string? NameRu { get; set; }
         public string? NameEn { get; set; }
