@@ -173,8 +173,8 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountTypeId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(10,2)");
+                    b.Property<int>("BalanceId")
+                        .HasColumnType("int");
 
                     b.Property<int>("BankId")
                         .HasColumnType("int");
@@ -222,6 +222,35 @@ namespace YFS.Repo.Migrations
                     b.ToTable("Accounts");
                 });
 
+            modelBuilder.Entity("YFS.Core.Models.AccountBalance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("Balance")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("decimal(18,2)")
+                        .HasDefaultValueSql("0.0");
+
+                    b.Property<DateTime>("LastUpdateTime")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime2")
+                        .HasDefaultValueSql("getdate()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId")
+                        .IsUnique();
+
+                    b.ToTable("AccountsBalance");
+                });
+
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
                 {
                     b.Property<int>("AccountGroupId")
@@ -264,6 +293,42 @@ namespace YFS.Repo.Migrations
                         .IsUnique();
 
                     b.ToTable("AccountGroups");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.AccountMonthlyBalance", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("ClosingMonthBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MonthCredit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<decimal>("MonthDebit")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("MonthNumber")
+                        .HasColumnType("int");
+
+                    b.Property<decimal>("OpeningMonthBalance")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("YearNumber")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("AccountsMonthlyBalance");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountType", b =>
@@ -875,6 +940,17 @@ namespace YFS.Repo.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("YFS.Core.Models.AccountBalance", b =>
+                {
+                    b.HasOne("YFS.Core.Models.Account", "Account")
+                        .WithOne("AccountBalance")
+                        .HasForeignKey("YFS.Core.Models.AccountBalance", "AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
                 {
                     b.HasOne("YFS.Core.Models.User", "User")
@@ -884,6 +960,15 @@ namespace YFS.Repo.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.AccountMonthlyBalance", b =>
+                {
+                    b.HasOne("YFS.Core.Models.Account", null)
+                        .WithMany("AccountsMonthlyBalance")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Operation", b =>
@@ -913,6 +998,11 @@ namespace YFS.Repo.Migrations
 
             modelBuilder.Entity("YFS.Core.Models.Account", b =>
                 {
+                    b.Navigation("AccountBalance")
+                        .IsRequired();
+
+                    b.Navigation("AccountsMonthlyBalance");
+
                     b.Navigation("Operations");
                 });
 

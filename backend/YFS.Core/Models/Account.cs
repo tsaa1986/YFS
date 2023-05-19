@@ -8,6 +8,9 @@ namespace YFS.Core.Models
     {
         [Column("AccountId")]
         public int Id { get; set; }
+        [Required]
+        public int BalanceId { get; set; }
+        public AccountBalance AccountBalance { get; set; }
 
         [Required]
         public string UserId { get; set; }
@@ -39,8 +42,8 @@ namespace YFS.Core.Models
         public string? Note { get; set; }
 
         [Column(TypeName = "decimal(10, 2)")]
-        public decimal Balance { get; set; }
 
         public List<Operation> Operations { get; set; } = new List<Operation>();
+        public List<AccountMonthlyBalance> AccountsMonthlyBalance { get; set; } = new List<AccountMonthlyBalance>();
     }
 }

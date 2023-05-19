@@ -9,6 +9,8 @@ namespace YFS.Repo.Data
     {
         public DbSet<AccountGroup> AccountGroups { get; set; } = null!;
         public DbSet<Account> Accounts { get; set; } = null!;
+        public DbSet<AccountBalance> AccountsBalance { get; set; } = null!;
+        public DbSet<AccountMonthlyBalance> AccountsMonthlyBalance { get; set; } = null!;
         public DbSet<AccountType> AccountTypes { get; set; } = null!;
         public DbSet<Currency> Currencies { get; set; } = null!;
         public DbSet<Operation> Operations { get; set; } = null!;
@@ -25,7 +27,9 @@ namespace YFS.Repo.Data
 
             //modelBuilder.Entity<Account>().HasOne(a => a.User).WithOne();//.HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Account>().Property(b => b.Favorites).HasDefaultValueSql("0");
-             
+            modelBuilder.Entity<AccountBalance>().Property(ab => ab.LastUpdateTime).HasDefaultValueSql("getdate()");
+            modelBuilder.Entity<AccountBalance>().Property(ab => ab.Balance).HasDefaultValueSql("0.0");
+
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameRu }).IsUnique();
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();

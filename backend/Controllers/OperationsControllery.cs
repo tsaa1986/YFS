@@ -40,8 +40,8 @@ namespace YFS.Controllers
                 operationData.OperationAmount = -operationData.OperationAmount;
 
             operationData.CurrencyAmount = operationData.OperationAmount;
-            operationData.Balance = account.Balance + operationData.CurrencyAmount;
-            account.Balance = operationData.CurrencyAmount + account.Balance;
+            //operationData.Balance = account.Balance + operationData.CurrencyAmount;
+            //account.Balance = operationData.CurrencyAmount + account.Balance;
 
             await _repository.Operation.CreateOperation(operationData);
             await _repository.Account.UpdateAccount(account);
@@ -65,10 +65,10 @@ namespace YFS.Controllers
                         OperationCurrencyId = operationData.OperationCurrencyId,
                         CurrencyAmount = Math.Abs(operationData.OperationAmount),
                         OperationAmount = Math.Abs(operationData.OperationAmount),
-                        Balance = accountTarget.Balance + Math.Abs(operationData.OperationAmount)
+                        //Balance = accountTarget.Balance + Math.Abs(operationData.OperationAmount)
                     };
 
-                    accountTarget.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.Balance;
+                    //accountTarget.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.Balance;
 
                     await _repository.Operation.CreateOperation(transferOperaitonData);
                     await _repository.Account.UpdateAccount(accountTarget);
@@ -161,8 +161,8 @@ namespace YFS.Controllers
                             decimal temp_CurrencyAmount = operationWithdrawData.CurrencyAmount;
                             decimal temp_CurrencyIncomeAmount = operationIncomeData.CurrencyAmount;
 
-                            targetAccount.Balance = targetAccount.Balance - temp_CurrencyIncomeAmount;
-                            withdrawAccount.Balance = withdrawAccount.Balance - temp_CurrencyAmount;
+                            //targetAccount.Balance = targetAccount.Balance - temp_CurrencyIncomeAmount;
+                            //withdrawAccount.Balance = withdrawAccount.Balance - temp_CurrencyAmount;
                         }
                         else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
                     }
@@ -177,8 +177,8 @@ namespace YFS.Controllers
                             targetAccount = await _repository.Account.GetAccount(operationIncomeData.AccountId);
                             decimal temp_CurrencyAmount = operationWithdrawData.CurrencyAmount;
                             decimal temp_CurrencyIncomeAmount = operationIncomeData.CurrencyAmount;
-                            targetAccount.Balance = targetAccount.Balance - temp_CurrencyIncomeAmount;
-                            withdrawAccount.Balance = withdrawAccount.Balance - temp_CurrencyAmount;
+                            //targetAccount.Balance = targetAccount.Balance - temp_CurrencyIncomeAmount;
+                           // withdrawAccount.Balance = withdrawAccount.Balance - temp_CurrencyAmount;
                         }
                         else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
                     }
@@ -204,7 +204,7 @@ namespace YFS.Controllers
                     if (operationData != null) { 
                         targetAccount = await _repository.Account.GetAccount(operationData.AccountId);
                         decimal temp_CurrencyAmount = operationData.CurrencyAmount;
-                        targetAccount.Balance = targetAccount.Balance - temp_CurrencyAmount;
+                        //targetAccount.Balance = targetAccount.Balance - temp_CurrencyAmount;
                         await _repository.Operation.RemoveOperation(operationData);
                         await _repository.Account.UpdateAccount(targetAccount);
 

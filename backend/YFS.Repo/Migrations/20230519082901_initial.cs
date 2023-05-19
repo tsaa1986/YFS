@@ -252,6 +252,7 @@ namespace YFS.Repo.Migrations
                 {
                     AccountId = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    BalanceId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     AccountStatus = table.Column<int>(type: "int", nullable: false),
                     IBAN = table.Column<string>(type: "VARCHAR(40)", maxLength: 40, nullable: true),
@@ -262,8 +263,7 @@ namespace YFS.Repo.Migrations
                     BankId = table.Column<int>(type: "int", nullable: false),
                     Name = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: false),
                     OpeningDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Note = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
-                    Balance = table.Column<decimal>(type: "decimal(10,2)", nullable: false)
+                    Note = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -294,6 +294,52 @@ namespace YFS.Repo.Migrations
                         column: x => x.CurrencyId,
                         principalTable: "Currencies",
                         principalColumn: "CurrencyId");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccountsBalance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValueSql: "0.0"),
+                    LastUpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountsBalance", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccountsBalance_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccountsMonthlyBalance",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
+                    MonthNumber = table.Column<int>(type: "int", nullable: false),
+                    YearNumber = table.Column<int>(type: "int", nullable: false),
+                    MonthDebit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    MonthCredit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    OpeningMonthBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    ClosingMonthBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountsMonthlyBalance", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccountsMonthlyBalance_Accounts_AccountId",
+                        column: x => x.AccountId,
+                        principalTable: "Accounts",
+                        principalColumn: "AccountId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -436,6 +482,17 @@ namespace YFS.Repo.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccountsBalance_AccountId",
+                table: "AccountsBalance",
+                column: "AccountId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AccountsMonthlyBalance_AccountId",
+                table: "AccountsMonthlyBalance",
+                column: "AccountId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
@@ -492,6 +549,12 @@ namespace YFS.Repo.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AccountsBalance");
+
+            migrationBuilder.DropTable(
+                name: "AccountsMonthlyBalance");
+
             migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
