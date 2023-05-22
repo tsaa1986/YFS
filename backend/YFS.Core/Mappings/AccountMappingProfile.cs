@@ -8,9 +8,9 @@ namespace YFS.Core.Mappings
     {
         public AccountMappingProfile()
         {
-            CreateMap<Account, AccountDto>();
-
             CreateMap<AccountDto, Account>();
+            CreateMap<Account, AccountDto>()
+                .ForMember(dest => dest.Balance, conf => conf.MapFrom(opt => opt.AccountBalance.Balance));
         }
     }
 }

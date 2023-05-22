@@ -26,7 +26,10 @@ namespace YFS.Service.Services
         public async Task UpdateAccount(Account account) => 
             await UpdateAsync(account);
         public async Task<IEnumerable<Account>> GetOpenAccountsByUserId(string userId, bool trackChanges) =>
-            await FindByConditionAsync(c => c.AccountStatus.Equals(1) && c.UserId.Equals(userId), trackChanges).Result.OrderByDescending(c => c.Favorites).ToListAsync();
+            await FindByConditionAsync(c => c.AccountStatus.Equals(1) && c.UserId.Equals(userId), trackChanges)        
+            .Result.OrderByDescending(c => c.Favorites)
+            .Include(p => p.AccountBalance).AsNoTracking()
+            .ToListAsync();
         public async Task<Account?> GetAccount(int _accountId) =>
             await FindByConditionAsync(c => c.Id.Equals(_accountId), false).Result.FirstOrDefaultAsync();
 

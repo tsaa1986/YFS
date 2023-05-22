@@ -8,7 +8,8 @@ namespace YFS.Core.Models
     {
         [Column("AccountId")]
         public int Id { get; set; }
-        public AccountBalance AccountBalance { get; set; }
+        [Required]
+        public virtual AccountBalance AccountBalance { get; set; }
 
         [Required]
         public string UserId { get; set; }

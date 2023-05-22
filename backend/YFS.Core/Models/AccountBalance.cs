@@ -12,7 +12,6 @@ namespace YFS.Core.Models
     {
         [Key]
         public int Id { get; set; }
-        [Required]
         [ForeignKey("Account")]
         public int AccountId { get; set; }
         public virtual Account? Account { get; set; }
