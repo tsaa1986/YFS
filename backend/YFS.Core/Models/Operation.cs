@@ -49,9 +49,7 @@ namespace YFS.Core.Models
         public decimal CashbackAmount { get; set; }
         [Required]
         [Column(TypeName = "decimal(10,2)")]
-        public decimal Balance { get; set; }
         public int MCC { get; set; }
-
         [Column(TypeName = "VARCHAR")]
         [MaxLength(200, ErrorMessage = "Maximum length for the Description is 200.")]
         public string? Description { get; set; }

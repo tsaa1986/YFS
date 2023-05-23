@@ -10,8 +10,8 @@ namespace YFS.Core.Mappings
         {
             CreateMap<OperationDto, Operation>();
             CreateMap<Operation, OperationDto>()
-               .ForMember(dest => dest.AccountName, conf => conf.MapFrom(opt => opt.Account.Name)); 
-               
+             .ForMember(dest => dest.AccountName, conf => conf.MapFrom(opt => opt.Account.Name))
+             .ForMember(dest => dest.Balance, conf => conf.MapFrom(opt => opt.Account.AccountBalance.Balance));
         }
     }
 }

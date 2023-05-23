@@ -712,9 +712,6 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("Balance")
-                        .HasColumnType("decimal(10,2)");
-
                     b.Property<decimal>("CashbackAmount")
                         .HasColumnType("decimal(10,2)");
 
@@ -734,8 +731,8 @@ namespace YFS.Repo.Migrations
                     b.Property<decimal>("ExchangeRate")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<int>("MCC")
-                        .HasColumnType("int");
+                    b.Property<decimal>("MCC")
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<decimal>("OperationAmount")
                         .HasColumnType("decimal(10,2)");

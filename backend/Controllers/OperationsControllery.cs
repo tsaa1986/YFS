@@ -29,7 +29,7 @@ namespace YFS.Controllers
             string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
             operationData.UserId = userid;
             
-            Account account = await _repository.Account.GetAccount(operationData.AccountId);
+            Account account = await _repository.Account.GetAccount(operationData.AccountId);         
             
             operationData.OperationCurrencyId = account.CurrencyId;
             if (operationData.TypeOperation == 1)
@@ -40,6 +40,8 @@ namespace YFS.Controllers
                 operationData.OperationAmount = -operationData.OperationAmount;
 
             operationData.CurrencyAmount = operationData.OperationAmount;
+            account.AccountBalance.Balance = account.AccountBalance.Balance + operationData.OperationAmount;
+            
             //operationData.Balance = account.Balance + operationData.CurrencyAmount;
             //account.Balance = operationData.CurrencyAmount + account.Balance;
 
@@ -47,7 +49,7 @@ namespace YFS.Controllers
             await _repository.Account.UpdateAccount(account);
             await _repository.SaveAsync();
 
-            List<Operation> listOperationReturn= new List<Operation>();
+            List<Operation> listOperationReturn = new List<Operation>();
             listOperationReturn.Add(operationData);         
 
             if (operationData.TypeOperation == 3) //transfer Money
@@ -89,7 +91,7 @@ namespace YFS.Controllers
             try
             {
                 string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var operations = await _repository.Operation.GetOperationsForAccountForPeriod(userid, accountId, startDate, endDate, trackChanges: false);
+                var operations = await _repository.Operation.GetOperationsForAccountForPeriod(accountId, startDate, endDate, trackChanges: false);
                 var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
                 return Ok(operationsDto);
             }
@@ -106,7 +108,7 @@ namespace YFS.Controllers
             try
             {
                 string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var operations = await _repository.Operation.GetLast10OperationsForAccount(userid, accountId, trackChanges: false);
+                var operations = await _repository.Operation.GetLast10OperationsForAccount(accountId, trackChanges: false);
                 var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
                 return Ok(operationsDto);
             }

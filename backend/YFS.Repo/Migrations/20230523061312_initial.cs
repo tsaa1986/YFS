@@ -359,8 +359,7 @@ namespace YFS.Repo.Migrations
                     OperationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     ExchangeRate = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     CashbackAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    MCC = table.Column<int>(type: "int", nullable: false),
+                    MCC = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
                     Description = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: true),
                     Tag = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: true)
                 },

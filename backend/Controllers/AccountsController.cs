@@ -53,23 +53,6 @@ namespace YFS.Controllers
                 return StatusCode(500, ex.Message);
             }
         }
-
-        [HttpGet()]
-        [Authorize]
-        public async Task<IActionResult> GetAccountsByFavorites()
-        {
-            try
-            {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var accounts = await _repository.Account.GetAccountsByFavorites(userid, trackChanges: false);
-                var accountDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
-                return Ok(accountDto);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
         
         [HttpGet("openAccountsByUserId")]
         [Authorize]
