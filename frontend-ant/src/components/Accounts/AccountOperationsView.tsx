@@ -61,16 +61,6 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             }
         },
         {
-            title: 'Balance',
-            dataIndex: 'balance',
-            width: 100,
-            align: 'center',
-            render: (text) => { return (
-                Intl.NumberFormat('en-US').format(text)
-            )
-            }
-        },
-        {
             title: 'Description',
             dataIndex: 'description',
             width: 200,
