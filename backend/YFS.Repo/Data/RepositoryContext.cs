@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using YFS.Core.Models;
+using YFS.Core.Models.Triggers;
 
 namespace YFS.Repo.Data
 {
@@ -21,6 +22,15 @@ namespace YFS.Repo.Data
         {
         }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseTriggers(triggersOptions =>
+            {
+                triggersOptions.AddTrigger<AccountBalanceUpdateDateTrigger>();
+            });
+
+            base.OnConfiguring(optionsBuilder);
+        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -50,6 +60,7 @@ namespace YFS.Repo.Data
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CategoryData());
             modelBuilder.ApplyConfiguration(new BankData());
+
 
         } 
     }

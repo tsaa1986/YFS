@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230523061312_initial")]
+    [Migration("20230523110954_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
