@@ -27,11 +27,13 @@ namespace YFS.Service.Services
             await FindByConditionAsync(c => c.AccountStatus.Equals(1) && c.UserId.Equals(userId), trackChanges)        
             .Result.OrderByDescending(c => c.Favorites)
             .Include(p => p.AccountBalance).AsNoTracking()
+            .Include(amb => amb.AccountsMonthlyBalance).AsNoTracking()
             .ToListAsync();
         public async Task<Account?> GetAccount(int _accountId) =>
             await FindByConditionAsync(c => c.Id.Equals(_accountId), false)
                 .Result
                 .Include(p => p.AccountBalance).AsNoTracking()
+                .Include(amb => amb.AccountsMonthlyBalance).AsNoTracking()
                 .FirstOrDefaultAsync();
 
     }

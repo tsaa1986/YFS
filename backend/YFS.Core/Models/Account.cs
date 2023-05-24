@@ -43,6 +43,6 @@ namespace YFS.Core.Models
         [Column(TypeName = "decimal(10, 2)")]
 
         public List<Operation> Operations { get; set; } = new List<Operation>();
-        public List<AccountMonthlyBalance> AccountsMonthlyBalance { get; set; } = new List<AccountMonthlyBalance>();
+        public virtual List<AccountMonthlyBalance> AccountsMonthlyBalance { get; set; }// = new List<AccountMonthlyBalance>();
     }
 }

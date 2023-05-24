@@ -9,6 +9,7 @@ using YFS.Core.Models;
 using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Principal;
+using System.Linq;
 
 namespace YFS.Controllers
 {
@@ -39,11 +40,10 @@ namespace YFS.Controllers
             if (operationData.TypeOperation == 3)
                 operationData.OperationAmount = -operationData.OperationAmount;
 
-            operationData.CurrencyAmount = operationData.OperationAmount;
+            operationData.CurrencyAmount = operationData.OperationAmount;            
+            Task<AccountMonthlyBalance> accountMonthlyBalance = GetAccountMonthlyBalance(account, operationData);
             account.AccountBalance.Balance = account.AccountBalance.Balance + operationData.OperationAmount;
-            
-            //operationData.Balance = account.Balance + operationData.CurrencyAmount;
-            //account.Balance = operationData.CurrencyAmount + account.Balance;
+
 
             await _repository.Operation.CreateOperation(operationData);
             await _repository.Account.UpdateAccount(account);
@@ -67,10 +67,8 @@ namespace YFS.Controllers
                         OperationCurrencyId = operationData.OperationCurrencyId,
                         CurrencyAmount = Math.Abs(operationData.OperationAmount),
                         OperationAmount = Math.Abs(operationData.OperationAmount),
-                        //Balance = accountTarget.Balance + Math.Abs(operationData.OperationAmount)
                     };
-
-                    //accountTarget.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.Balance;
+                    accountTarget.AccountBalance.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.AccountBalance.Balance;
 
                     await _repository.Operation.CreateOperation(transferOperaitonData);
                     await _repository.Account.UpdateAccount(accountTarget);
@@ -82,6 +80,51 @@ namespace YFS.Controllers
             var operationReturn = _mapper.Map<List<OperationDto>>(listOperationReturn);
 
             return Ok(operationReturn);
+        }
+
+        private async Task<AccountMonthlyBalance> GetAccountMonthlyBalance(Account _account, Operation _operation)
+        {
+            int month = _operation.OperationDate.Month;
+            int year = _operation.OperationDate.Year;
+            AccountMonthlyBalance accountMonthlyBalance = null;
+
+            accountMonthlyBalance = _account.AccountsMonthlyBalance.Where<AccountMonthlyBalance>(amb => (amb.AccountId == _account.Id && amb.MonthNumber == month && amb.YearNumber == year))
+                    .FirstOrDefault<AccountMonthlyBalance>();    
+            
+            if (accountMonthlyBalance == null) {
+                await AddAccountMonthlyBalance(_account, _operation);
+            }
+
+            return accountMonthlyBalance;
+        }
+
+        private async Task<bool> AddAccountMonthlyBalance(Account _account, Operation _operation)
+        {
+            decimal MonthCreadit = 0;
+            decimal MonthDebit = 0;
+            AccountMonthlyBalance accountMonthlyBalance = null;
+
+            if (_operation.CurrencyAmount> 0)
+            {
+                MonthDebit = _operation.CurrencyAmount;
+            } else MonthCreadit = _operation.CurrencyAmount;
+
+            if ((_operation.OperationDate.Month == DateTime.Now.Month && _operation.OperationDate.Year == DateTime.Now.Year))
+            {
+                accountMonthlyBalance = new AccountMonthlyBalance
+                {
+                    OpeningMonthBalance = _account.AccountBalance.Balance,
+                    ClosingMonthBalance = _account.AccountBalance.Balance + MonthDebit + MonthCreadit,
+                    MonthNumber = _operation.OperationDate.Month,
+                    YearNumber = _operation.OperationDate.Year,
+                    MonthCredit = MonthCreadit,
+                    MonthDebit = MonthDebit
+                };
+            }
+            
+
+            _account.AccountsMonthlyBalance.Add(accountMonthlyBalance);
+            return true;
         }
 
         [HttpGet("period/{accountId:int}/{startDate:datetime}/{endDate:datetime}")]
