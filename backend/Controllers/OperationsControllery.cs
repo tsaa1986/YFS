@@ -42,8 +42,8 @@ namespace YFS.Controllers
 
             operationData.CurrencyAmount = operationData.OperationAmount;            
             Task<AccountMonthlyBalance> accountMonthlyBalance = GetAccountMonthlyBalance(account, operationData);
-            account.AccountBalance.Balance = account.AccountBalance.Balance + operationData.OperationAmount;
 
+            account.AccountBalance.Balance = account.AccountBalance.Balance + operationData.OperationAmount;            
 
             await _repository.Operation.CreateOperation(operationData);
             await _repository.Account.UpdateAccount(account);
@@ -68,6 +68,9 @@ namespace YFS.Controllers
                         CurrencyAmount = Math.Abs(operationData.OperationAmount),
                         OperationAmount = Math.Abs(operationData.OperationAmount),
                     };
+
+                    Task<AccountMonthlyBalance> accountTargetMonthlyBalance = GetAccountMonthlyBalance(accountTarget, transferOperaitonData);
+
                     accountTarget.AccountBalance.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.AccountBalance.Balance;
 
                     await _repository.Operation.CreateOperation(transferOperaitonData);
@@ -93,6 +96,10 @@ namespace YFS.Controllers
             
             if (accountMonthlyBalance == null) {
                 await AddAccountMonthlyBalance(_account, _operation);
+            }
+            else
+            {
+                await ChangeAccountMonthlyBalance(_account, _operation, accountMonthlyBalance);
             }
 
             return accountMonthlyBalance;
@@ -124,6 +131,25 @@ namespace YFS.Controllers
             
 
             _account.AccountsMonthlyBalance.Add(accountMonthlyBalance);
+            return true;
+        }
+        private async Task<bool> ChangeAccountMonthlyBalance(Account _account, Operation _operation, AccountMonthlyBalance _accountMonthlyBalance)
+        {
+            decimal MonthCreadit = 0;
+            decimal MonthDebit = 0;
+            //AccountMonthlyBalance accountMonthlyBalance = null;
+
+            if (_operation.CurrencyAmount > 0)
+            {
+                MonthDebit = _operation.CurrencyAmount;
+            }
+            else MonthCreadit = _operation.CurrencyAmount;
+
+            _accountMonthlyBalance.ClosingMonthBalance = _account.AccountBalance.Balance + MonthDebit + MonthCreadit;
+            _accountMonthlyBalance.MonthDebit = _accountMonthlyBalance.MonthDebit + MonthDebit;
+            _accountMonthlyBalance.MonthCredit = _accountMonthlyBalance.MonthCredit + MonthCreadit;
+
+            _account.AccountsMonthlyBalance.Add(_accountMonthlyBalance);
             return true;
         }
 
