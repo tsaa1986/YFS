@@ -91,8 +91,8 @@ namespace YFS.Controllers
             int year = _operation.OperationDate.Year;
             AccountMonthlyBalance accountMonthlyBalance = null;
 
-            accountMonthlyBalance = _account.AccountsMonthlyBalance.Where<AccountMonthlyBalance>(amb => (amb.AccountId == _account.Id && amb.MonthNumber == month && amb.YearNumber == year))
-                    .FirstOrDefault<AccountMonthlyBalance>();    
+            accountMonthlyBalance = _account.AccountsMonthlyBalance.FirstOrDefault<AccountMonthlyBalance>(amb => (amb.AccountId == _account.Id && amb.MonthNumber == month && amb.YearNumber == year));
+                    //.FirstOrDefault<AccountMonthlyBalance>();    
             
             if (accountMonthlyBalance == null) {
                 await AddAccountMonthlyBalance(_account, _operation);
@@ -149,7 +149,7 @@ namespace YFS.Controllers
             _accountMonthlyBalance.MonthDebit = _accountMonthlyBalance.MonthDebit + MonthDebit;
             _accountMonthlyBalance.MonthCredit = _accountMonthlyBalance.MonthCredit + MonthCreadit;
 
-            _account.AccountsMonthlyBalance.Add(_accountMonthlyBalance);
+            //_account.AccountsMonthlyBalance..Add(_accountMonthlyBalance);
             return true;
         }
 
@@ -274,10 +274,19 @@ namespace YFS.Controllers
                 {
                     if (operationData != null) { 
                         targetAccount = await _repository.Account.GetAccount(operationData.AccountId);
+
+                        //AccountMonthlyBalance accountMonthlyBalance1 = operationData.Account.AccountsMonthlyBalance.FirstOrDefault<AccountMonthlyBalance>(amb => (amb.MonthNumber == operationData.OperationDate.Month && amb.YearNumber == operationData.OperationDate.Year));
+
+                        AccountMonthlyBalance accountMonthlyBalance = await GetAccountMonthlyBalance(targetAccount, operationData);
+
                         decimal temp_CurrencyAmount = operationData.CurrencyAmount;
                         //targetAccount.Balance = targetAccount.Balance - temp_CurrencyAmount;
+                        operationData.Account.AccountBalance.Balance = operationData.Account.AccountBalance.Balance - temp_CurrencyAmount;
                         await _repository.Operation.RemoveOperation(operationData);
-                        await _repository.Account.UpdateAccount(targetAccount);
+                        //operationData.Account.AccountBalance.Balance = operationData.Account.AccountBalance.Balance - temp_CurrencyAmount;
+                        //targetAccount.AccountBalance.Balance = targetAccount.AccountBalance.Balance - temp_CurrencyAmount;
+                        //await _repository.Account.UpdateAccount(operationData.Account);
+                        //await _repository.Account.UpdateAccount(targetAccount);
 
                         List<Account> accountList = new List<Account>();
                         accountList.Add(targetAccount);
