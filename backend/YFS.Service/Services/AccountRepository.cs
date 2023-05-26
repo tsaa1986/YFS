@@ -1,5 +1,6 @@
 ﻿
 using Microsoft.EntityFrameworkCore;
+using System.Security.Principal;
 using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
@@ -36,8 +37,9 @@ namespace YFS.Service.Services
                 //.AsNoTracking()
                 .Include(p => p.AccountBalance)
                 .Include(amb => amb.AccountsMonthlyBalance)
-                .SingleOrDefaultAsync();    
-            //.FirstOrDefaultAsync();
+                .SingleOrDefaultAsync();
+
+        //.FirstOrDefaultAsync();
 
     }
 }

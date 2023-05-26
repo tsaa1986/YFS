@@ -279,14 +279,15 @@ namespace YFS.Controllers
 
                         AccountMonthlyBalance accountMonthlyBalance = await GetAccountMonthlyBalance(targetAccount, operationData);
 
-                        decimal temp_CurrencyAmount = operationData.CurrencyAmount;
-                        //targetAccount.Balance = targetAccount.Balance - temp_CurrencyAmount;
-                        operationData.Account.AccountBalance.Balance = operationData.Account.AccountBalance.Balance - temp_CurrencyAmount;
-                        await _repository.Operation.RemoveOperation(operationData);
+                        //targetAccount.AccountBalance.Balance = targetAccount.AccountBalance.Balance - temp_CurrencyAmount;
+                        operationData.Account.AccountBalance.Balance = operationData.Account.AccountBalance.Balance - operationData.CurrencyAmount;                        
                         //operationData.Account.AccountBalance.Balance = operationData.Account.AccountBalance.Balance - temp_CurrencyAmount;
                         //targetAccount.AccountBalance.Balance = targetAccount.AccountBalance.Balance - temp_CurrencyAmount;
-                        //await _repository.Account.UpdateAccount(operationData.Account);
+                        await _repository.AccountBalance.UpdateAccountBalance(operationData.Account.AccountBalance);
+                        await _repository.Operation.RemoveOperation(operationData);
                         //await _repository.Account.UpdateAccount(targetAccount);
+
+                        await _repository.SaveAsync();
 
                         List<Account> accountList = new List<Account>();
                         accountList.Add(targetAccount);
@@ -295,7 +296,7 @@ namespace YFS.Controllers
                         var accountResult = _mapper.Map<List<Account>>(accountList);
                         //var accountReturn = _mapper.Map<AccountDto>(accountData);
 
-                        await _repository.SaveAsync();
+                        
 
 
                         return Ok(accountResult);

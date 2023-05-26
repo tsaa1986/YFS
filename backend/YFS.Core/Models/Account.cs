@@ -9,7 +9,7 @@ namespace YFS.Core.Models
         [Column("AccountId")]
         public int Id { get; set; }
         [Required]
-        public virtual AccountBalance AccountBalance { get; set; }
+        public virtual AccountBalance? AccountBalance { get; set; }
 
         [Required]
         public string UserId { get; set; }
@@ -42,7 +42,7 @@ namespace YFS.Core.Models
 
         [Column(TypeName = "decimal(10, 2)")]
 
-        public List<Operation> Operations { get; set; } = new List<Operation>();
-        public virtual List<AccountMonthlyBalance> AccountsMonthlyBalance { get; set; }// = new List<AccountMonthlyBalance>();
+        public virtual List<Operation> Operations { get; set; } = new List<Operation>();
+        public virtual List<AccountMonthlyBalance>? AccountsMonthlyBalance { get; set; } = new List<AccountMonthlyBalance>();
     }
 }

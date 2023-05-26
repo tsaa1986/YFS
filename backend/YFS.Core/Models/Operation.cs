@@ -27,7 +27,7 @@ namespace YFS.Core.Models
 
         [Required]
         public int AccountId { get; set; }  //foreign key
-        public Account? Account { get; set; }   //nav property
+        public Account Account { get; set; }   //nav property
 
         [Required]
         public int OperationCurrencyId { get; set; }
