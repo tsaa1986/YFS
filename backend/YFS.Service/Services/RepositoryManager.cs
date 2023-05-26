@@ -16,6 +16,7 @@ namespace YFS.Service.Services
         private IAccountTypeRepository _accountTypeRepository;
         private IAccountRepository _accountRepository;
         private IAccountBalanceRepository _accountBalanceRepository;
+        private IAccountMonthlyBalanceRepository _accountMonthlyBalanceRepository;
         private ICurrencyRepository _currencyRepository;
         private ICategoryRepository _categoryRepository;
         private IOperationRepository _operationRepository;
@@ -112,6 +113,16 @@ namespace YFS.Service.Services
                 if (_operationRepository is null)
                     _operationRepository = new OperationRepository(_repositoryContext);
                 return _operationRepository;
+            }
+        }
+
+        public IAccountMonthlyBalanceRepository AccountMonthlyBalance
+        {
+            get
+            {
+                if (_accountMonthlyBalanceRepository is null)
+                    _accountMonthlyBalanceRepository = new AccountMonthlyBalanceRepository(_repositoryContext);
+                return _accountMonthlyBalanceRepository;
             }
         }
 

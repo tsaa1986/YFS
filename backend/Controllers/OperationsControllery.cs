@@ -284,6 +284,7 @@ namespace YFS.Controllers
                         //operationData.Account.AccountBalance.Balance = operationData.Account.AccountBalance.Balance - temp_CurrencyAmount;
                         //targetAccount.AccountBalance.Balance = targetAccount.AccountBalance.Balance - temp_CurrencyAmount;
                         await _repository.AccountBalance.UpdateAccountBalance(operationData.Account.AccountBalance);
+                        await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountMonthlyBalance);
                         await _repository.Operation.RemoveOperation(operationData);
                         //await _repository.Account.UpdateAccount(targetAccount);
 

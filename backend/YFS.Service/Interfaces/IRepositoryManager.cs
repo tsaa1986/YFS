@@ -6,6 +6,7 @@
         IAccountTypeRepository AccountType { get; }
         IAccountRepository Account { get; }
         IAccountBalanceRepository AccountBalance { get; }
+        IAccountMonthlyBalanceRepository AccountMonthlyBalance { get; }
         ICurrencyRepository Currency { get; }
         ICategoryRepository Category { get; }
         IUserAuthenticationRepository UserAuthentication { get; }
