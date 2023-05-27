@@ -41,7 +41,7 @@ namespace YFS.Controllers
                 operationData.OperationAmount = -operationData.OperationAmount;
 
             operationData.CurrencyAmount = operationData.OperationAmount;            
-            Task<AccountMonthlyBalance> accountMonthlyBalance = GetAccountMonthlyBalance(account, operationData);
+            Task<AccountMonthlyBalance> accountMonthlyBalance = GetAccountMonthlyBalance(account, operationData, false);
 
             account.AccountBalance.Balance = account.AccountBalance.Balance + operationData.OperationAmount;            
 
@@ -69,7 +69,7 @@ namespace YFS.Controllers
                         OperationAmount = Math.Abs(operationData.OperationAmount),
                     };
 
-                    Task<AccountMonthlyBalance> accountTargetMonthlyBalance = GetAccountMonthlyBalance(accountTarget, transferOperaitonData);
+                    Task<AccountMonthlyBalance> accountTargetMonthlyBalance = GetAccountMonthlyBalance(accountTarget, transferOperaitonData, false);
 
                     accountTarget.AccountBalance.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.AccountBalance.Balance;
 
@@ -85,7 +85,7 @@ namespace YFS.Controllers
             return Ok(operationReturn);
         }
 
-        private async Task<AccountMonthlyBalance> GetAccountMonthlyBalance(Account _account, Operation _operation)
+        private async Task<AccountMonthlyBalance> GetAccountMonthlyBalance(Account _account, Operation _operation, Boolean _removeOperation)
         {
             int month = _operation.OperationDate.Month;
             int year = _operation.OperationDate.Year;
@@ -99,7 +99,7 @@ namespace YFS.Controllers
             }
             else
             {
-                await ChangeAccountMonthlyBalance(_account, _operation, accountMonthlyBalance);
+                await ChangeAccountMonthlyBalance(_account, _operation, accountMonthlyBalance, _removeOperation);
             }
 
             return accountMonthlyBalance;
@@ -133,23 +133,36 @@ namespace YFS.Controllers
             _account.AccountsMonthlyBalance.Add(accountMonthlyBalance);
             return true;
         }
-        private async Task<bool> ChangeAccountMonthlyBalance(Account _account, Operation _operation, AccountMonthlyBalance _accountMonthlyBalance)
+        private async Task<bool> ChangeAccountMonthlyBalance(Account _account, Operation _operation, AccountMonthlyBalance _accountMonthlyBalance, Boolean _removeOperation)
         {
             decimal MonthCreadit = 0;
             decimal MonthDebit = 0;
-            //AccountMonthlyBalance accountMonthlyBalance = null;
 
             if (_operation.CurrencyAmount > 0)
             {
-                MonthDebit = _operation.CurrencyAmount;
+                if (_removeOperation == true)//((_operation.CategoryId == -1) && (_removeOperation == true))
+                {
+                    MonthDebit = -_operation.CurrencyAmount;
+                }
+                else { MonthDebit = _operation.CurrencyAmount; }
             }
-            else MonthCreadit = _operation.CurrencyAmount;
+            else
+            {
+                //if ((_operation.CategoryId == -1) && (_removeOperation == true))
+                if (_removeOperation == true)
+                {
+                    MonthCreadit = -_operation.CurrencyAmount;
+                }
+                else
+                {
+                    MonthCreadit = _operation.CurrencyAmount;
+                }
+            }
 
             _accountMonthlyBalance.ClosingMonthBalance = _account.AccountBalance.Balance + MonthDebit + MonthCreadit;
             _accountMonthlyBalance.MonthDebit = _accountMonthlyBalance.MonthDebit + MonthDebit;
             _accountMonthlyBalance.MonthCredit = _accountMonthlyBalance.MonthCredit + MonthCreadit;
 
-            //_account.AccountsMonthlyBalance..Add(_accountMonthlyBalance);
             return true;
         }
 
@@ -246,15 +259,13 @@ namespace YFS.Controllers
                         if (operationIncomeData != null)
                         {
                             withdrawAccount = await _repository.Account.GetAccount(operationWithdrawData.AccountId);
-                            withdrawAccountMonthlyBalance = await GetAccountMonthlyBalance(withdrawAccount, operationWithdrawData);
+                            withdrawAccountMonthlyBalance = await GetAccountMonthlyBalance(withdrawAccount, operationWithdrawData, true);
                             operationWithdrawData.Account.AccountBalance.Balance = operationWithdrawData.Account.AccountBalance.Balance - operationWithdrawData.CurrencyAmount;
 
                             targetAccount = await _repository.Account.GetAccount(operationIncomeData.AccountId);
-                            targetAccountMonthlyBalance = await GetAccountMonthlyBalance(targetAccount, operationIncomeData);
+                            targetAccountMonthlyBalance = await GetAccountMonthlyBalance(targetAccount, operationIncomeData, true);
                             operationIncomeData.Account.AccountBalance.Balance = operationIncomeData.Account.AccountBalance.Balance - operationIncomeData.CurrencyAmount;
 
-                            //await _repository.Account.UpdateAccount(targetAccount);
-                            //await _repository.Account.UpdateAccount(withdrawAccount);
                             await _repository.AccountBalance.UpdateAccountBalance(operationWithdrawData.Account.AccountBalance);
                             await _repository.AccountBalance.UpdateAccountBalance(operationIncomeData.Account.AccountBalance);
 
@@ -281,7 +292,7 @@ namespace YFS.Controllers
                 {
                     if (operationData != null) { 
                         targetAccount = await _repository.Account.GetAccount(operationData.AccountId);
-                        AccountMonthlyBalance accountMonthlyBalance = await GetAccountMonthlyBalance(targetAccount, operationData);
+                        AccountMonthlyBalance accountMonthlyBalance = await GetAccountMonthlyBalance(targetAccount, operationData, true);
                         operationData.Account.AccountBalance.Balance = operationData.Account.AccountBalance.Balance - operationData.CurrencyAmount;                        
                         await _repository.AccountBalance.UpdateAccountBalance(operationData.Account.AccountBalance);
                         await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountMonthlyBalance);
