@@ -32,7 +32,6 @@ namespace YFS.Extension
                 map.AddProfile<UserAccountMappingProfile>();
                 map.AddProfile<CurrencyMappingProfile>();
                 map.AddProfile<CategoryMappingProfile>();
-                //map.AddProfile<OperationMappingProfile>();
                 map.AddProfile<OperationMappingProfile>();
             });
             services.AddSingleton(mapperConfig.CreateMapper());
@@ -79,8 +78,6 @@ namespace YFS.Extension
         public static void RegisterDependencies(this IServiceCollection services)
         {
             services.AddScoped<ValidationFilterAttribute>();
-
-            //services.AddScoped<IAccountGroupRepository, AccountGroupRepository>();
         }
     }
 }

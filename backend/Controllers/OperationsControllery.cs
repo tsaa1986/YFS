@@ -128,6 +128,19 @@ namespace YFS.Controllers
                     MonthDebit = MonthDebit
                 };
             }
+            else
+            {
+                accountMonthlyBalance = new AccountMonthlyBalance
+                {
+                    //get all operations before 
+                    OpeningMonthBalance = 0,//_account.AccountBalance.Balance,
+                    ClosingMonthBalance = 0 + MonthDebit + MonthCreadit, //_account.AccountBalance.Balance + MonthDebit + MonthCreadit,
+                    MonthNumber = _operation.OperationDate.Month,
+                    YearNumber = _operation.OperationDate.Year,
+                    MonthCredit = MonthCreadit,
+                    MonthDebit = MonthDebit
+                };
+            }
             
 
             _account.AccountsMonthlyBalance.Add(accountMonthlyBalance);

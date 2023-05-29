@@ -27,6 +27,7 @@ namespace YFS.Repo.Data
             optionsBuilder.UseTriggers(triggersOptions =>
             {
                 triggersOptions.AddTrigger<AccountBalanceUpdateDateTrigger>();
+                triggersOptions.AddTrigger<AccountMonthlyBalanceUpdateMonthBalance>();
             });
 
             base.OnConfiguring(optionsBuilder);

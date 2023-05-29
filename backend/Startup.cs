@@ -7,8 +7,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using YFS.Extension;
 using YFS.Repo.Data;
-using Microsoft.Net.Http.Headers;
-using System;
 
 namespace YFS
 {
