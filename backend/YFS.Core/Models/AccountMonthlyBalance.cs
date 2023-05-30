@@ -11,6 +11,8 @@ namespace YFS.Core.Models
         [Required]
         [ForeignKey("Account")]
         public int AccountId { get; set; }
+        [Required]
+        public DateTime StartDateOfMonth { get; set; }
         public int MonthNumber { get; set; }
         public int YearNumber { get; set; }
         [Required]

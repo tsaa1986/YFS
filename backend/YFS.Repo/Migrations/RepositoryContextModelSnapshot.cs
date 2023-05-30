@@ -318,6 +318,9 @@ namespace YFS.Repo.Migrations
                     b.Property<decimal>("OpeningMonthBalance")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<DateTime>("StartDateOfMonth")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("YearNumber")
                         .HasColumnType("int");
 

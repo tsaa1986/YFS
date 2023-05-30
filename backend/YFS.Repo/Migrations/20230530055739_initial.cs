@@ -323,6 +323,7 @@ namespace YFS.Repo.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<int>(type: "int", nullable: false),
+                    StartDateOfMonth = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MonthNumber = table.Column<int>(type: "int", nullable: false),
                     YearNumber = table.Column<int>(type: "int", nullable: false),
                     MonthDebit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),

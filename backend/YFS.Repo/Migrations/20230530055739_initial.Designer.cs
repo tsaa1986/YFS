@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230526054701_initial")]
+    [Migration("20230530055739_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -319,6 +319,9 @@ namespace YFS.Repo.Migrations
 
                     b.Property<decimal>("OpeningMonthBalance")
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<DateTime>("StartDateOfMonth")
+                        .HasColumnType("datetime2");
 
                     b.Property<int>("YearNumber")
                         .HasColumnType("int");
