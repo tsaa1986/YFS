@@ -43,32 +43,38 @@ namespace YFS.Controllers
 
             operationData.CurrencyAmount = operationData.OperationAmount;
 
-            //Task<AccountMonthlyBalance> accountMonthlyBalance = GetAccountMonthlyBalance(account, operationData, false);
-            AccountMonthlyBalance accountMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
-            List<AccountMonthlyBalance> listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
-            List<AccountMonthlyBalance> listAccountMonthlyBalanceBeforeOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceBeforeOperation(operationData, false);
+            var accountMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
+            var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
+            var listAccountMonthlyBalanceBeforeOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceBeforeOperation(operationData, false);
+            var updatedAccountCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
 
             if (accountMonthlyBalance == null)
             {
                 await AddAccountMonthlyBalance(account, operationData);
             }
+            else
+            {
+                List<AccountMonthlyBalance> listAccount = new List<AccountMonthlyBalance>();
+                listAccount.Add(accountMonthlyBalance);
 
-            List<AccountMonthlyBalance> updatedAccountMonthlyBalances = await ChangeAccountMonthlyBalanceNew(account, operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
- 
+                updatedAccountCurrentMonthlyBalance = await ChangeAccountMonthlyBalanceNew(account, operationData, (IEnumerable<AccountMonthlyBalance>)listAccount, false);
+            }
+
+            var updatedAccountMonthlyBalancesBefore = await ChangeAccountMonthlyBalanceNew(account, operationData, listAccountMonthlyBalanceBeforeOperationMonth, false);
+            var updatedAccountMonthlyBalancesAfter = await ChangeAccountMonthlyBalanceNew(account, operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
 
             account.AccountBalance.Balance = account.AccountBalance.Balance + operationData.OperationAmount;
 
             await _repository.Operation.CreateOperation(operationData);
             await _repository.Account.UpdateAccount(account);
-            
-            //var test = _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceById(updatedAccountMonthlyBalances[0].Id);
-            
-            await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(updatedAccountMonthlyBalances[0]);
+            if (updatedAccountCurrentMonthlyBalance != null)
+             foreach (AccountMonthlyBalance a in updatedAccountCurrentMonthlyBalance) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
 
-            if (updatedAccountMonthlyBalances!= null)
-            {
-                //foreach (AccountMonthlyBalance a in updatedAccountMonthlyBalances) { await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
-            }
+            if (updatedAccountMonthlyBalancesBefore != null)
+                foreach (AccountMonthlyBalance a in updatedAccountMonthlyBalancesBefore) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+            if (updatedAccountMonthlyBalancesAfter != null)
+             foreach (AccountMonthlyBalance a in updatedAccountMonthlyBalancesAfter) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+           
 
             await _repository.SaveAsync();
 
@@ -203,7 +209,7 @@ namespace YFS.Controllers
 
             return true;
         }
-        private async Task<List<AccountMonthlyBalance>?> ChangeAccountMonthlyBalanceNew(Account _account, Operation _operation, List<AccountMonthlyBalance> _accountMonthlyBalances, Boolean _removeOperation)
+        private async Task<IEnumerable<AccountMonthlyBalance>?> ChangeAccountMonthlyBalanceNew(Account _account, Operation _operation, IEnumerable<AccountMonthlyBalance> _accountMonthlyBalances, Boolean _removeOperation)
         {
             decimal MonthCreadit = 0;
             decimal MonthDebit = 0;
@@ -228,7 +234,7 @@ namespace YFS.Controllers
                 }
             }
 
-            if (_accountMonthlyBalances.Count > 0)
+            if (_accountMonthlyBalances.Count() > 0)
             {
                 foreach (AccountMonthlyBalance amb in _accountMonthlyBalances)
                 {
