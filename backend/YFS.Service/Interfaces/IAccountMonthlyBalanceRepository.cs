@@ -8,7 +8,7 @@ namespace YFS.Service.Interfaces
         Task UpdateAccountMonthlyBalance(AccountMonthlyBalance accountMonthlyBalance);
         Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceById(int _id);
         Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceAfterOperation(Operation _operation, bool trackChanges);
-        Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges);
+        Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges);
         Task<AccountMonthlyBalance?> CheckAccountMonthlyBalance(Operation _operation, bool trackChanges);
     }
 }

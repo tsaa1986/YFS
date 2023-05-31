@@ -22,20 +22,18 @@ namespace YFS.Service.Services
         {
             DateTime nextMonthOperationDate = _operation.OperationDate.AddMonths(1);
             DateTime dtSearchMonth = new DateTime(nextMonthOperationDate.Year, nextMonthOperationDate.Month, 1);
-            var res = await this.FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
+            var res = await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
                 (amb.StartDateOfMonth >= dtSearchMonth), trackChanges)
                 .Result.OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
             return res;
         }
 
 
-        public async Task<IEnumerable<AccountMonthlyBalance>> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges) 
+        public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges) 
         {
-            DateTime nextMonthOperationDate = _operation.OperationDate.AddMonths(-1);
-            DateTime dtSearchMonth = new DateTime(nextMonthOperationDate.Year, nextMonthOperationDate.Month, 1);
             var res = await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
-               (amb.StartDateOfMonth <= dtSearchMonth), trackChanges)
-               .Result.OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
+               (amb.StartDateOfMonth < _operation.OperationDate), trackChanges).Result.FirstOrDefaultAsync();
+
             return res;
         }
 
