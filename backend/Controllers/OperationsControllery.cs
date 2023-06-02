@@ -73,17 +73,21 @@ namespace YFS.Controllers
             if (updatedAccountMonthlyBalancesAfter != null)
                 foreach (AccountMonthlyBalance a in updatedAccountMonthlyBalancesAfter) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
            
-
-            await _repository.SaveAsync();
+            //await _repository.SaveAsync();
 
             List<Operation> listOperationReturn = new List<Operation>();
-            listOperationReturn.Add(operationData);         
+            listOperationReturn.Add(operationData);
+
+            var accountTargetMonthlyBalance = (AccountMonthlyBalance)null;
+            var listAccountTargetMonthlyBalanceAfterOperationMonth = (IEnumerable<AccountMonthlyBalance>)null;
+            var updatedAccountTargetCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
+            Account accountTarget = null;
 
             if (operationData.TypeOperation == 3) //transfer Money
             {
                 if (targetAccountId > 0)
                 {
-                    Account accountTarget = await _repository.Account.GetAccount(targetAccountId);
+                    accountTarget = await _repository.Account.GetAccount(targetAccountId);
 
                     Operation transferOperaitonData = new Operation { UserId = userid,
                         TypeOperation = operationData.TypeOperation,
@@ -96,16 +100,38 @@ namespace YFS.Controllers
                         OperationAmount = Math.Abs(operationData.OperationAmount),
                     };
 
-                    Task<AccountMonthlyBalance> accountTargetMonthlyBalance = GetAccountMonthlyBalance(accountTarget, transferOperaitonData, false);
+                    accountTargetMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(transferOperaitonData, false);
+                    listAccountTargetMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(transferOperaitonData, false);
 
+
+                    if (accountTargetMonthlyBalance == null)
+                    {
+                        AddAccountMonthlyBalance(accountTarget, transferOperaitonData);
+                    }
+                    else
+                    {
+                        List<AccountMonthlyBalance> listAccountTarget = new List<AccountMonthlyBalance>();
+                        listAccountTarget.Add(accountTargetMonthlyBalance);
+
+                        updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(accountTarget, transferOperaitonData, (IEnumerable<AccountMonthlyBalance>)listAccountTarget, false);
+                    }
+
+                    var updatedAccountTargetMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(accountTarget, transferOperaitonData, listAccountTargetMonthlyBalanceAfterOperationMonth, false);
                     accountTarget.AccountBalance.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.AccountBalance.Balance;
 
                     await _repository.Operation.CreateOperation(transferOperaitonData);
                     await _repository.Account.UpdateAccount(accountTarget);
-                    await _repository.SaveAsync();
+
+                    if (updatedAccountTargetCurrentMonthlyBalance != null)
+                        foreach (AccountMonthlyBalance a in updatedAccountTargetCurrentMonthlyBalance) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+
+                    if (updatedAccountTargetMonthlyBalancesAfter != null)
+                        foreach (AccountMonthlyBalance a in updatedAccountTargetMonthlyBalancesAfter) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
                     listOperationReturn.Add(transferOperaitonData);
                 } 
             }
+
+            await _repository.SaveAsync();
 
             var operationReturn = _mapper.Map<List<OperationDto>>(listOperationReturn);
 
@@ -166,13 +192,11 @@ namespace YFS.Controllers
                 }
                 else
                 {
-                    //calculated operation before
+                    //calculated operation before !!!
                 }
 
                 accountMonthlyBalance = new AccountMonthlyBalance
                 {                    
-                    //get bafore accountMonth
-                //get all operations before 
                     OpeningMonthBalance = openningBalance,
                     ClosingMonthBalance = openningBalance + MonthDebit + MonthCreadit, 
                     StartDateOfMonth = new DateTime(_operation.OperationDate.Year, _operation.OperationDate.Month, 1),
