@@ -55,10 +55,10 @@ namespace YFS.Controllers
             }
             else
             {
-                List<AccountMonthlyBalance> listAccount = new List<AccountMonthlyBalance>();
-                listAccount.Add(accountMonthlyBalance);
+                List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>();
+                listAccountMonthly.Add(accountMonthlyBalance);
 
-                updatedAccountCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(account, operationData, (IEnumerable<AccountMonthlyBalance>)listAccount, false);
+                updatedAccountCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(account, operationData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthly, false);
             }
 
             var updatedAccountMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(account, operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
@@ -72,9 +72,8 @@ namespace YFS.Controllers
 
             if (updatedAccountMonthlyBalancesAfter != null)
                 foreach (AccountMonthlyBalance a in updatedAccountMonthlyBalancesAfter) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
-           
-            //await _repository.SaveAsync();
 
+            await _repository.SaveAsync();
             List<Operation> listOperationReturn = new List<Operation>();
             listOperationReturn.Add(operationData);
 
@@ -110,10 +109,10 @@ namespace YFS.Controllers
                     }
                     else
                     {
-                        List<AccountMonthlyBalance> listAccountTarget = new List<AccountMonthlyBalance>();
-                        listAccountTarget.Add(accountTargetMonthlyBalance);
+                        List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>();
+                        listAccountMonthly.Add(accountTargetMonthlyBalance);
 
-                        updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(accountTarget, transferOperaitonData, (IEnumerable<AccountMonthlyBalance>)listAccountTarget, false);
+                        updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(accountTarget, transferOperaitonData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthly, false);
                     }
 
                     var updatedAccountTargetMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(accountTarget, transferOperaitonData, listAccountTargetMonthlyBalanceAfterOperationMonth, false);
@@ -218,7 +217,7 @@ namespace YFS.Controllers
 
             if (_operation.CurrencyAmount > 0)
             {
-                if (_removeOperation == true)//((_operation.CategoryId == -1) && (_removeOperation == true))
+                if (_removeOperation == true)
                 {
                     MonthDebit = -_operation.CurrencyAmount;
                 }
@@ -349,34 +348,33 @@ namespace YFS.Controllers
                 }
                 //check if transfer before delete operation, remove child/parent operation
                 //change ballance account after remove operation
-                Account withdrawAccount = null;
+                Account accountWithdraw = null;
                 Account accountTarget = operationData.Account;//await _repository.Account.GetAccount(operationData.AccountId); 
 
-                AccountMonthlyBalance withdrawAccountMonthlyBalance, targetAccountMonthlyBalance = null;
+                AccountMonthlyBalance accountWithdrawCurrentMonthlyBalance = null;
+                AccountMonthlyBalance accountTargetCurrentMonthlyBalance = null;//await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
                 var updatedAccountTargetCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
+                var updatedAccountWithdrawCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
 
                 var operationWithdrawData = (Operation)null;
                 var operationIncomeData = (Operation)null;
                 var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
-                var accountMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
-                var updatedAccountMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;//ChangeAccountMonthlyBalanceNew(account, operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
+                var listAccountWithdrawMonthlyBalanceAfterOperationMonth = (IEnumerable<AccountMonthlyBalance>)null;
+                var updatedAccountTargetMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
+                var updatedAccountWithdrawMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
 
                 if (operationData.CategoryId == -1)
                 {
                     if (operationData.TransferOperationId > 0)
-                    {
-                        operationWithdrawData = await _repository.Operation.GetOperationById(operationData.TransferOperationId);
+                    {                   
                         operationIncomeData = operationData;
+                        operationWithdrawData = await _repository.Operation.GetOperationById(operationData.TransferOperationId);
 
                         if (operationWithdrawData != null)
                         {
-                            withdrawAccount = await _repository.Account.GetAccount(operationWithdrawData.AccountId);
-                            accountTarget = await _repository.Account.GetAccount(operationIncomeData.AccountId);
-                            decimal temp_CurrencyAmount = operationWithdrawData.CurrencyAmount;
-                            decimal temp_CurrencyIncomeAmount = operationIncomeData.CurrencyAmount;
-
-                            //targetAccount.Balance = targetAccount.Balance - temp_CurrencyIncomeAmount;
-                            //withdrawAccount.Balance = withdrawAccount.Balance - temp_CurrencyAmount;
+                            accountWithdraw = operationWithdrawData.Account;
+                            accountTarget = operationIncomeData.Account;
+                            accountWithdrawCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationWithdrawData, false);
                         }
                         else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
                     }
@@ -384,52 +382,85 @@ namespace YFS.Controllers
                     {
                         operationWithdrawData = operationData;
                         operationIncomeData = await _repository.Operation.GetTransferOperationById(operationWithdrawData.Id);
+                        accountWithdrawCurrentMonthlyBalance = accountTargetCurrentMonthlyBalance;
+                        //accountTargetMonthlyBalance =
 
                         if (operationIncomeData != null)
                         {
-                            withdrawAccount = await _repository.Account.GetAccount(operationWithdrawData.AccountId);
-                            withdrawAccountMonthlyBalance = await GetAccountMonthlyBalance(withdrawAccount, operationWithdrawData, true);
-                            operationWithdrawData.Account.AccountBalance.Balance = operationWithdrawData.Account.AccountBalance.Balance - operationWithdrawData.CurrencyAmount;
-
-                            accountTarget = await _repository.Account.GetAccount(operationIncomeData.AccountId);
-                            targetAccountMonthlyBalance = await GetAccountMonthlyBalance(accountTarget, operationIncomeData, true);
-                            operationIncomeData.Account.AccountBalance.Balance = operationIncomeData.Account.AccountBalance.Balance - operationIncomeData.CurrencyAmount;
-
-                            await _repository.AccountBalance.UpdateAccountBalance(operationWithdrawData.Account.AccountBalance);
-                            await _repository.AccountBalance.UpdateAccountBalance(operationIncomeData.Account.AccountBalance);
-
-                            await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(withdrawAccountMonthlyBalance);
-                            await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(targetAccountMonthlyBalance);
-
-                            await _repository.Operation.RemoveOperation(operationWithdrawData);
-                            await _repository.Operation.RemoveOperation(operationIncomeData);
-                            await _repository.SaveAsync();
+                            accountWithdraw = operationWithdrawData.Account;
+                            accountTarget = operationIncomeData.Account;
+                            //accountTargetMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationWithdrawData, false);
                         }
-                        else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
+                           else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
                     }
 
+                    accountTarget.AccountBalance.Balance = accountTarget.AccountBalance.Balance - operationIncomeData.CurrencyAmount;
+                    accountWithdraw.AccountBalance.Balance = accountWithdraw.AccountBalance.Balance - operationWithdrawData.CurrencyAmount;
 
-                    /*List<Account> accountList = new List<Account>();
-                    accountList.Add(targetAccount);
-                    accountList.Add(withdrawAccount);
+                    accountWithdrawCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationWithdrawData, false);//await GetAccountMonthlyBalance(accountWithdraw, operationWithdrawData, true);
+                    accountTargetCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationIncomeData, false);//await GetAccountMonthlyBalance(accountTarget, operationIncomeData, true);
 
-                    var accountResult = _mapper.Map<List<Account>>(accountList);
+                    listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationIncomeData, false);
+                    listAccountWithdrawMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationWithdrawData, false);
 
-                    return Ok(accountResult);*/
+                    #region update balance current month of operation
+                    List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>();
+                    List<AccountMonthlyBalance> listAccountWithdrawMonthly = new List<AccountMonthlyBalance>();
+                    listAccountMonthly.Add(accountTargetCurrentMonthlyBalance);
+                    listAccountWithdrawMonthly.Add(accountWithdrawCurrentMonthlyBalance);
+
+                    updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(accountTarget, operationIncomeData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthly, true);
+                    updatedAccountWithdrawCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(accountWithdraw, operationWithdrawData, (IEnumerable<AccountMonthlyBalance>)listAccountWithdrawMonthly, true);
+
+                    if (updatedAccountTargetCurrentMonthlyBalance != null)
+                        foreach (AccountMonthlyBalance a in updatedAccountTargetCurrentMonthlyBalance) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+                    if (updatedAccountWithdrawCurrentMonthlyBalance != null)
+                        foreach (AccountMonthlyBalance a in updatedAccountWithdrawCurrentMonthlyBalance) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+                    #endregion
+
+                    updatedAccountTargetMonthlyBalancesAfter = 
+                        ChangeAccountMonthlyBalanceNew(accountTarget, operationIncomeData, listAccountMonthlyBalanceAfterOperationMonth, false);
+                    updatedAccountWithdrawMonthlyBalancesAfter = 
+                        ChangeAccountMonthlyBalanceNew(accountWithdraw, operationWithdrawData, listAccountWithdrawMonthlyBalanceAfterOperationMonth, false);
+
+                    if (listAccountMonthlyBalanceAfterOperationMonth.Count() > 0)
+                        updatedAccountTargetMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(accountTarget, operationIncomeData, listAccountMonthlyBalanceAfterOperationMonth, true);
+                    if (listAccountWithdrawMonthlyBalanceAfterOperationMonth.Count() > 0)
+                        updatedAccountWithdrawMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(accountWithdraw, operationWithdrawData, listAccountWithdrawMonthlyBalanceAfterOperationMonth, true);
+
+                    if (updatedAccountTargetMonthlyBalancesAfter.Count() > 0)
+                        foreach (AccountMonthlyBalance a in updatedAccountTargetMonthlyBalancesAfter)
+                        { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+
+                    if (updatedAccountWithdrawMonthlyBalancesAfter.Count() > 0)
+                        foreach (AccountMonthlyBalance a in updatedAccountWithdrawMonthlyBalancesAfter) 
+                        { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+
+                    //listOperationReturn.Add(transferOperaitonData);
+
+                    await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountWithdrawCurrentMonthlyBalance);
+                    await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountTargetCurrentMonthlyBalance);
+
+                    await _repository.AccountBalance.UpdateAccountBalance(operationWithdrawData.Account.AccountBalance);
+                    await _repository.AccountBalance.UpdateAccountBalance(operationIncomeData.Account.AccountBalance);
+
+                    await _repository.Operation.RemoveOperation(operationWithdrawData);
+                    await _repository.Operation.RemoveOperation(operationIncomeData);
+
                 }
                 else
                 {
                     accountTarget.AccountBalance.Balance = accountTarget.AccountBalance.Balance - operationData.CurrencyAmount;                    
                     
                     if (listAccountMonthlyBalanceAfterOperationMonth.Count() > 0)
-                        updatedAccountMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(accountTarget, operationData, listAccountMonthlyBalanceAfterOperationMonth, true);
+                        updatedAccountTargetMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(accountTarget, operationData, listAccountMonthlyBalanceAfterOperationMonth, true);
 
-                    if (updatedAccountMonthlyBalancesAfter != null)
-                        foreach (AccountMonthlyBalance a in updatedAccountMonthlyBalancesAfter) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
+                    if (updatedAccountTargetMonthlyBalancesAfter != null)
+                        foreach (AccountMonthlyBalance a in updatedAccountTargetMonthlyBalancesAfter) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
                     
-                    List<AccountMonthlyBalance> listAccountTarget = new List<AccountMonthlyBalance>();
-                    listAccountTarget.Add(accountMonthlyBalance);
-                    updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(accountTarget, operationData, (IEnumerable<AccountMonthlyBalance>)listAccountTarget, true);
+                    List<AccountMonthlyBalance> listAccountMonthlyBalance = new List<AccountMonthlyBalance>();
+                    listAccountMonthlyBalance.Add(accountTargetCurrentMonthlyBalance);
+                    updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(accountTarget, operationData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthlyBalance, true);
 
                     if (updatedAccountTargetCurrentMonthlyBalance != null)
                         foreach (AccountMonthlyBalance a in updatedAccountTargetCurrentMonthlyBalance) { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
@@ -441,6 +472,9 @@ namespace YFS.Controllers
                 await _repository.SaveAsync();
                 List<Account> accountList = new List<Account>();
                 accountList.Add(accountTarget);
+                if (accountWithdraw != null)
+                    accountList.Add(accountWithdraw);
+
                 var accountResult = _mapper.Map<List<Account>>(accountList);
 
                 return Ok(accountResult);
@@ -449,7 +483,6 @@ namespace YFS.Controllers
             {
                 return  BadRequest(ex.Message);
             }
-                return Ok();
         }
     }
 
