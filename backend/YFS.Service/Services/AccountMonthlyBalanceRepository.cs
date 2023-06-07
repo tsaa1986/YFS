@@ -18,7 +18,7 @@ namespace YFS.Service.Services
         public async Task UpdateAccountMonthlyBalance(AccountMonthlyBalance accountMonthlyBalance) =>
             await UpdateAsync(accountMonthlyBalance);
 
-        public async Task<IEnumerable<AccountMonthlyBalance>> GetAccountMonthlyBalanceAfterOperation(Operation _operation, bool trackChanges)
+        public async Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceAfterOperation(Operation _operation, bool trackChanges)
         {
             DateTime nextMonthOperationDate = _operation.OperationDate.AddMonths(1);
             DateTime dtSearchMonth = new DateTime(nextMonthOperationDate.Year, nextMonthOperationDate.Month, 1);

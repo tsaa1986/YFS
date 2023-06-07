@@ -1,0 +1,22 @@
+using (var context = new YourDbContext())
+{
+    using (var transaction = context.Database.BeginTransaction())
+    {
+        try
+        {
+            // Modify your entities here
+
+            // Save the changes
+            context.SaveChanges();
+
+            // Commit the transaction
+            transaction.Commit();
+        }
+        catch (Exception)
+        {
+            // Handle any exceptions and rollback the transaction if necessary
+            transaction.Rollback();
+            throw;
+        }
+    }
+}
