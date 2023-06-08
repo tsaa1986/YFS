@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using System.Security.Principal;
 using System.Linq;
 using YFS.Repo.Data;
+using System.Collections;
 
 namespace YFS.Controllers
 {
@@ -433,7 +434,7 @@ namespace YFS.Controllers
                 if (accountWithdraw != null)
                     accountList.Add(accountWithdraw);
 
-                var accountResult = _mapper.Map<List<Account>>(accountList);
+                var accountResult = _mapper.Map<IEnumerable<AccountDto>>(accountList);
 
                 return Ok(accountResult);
             }
