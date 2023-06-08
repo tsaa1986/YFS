@@ -125,14 +125,10 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
           if (response.status === 200)
               {
                   //debugger
-                  console.log(response.data)
-                  formOperation.resetFields()
-                  if (response.data != undefined)
-                    {
-                      setAddedOperation(response.data)
-                    };   
-                                 
-                  setOpenOperationForm(false)
+                  console.log(response.data);
+                  setAddedOperation(response.data);
+                  formOperation.resetFields();                                                                      
+                  setOpenOperationForm(false);
               }
       });  
     

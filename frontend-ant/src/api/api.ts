@@ -201,7 +201,7 @@ export const operationAccount = {
         operation)
     },
     remove(id: number) {
-        return instancePrivate.delete<accountType[]>(`${BASE_URL}/Operations/${id}`)
+        return instancePrivate.delete<IOperation[]>(`${BASE_URL}/Operations/${id}`)
     },
     getOperationsAccountForPeriod(accountId: number, startDate: Date, endDate: Date) {
         let sDate: string = moment(startDate).format('YYYY-MM-DD');

@@ -113,8 +113,8 @@ const columns: ColumnsType<accountType> = [
 
     const onChangeBalanceAccount = (accountId: number, newBalance: number) => {
       if (props.openAccounts != undefined)
-      {
-        let tempAccounts = props.openAccounts.map( account => {
+      {        
+        let tempAccounts = props.openAccounts.map( account => {          
           if (account.id === accountId) {
             {
               return {...account, balance: newBalance}
@@ -126,12 +126,27 @@ const columns: ColumnsType<accountType> = [
       }
     }
 
+    const onChangeBalanceAccounts = (operations: IOperation[]) => {
+      if (props.openAccounts != undefined)
+      {        
+        let tempAccounts = props.openAccounts;
+        operations.forEach( operation => {
+          tempAccounts = tempAccounts.map( account => { 
+            if (account.id === operation.accountId) 
+              {
+                return {...account, balance: operation.balance}
+              }
+            return account;} )
+        } )
+
+        props.setOpenAccounts(tempAccounts)
+      }
+    }
+
     useEffect( () => {
       if (addedOperation !== undefined)
       {
-        addedOperation.forEach(o => {
-          onChangeBalanceAccount(o.accountId, o.balance)
-        })
+        onChangeBalanceAccounts(addedOperation);
       }
     }, [addedOperation])
     
@@ -173,7 +188,7 @@ const columns: ColumnsType<accountType> = [
                 accountListDataSource={accountListDataSource}
                 setAccountListSelectedTab={setAccountListSelectedTab}
                 addedOperation={addedOperation}
-                onChangeBalanceAccount={onChangeBalanceAccount}
+                onChangeBalanceAccounts={onChangeBalanceAccounts}
               />
             </Panel>
           </Collapse>
