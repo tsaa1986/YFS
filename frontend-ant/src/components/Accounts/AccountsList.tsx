@@ -110,7 +110,7 @@ const columns: ColumnsType<accountType> = [
       
       }
     }
-
+/*
     const onChangeBalanceAccount = (accountId: number, newBalance: number) => {
       if (props.openAccounts != undefined)
       {        
@@ -124,7 +124,7 @@ const columns: ColumnsType<accountType> = [
         })
         props.setOpenAccounts(tempAccounts)
       }
-    }
+    }*/
 
     const onChangeBalanceAccounts = (operations: IOperation[]) => {
       if (props.openAccounts != undefined)
