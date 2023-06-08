@@ -337,6 +337,7 @@ namespace YFS.Controllers
                 var listAccountWithdrawMonthlyBalanceAfterOperationMonth = (IEnumerable<AccountMonthlyBalance>)null;
                 var updatedAccountTargetMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
                 var updatedAccountWithdrawMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
+                List<Operation> listOperationReturn = new List<Operation>();
 
                 if (operationData.CategoryId == -1)
                 {
@@ -412,6 +413,8 @@ namespace YFS.Controllers
                     await _repository.Operation.RemoveOperation(operationWithdrawData);
                     await _repository.Operation.RemoveOperation(operationIncomeData);
 
+                    listOperationReturn.Add(operationWithdrawData);
+                    listOperationReturn.Add(operationIncomeData);
                 }
                 else
                 {
@@ -425,7 +428,9 @@ namespace YFS.Controllers
                     updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(operationData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthlyBalance, true);
 
                     await _repository.Operation.RemoveOperation(operationData);
-                    await _repository.AccountBalance.UpdateAccountBalance(accountTarget.AccountBalance);                   
+                    await _repository.AccountBalance.UpdateAccountBalance(accountTarget.AccountBalance);
+
+                    listOperationReturn.Add(operationData);
                 }
 
                 await _repository.SaveAsync();
@@ -434,9 +439,12 @@ namespace YFS.Controllers
                 if (accountWithdraw != null)
                     accountList.Add(accountWithdraw);
 
-                var accountResult = _mapper.Map<IEnumerable<AccountDto>>(accountList);
+                //var accountResult = _mapper.Map<IEnumerable<AccountDto>>(accountList);
 
-                return Ok(accountResult);
+                //return Ok(accountResult);
+                var operationReturn = _mapper.Map<List<OperationDto>>(listOperationReturn);
+
+                return Ok(operationReturn);
             }
             catch (Exception ex)
             {
