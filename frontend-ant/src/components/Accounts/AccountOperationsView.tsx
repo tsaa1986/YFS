@@ -1,14 +1,11 @@
-import React, { Dispatch, SetStateAction, useDebugValue, useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Layout, Popconfirm, Space, Table } from 'antd';
 import { SelectedVariantPeriod } from "./AccountSelectedPeriod";
 import { AccountGroupType, accountType, IOperation, operationAccount } from "../../api/api";
-import { AccountDataType, IDateOption } from "./AccountsList";
-import { StringGradients } from "antd/es/progress/progress";
+import { IDateOption } from "./AccountsList";
 import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
-import { appendFile } from "fs";
-import { collapseTextChangeRangesAcrossMultipleVersions } from "typescript";
-import { Item } from "rc-menu";
+
 
 interface IAccountOperationViewProps {
     selectedAccountGroupData: AccountGroupType | null
@@ -74,7 +71,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
                 operationsList.length >= 1 ? (
                 <Space size="small">
                   <a>Edit</a>
-                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDeleteOperation(record.id)}>
+                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDeleteOperation(record)}>
                         <a>Delete</a>
                     </Popconfirm>
                 </Space>
@@ -82,19 +79,16 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         },
         ]
 
-    const handleDeleteOperation = (id: number) => {
-            //const newData = operationsList.filter((item: any) => item.key !== key);
-            //setDataSource(newData);
-            console.log(id);
-            //debugger;
-            operationAccount.remove(id).then(
-                res => { debugger
+    const handleDeleteOperation = (_removeOperation: IOperation) => {
+            //console.log("remove operation: ", _removeOperation);
+            operationAccount.remove(_removeOperation.id).then(
+                res => { //debugger
                     if (res.status === 200) {
   
-                        removeOperation(id);
+                        removeOperation(_removeOperation);
                         
                         res.data.forEach(element => {
-                            onChangeBalanceAccount(element.id, 0);                     
+                            onChangeBalanceAccount(element.id, element.balance);                     
                         });                        
                         //refresh table account and operation(before check record included range)
                     }
@@ -107,6 +101,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         operation.forEach(element => {
             if (element.categoryId === -1 && element.operationAmount > 0 && element.accountId === selectedAccount?.id)
                 {
+                    //добавить условие проверки входит ли операция в вібраній диапазон дат
                     items.push(element)
                     setOperationList(items);
                     onChangeBalanceAccount(element.accountId, element.balance);
@@ -124,12 +119,13 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
 
     }
 
-    const removeOperation = (id: number) => {
-        const items = operationsList;
+    const removeOperation = (removeOperation: IOperation) => {
+        const items = [...operationsList];
 
         if (operationsList.length > 0)
-        {        
-            setOperationList(items.filter(o => o.id !== id));
+        {   
+            if (selectedAccount?.id == removeOperation.accountId)     
+                setOperationList(items.filter(o => o.id !== removeOperation.id));
         }
     }
 
