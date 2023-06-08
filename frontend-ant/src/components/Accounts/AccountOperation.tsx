@@ -31,6 +31,7 @@ interface IOperationFormProps {
     selectedAccount: accountType | undefined
     typeOperation: TypeOperation
     setAddedOperation: React.Dispatch<React.SetStateAction<IOperation[] | undefined>>
+    openAccounts: accountType[] | undefined
     //accountGroup: AccountGroupType
     //typeTransaction: TypeTransaction;
     //onChangeTypeTransaction: (typeTransaction: TypeTransaction) => void;
@@ -53,12 +54,10 @@ type categoryTreeType = {
 }
 
 
-
-
-const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation, setAddedOperation}) => {
+const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationForm, selectedAccount, typeOperation, setAddedOperation, openAccounts}) => {
     const [formOperation] = Form.useForm();
     const [selectedTypeOperation, setSelectTypeOperation] = useState<TypeOperation>(typeOperation);
-    const [openAccounts, setOpenAccounts] = useState<accountType[]>([]);
+    //const [openAccounts, setOpenAccounts] = useState(openAccounts);
     const [categoryList, setCategoryList] = useState<ICategory[] | null>([]);
     const [selectedCatagoryId, setSelectedCategoryId] = useState<number>(0);
     const [categoryTreeData, setCategoryTreeData] = useState<Array<categoryTreeType>>([]);//useState<ICategoryTree[]>([]);
@@ -71,15 +70,6 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
         }
       })
     },[])
-
-    useEffect(() => {
-      account.getListOpenAccountByUserId().then(res => {
-        if (res != undefined)
-          {                
-            setOpenAccounts(res);
-          }
-       })
-    }, [])
 
     useEffect (()=>{
       setSelectTypeOperation(typeOperation)
@@ -134,9 +124,8 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
       }, targetAccountId).then(response => {
           if (response.status === 200)
               {
-                  debugger
+                  //debugger
                   console.log(response.data)
-                  //addAccount(response.data)
                   formOperation.resetFields()
                   if (response.data != undefined)
                     {
@@ -187,33 +176,6 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
         setCategoryTreeData(tempCategoryTree)
       }*/
     }
-
-    const treeData = [
-      {
-        title: 'Node1',
-        value: '0-0',
-        key: '0-0',
-        children: [
-          {
-            title: 'Child Node1',
-            value: '0-0-1',
-            key: '0-0-1',
-          },
-          {
-            title: 'Child Node2',
-            value: '0-0-2',
-            key: '0-0-2',
-          },
-        ],
-      },
-      {
-        title: 'Node2',
-        value: '0-1',
-        key: '0-1',
-      },
-    ];
-
-    const [value, setValue] = useState<string>();
 
     return(
     <Modal

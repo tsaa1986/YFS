@@ -123,23 +123,6 @@ const columns: ColumnsType<accountType> = [
           return account;
         })
         props.setOpenAccounts(tempAccounts)
-        //let findedAccount = tempAccounts.find(acc => acc.id = accountId);
-      }
-    }
-
-    const onChangeBalanceAccount2 = (accountId: number, newBalance: number) => {
-      if (props.openAccounts != undefined)
-      {
-        let tempAccounts = props.openAccounts.map( account => {
-          if (account.id === accountId) {
-            {
-              return {...account, balance: newBalance}
-            }
-          }
-          return account;
-        })
-        props.setOpenAccounts(tempAccounts)
-        //let findedAccount = tempAccounts.find(acc => acc.id = accountId);
       }
     }
 
@@ -167,7 +150,6 @@ const columns: ColumnsType<accountType> = [
           onRow={(record, rowIndex) => {
               return {
                 onClick: (e) => { 
-                  //if (record != undefined)
                     setSelectedAccount(record);
                 } 
               } 
@@ -200,6 +182,7 @@ const columns: ColumnsType<accountType> = [
               selectedAccount={selectedAccount}
               typeOperation={selectedTypeOperation}
               setAddedOperation={setAddedOperation}    
+              openAccounts={props.openAccounts}
           />
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
         </div>

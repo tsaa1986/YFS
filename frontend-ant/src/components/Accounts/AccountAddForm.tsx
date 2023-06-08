@@ -26,7 +26,6 @@ type AddAccountFormPropsType = {
 
 
 const AccountAddForm: React.FC<AddAccountFormPropsType> = (props) => {
-    //const {visible, onCancel, onCreate, form} = props
     const [accountClosed, setAccountClosed] = useState<boolean>(false);
     const [accountName, setAccountName] = useState('');
     const [accountTypes, setAccountTypes] = useState<accountTypesResponseType>();
@@ -57,7 +56,6 @@ const AccountAddForm: React.FC<AddAccountFormPropsType> = (props) => {
           }
         }
       );
-      //console.log(currencies)
     }, [])
 
     const { TextArea } = Input;
@@ -121,7 +119,6 @@ const AccountAddForm: React.FC<AddAccountFormPropsType> = (props) => {
               onChange={(e:any)=> {
                 console.log(e)
                 setSelectedAccountGroup(e)}
-                //selectedAccountType = e;
               } 
               value={selectedAccountGroup} 
             >
