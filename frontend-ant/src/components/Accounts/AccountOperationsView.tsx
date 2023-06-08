@@ -86,15 +86,14 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             //const newData = operationsList.filter((item: any) => item.key !== key);
             //setDataSource(newData);
             console.log(id);
+            //debugger;
             operationAccount.remove(id).then(
-                res => {
+                res => { debugger
                     if (res.status === 200) {
   
                         removeOperation(id);
                         
                         res.data.forEach(element => {
-                            //changeAccountBalance(element.id, element.balance);   
-
                             onChangeBalanceAccount(element.id, 0);                     
                         });                        
                         //refresh table account and operation(before check record included range)
@@ -106,7 +105,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
     const handleAddOperation = (operation: IOperation[]) => {
         const items = [...operationsList];
         operation.forEach(element => {
-            if (element.categoryId === -1 && element.operationAmount > 0)
+            if (element.categoryId === -1 && element.operationAmount > 0 && element.accountId === selectedAccount?.id)
                 {
                     items.push(element)
                     setOperationList(items);
@@ -116,10 +115,9 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
                 {
                     onChangeBalanceAccount(element.accountId, element.balance);
                 }
-            if (element.categoryId !== -1) {
+            if (element.categoryId !== -1 && element.accountId === selectedAccount?.id) {
                 items.push(element)
                 setOperationList(items);
-                //changeAccountBalance(element.accountId, element.balance);
                 onChangeBalanceAccount(element.accountId, element.balance);
             }
         });    

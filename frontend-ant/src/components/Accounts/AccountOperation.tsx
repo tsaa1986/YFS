@@ -106,8 +106,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     },[selectedTypeOperation])
 
     const handleSubmitAddOperationForm = () => {
-      console.log('handle add operation'
-      );
+      console.log('handle add operation');
       //console.log(formOperation.getFieldValue('nameAccount'));
       let accountId = 0;
       let targetAccountId = 0;
