@@ -82,21 +82,13 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         ]
 
     const handleDeleteOperation = (_removeOperation: IOperation) => {
-            //const newData = operationsList.filter((item: any) => item.key !== key);
-            //setDataSource(newData);
-            console.log("remove operation: ", _removeOperation);
-            //debugger;
             operationAccount.remove(_removeOperation.id).then(
-                res => { debugger
+                res => { 
                     if (res.status === 200) {
   
                         removeOperation(_removeOperation);
                         
                         onChangeBalanceAccounts(res.data);
-                        //res.data.forEach(element => {
-                        //    onChangeBalanceAccount(element.id, element.balance);                     
-                        //});                        
-                        //refresh table account and operation(before check record included range)
                     }
                 }
             )
@@ -105,23 +97,25 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
     const handleAddOperation = (operation: IOperation[]) => {
         const items = [...operationsList];
         operation.forEach(element => {
-            if (element.categoryId === -1 && element.operationAmount > 0 && element.accountId === selectedAccount?.id)
+            let operationDate = new Date(element.operationDate);
+            if (items.length < 10 && selectedDateOption.dataOption === SelectedVariantPeriod.lastOperation10)
                 {
-                    //добавить условие проверки входит ли операция в вібраній диапазон дат
-                    items.push(element)
-                    setOperationList(items);
-                    //onChangeBalanceAccount(element.accountId, element.balance);
+                    if (element.accountId === selectedAccount?.id)
+                        {
+                            items.push(element)
+                            setOperationList(items);
+                        }
+                    return;
                 }
-            if (element.categoryId === -1 && element.operationAmount < 0)
-                {
-                    //onChangeBalanceAccount(element.accountId, element.balance);
+            if (operationDate  >= selectedDateOption.period.startDate && operationDate <= selectedDateOption.period.endDate)
+               { 
+                    if (element.accountId === selectedAccount?.id)
+                        {
+                            items.push(element)                            
+                            setOperationList(items);
+                        }
                 }
-            if (element.categoryId !== -1 && element.accountId === selectedAccount?.id) {
-                items.push(element)
-                setOperationList(items);
-                //onChangeBalanceAccount(element.accountId, element.balance);
-            }
-        });    
+            });    
 
     }
 
