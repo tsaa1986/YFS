@@ -45,8 +45,8 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
             align: 'center',
         },
         {
-            title: 'Category',
-            dataIndex: 'categoryId',
+            title: 'CategoryName',
+            dataIndex: 'categoryName',
             width: 400
         },
         {
