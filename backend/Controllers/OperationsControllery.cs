@@ -30,13 +30,15 @@ namespace YFS.Controllers
             var operationData = _mapper.Map<Operation>(operation);
 
             string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-            operationData.UserId = userid;                    
+            operationData.UserId = userid;
+            string transferWithdrawDescription = "";
 
-            if (operationData.AccountId == targetAccountId)
+            if ((operationData.AccountId == targetAccountId) && (operationData.CategoryId == -1))
                 return BadRequest("Target Account must be not equal Withdraw Account");
 
-            Account account = await _repository.Account.GetAccount(operationData.AccountId);         
-            
+            Account account = await _repository.Account.GetAccount(operationData.AccountId);
+            Account accountTarget = null;
+
             operationData.OperationCurrencyId = account.CurrencyId;
 
             if (operationData.TypeOperation == 1)
@@ -44,7 +46,12 @@ namespace YFS.Controllers
             if (operationData.TypeOperation == 2)
                 operationData.OperationAmount = Math.Abs(operationData.OperationAmount);
             if (operationData.TypeOperation == 3)
+            {
+                accountTarget = await _repository.Account.GetAccount(targetAccountId);
                 operationData.OperationAmount = -operationData.OperationAmount;
+                operationData.Description = operationData.Description + " [to " + accountTarget.Name + "]";
+                transferWithdrawDescription = " [from " + account.Name + "]";
+            }
 
             operationData.CurrencyAmount = operationData.OperationAmount;
 
@@ -82,8 +89,7 @@ namespace YFS.Controllers
                 {
                     var accountTargetMonthlyBalance = (AccountMonthlyBalance)null;
                     var listAccountTargetMonthlyBalanceAfterOperationMonth = (IEnumerable<AccountMonthlyBalance>)null;
-                    var updatedAccountTargetCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
-                    Account accountTarget = await _repository.Account.GetAccount(targetAccountId); 
+                    var updatedAccountTargetCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;                    
 
                     Operation transferOperaitonData = new Operation { UserId = userid,
                         TypeOperation = operationData.TypeOperation,
@@ -115,6 +121,7 @@ namespace YFS.Controllers
                     var updatedAccountTargetMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(transferOperaitonData, listAccountTargetMonthlyBalanceAfterOperationMonth, false);
                     accountTarget.AccountBalance.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.AccountBalance.Balance;
 
+                    transferOperaitonData.Description = transferWithdrawDescription;
                     await _repository.Operation.CreateOperation(transferOperaitonData);
                     await _repository.Account.UpdateAccount(accountTarget);
 
