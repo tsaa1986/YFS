@@ -33,7 +33,7 @@ namespace YFS.Controllers
             operationData.UserId = userid;                    
 
             if (operationData.AccountId == targetAccountId)
-                return BadRequest("Target Account equal Withdraw Account");
+                return BadRequest("Target Account must be not equal Withdraw Account");
 
             Account account = await _repository.Account.GetAccount(operationData.AccountId);         
             

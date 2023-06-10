@@ -15,22 +15,17 @@ namespace YFS.Service.Services
         }
         public async Task CreateOperation(Operation operation) =>
             await CreateAsync(operation);
-
-        //public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, bool trackChanges)
-        //    => await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges).Result.OrderBy(c => c.GroupOrderBy).ToListAsync();
-        //public async Task UpdateAccountGroupForUser(AccountGroup accountGroup) => 
-        //    await UpdateAsync(accountGroup);
-        //review sleect account from group
         public async Task UpdateOperation(Operation operation) =>
             await UpdateAsync(operation);
         public async Task RemoveOperation(Operation operation) =>
             await RemoveAsync(operation);
         public async Task<IEnumerable<Operation>> GetOperationsForAccount(int accountId, bool trackChanges)
                 => await FindByConditionAsync(op => ((op.AccountId == accountId)), trackChanges).Result.Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate).ToListAsync();
-
         public async Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(int accountId, DateTime startDate, DateTime endDate, bool trackChanges)
             => await FindByConditionAsync(op => ((op.AccountId == accountId) && (op.OperationDate >= startDate && op.OperationDate <= endDate) ), trackChanges)
-            .Result.Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate).ToListAsync();
+            .Result.Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate)
+            .Include(c => c.Category)
+            .ToListAsync();
 
         public Task<IEnumerable<Operation>> GetOperationsForAccountGroupForPeriod(int accountGroupId, bool trackChanges)
         {
@@ -41,6 +36,7 @@ namespace YFS.Service.Services
         public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(int accountId, bool trackChanges)
             => await FindByConditionAsync(op => ((op.AccountId == accountId)), trackChanges)
             .Result.Include(p => p.Account.AccountBalance).AsNoTracking()
+            .Include(c => c.Category)
             .OrderByDescending(op => op.OperationDate).Take(10).ToListAsync();
         //=> await Task.Run(() => RepositoryContext.Operations.Where(op => (op.AccountId == accountId))
         //.Include(p => p.Account.AccountBalance)            
@@ -50,6 +46,7 @@ namespace YFS.Service.Services
             => await FindByConditionAsync(op => op.Id.Equals(operationId), false)
             .Result.AsNoTracking()
             .Include(p => p.Account.AccountBalance).AsNoTracking()
+            .Include(c => c.Category)
             .SingleOrDefaultAsync();            
             
 

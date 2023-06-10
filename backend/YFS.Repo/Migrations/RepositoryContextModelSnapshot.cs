@@ -939,13 +939,11 @@ namespace YFS.Repo.Migrations
 
             modelBuilder.Entity("YFS.Core.Models.AccountBalance", b =>
                 {
-                    b.HasOne("YFS.Core.Models.Account", "Account")
+                    b.HasOne("YFS.Core.Models.Account", null)
                         .WithOne("AccountBalance")
                         .HasForeignKey("YFS.Core.Models.AccountBalance", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>

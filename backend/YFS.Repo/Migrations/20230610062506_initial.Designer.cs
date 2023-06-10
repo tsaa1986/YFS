@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20230530055739_initial")]
+    [Migration("20230610062506_initial")]
     partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -941,13 +941,11 @@ namespace YFS.Repo.Migrations
 
             modelBuilder.Entity("YFS.Core.Models.AccountBalance", b =>
                 {
-                    b.HasOne("YFS.Core.Models.Account", "Account")
+                    b.HasOne("YFS.Core.Models.Account", null)
                         .WithOne("AccountBalance")
                         .HasForeignKey("YFS.Core.Models.AccountBalance", "AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Account");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
