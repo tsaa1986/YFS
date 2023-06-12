@@ -20,7 +20,7 @@ namespace YFS.Core.Models
         //public User User { get; set; }
         [Required]
         public int CategoryId { get; set; }
-        public virtual Category? Category { get; set; }
+        public Category? Category { get; set; }
 
         [Required]
         public int TypeOperation { get; set; } //1-income,2-expense,3-transfer

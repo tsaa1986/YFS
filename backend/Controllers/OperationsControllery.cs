@@ -77,11 +77,13 @@ namespace YFS.Controllers
 
             await _repository.Operation.CreateOperation(operationData);
             await _repository.Account.UpdateAccount(account);
-
             await _repository.SaveAsync();
+            operationData = await _repository.Operation.GetOperationById(operationData.Id);            
+            
+            var operationDataReturnDto = _mapper.Map<OperationDto>(operationData);
 
-            List<Operation> listOperationReturn = new List<Operation>();
-            listOperationReturn.Add(operationData);
+            List<OperationDto> listOperationReturn = new List<OperationDto>();            
+            listOperationReturn.Add(operationDataReturnDto);
 
             if (operationData.TypeOperation == 3) //transfer Money
             {
@@ -89,7 +91,7 @@ namespace YFS.Controllers
                 {
                     var accountTargetMonthlyBalance = (AccountMonthlyBalance)null;
                     var listAccountTargetMonthlyBalanceAfterOperationMonth = (IEnumerable<AccountMonthlyBalance>)null;
-                    var updatedAccountTargetCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;                    
+                    //var updatedAccountTargetCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;                    
 
                     Operation transferOperaitonData = new Operation { UserId = userid,
                         TypeOperation = operationData.TypeOperation,
@@ -115,20 +117,21 @@ namespace YFS.Controllers
                     else
                     {
                         List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>() { accountTargetMonthlyBalance };
-                        updatedAccountTargetCurrentMonthlyBalance = ChangeAccountMonthlyBalanceNew(transferOperaitonData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthly, false);
+                        ChangeAccountMonthlyBalanceNew(transferOperaitonData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthly, false);
                     }
 
-                    var updatedAccountTargetMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(transferOperaitonData, listAccountTargetMonthlyBalanceAfterOperationMonth, false);
+                    ChangeAccountMonthlyBalanceNew(transferOperaitonData, listAccountTargetMonthlyBalanceAfterOperationMonth, false);
                     accountTarget.AccountBalance.Balance = Math.Abs(operationData.CurrencyAmount) + accountTarget.AccountBalance.Balance;
 
                     transferOperaitonData.Description = transferWithdrawDescription;
                     await _repository.Operation.CreateOperation(transferOperaitonData);
                     await _repository.Account.UpdateAccount(accountTarget);
-
-
                     await _repository.SaveAsync();
 
-                    listOperationReturn.Add(transferOperaitonData);
+                    transferOperaitonData = await _repository.Operation.GetOperationById(transferOperaitonData.Id);
+                    var operationTransferDataReturnDto = _mapper.Map<OperationDto>(operationData);
+
+                    listOperationReturn.Add(operationTransferDataReturnDto);
                 }
             }           
 
@@ -446,9 +449,6 @@ namespace YFS.Controllers
                 if (accountWithdraw != null)
                     accountList.Add(accountWithdraw);
 
-                //var accountResult = _mapper.Map<IEnumerable<AccountDto>>(accountList);
-
-                //return Ok(accountResult);
                 var operationReturn = _mapper.Map<List<OperationDto>>(listOperationReturn);
 
                 return Ok(operationReturn);
