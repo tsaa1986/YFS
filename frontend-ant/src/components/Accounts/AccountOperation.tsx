@@ -316,21 +316,15 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
                >
               <DatePicker format={dateFormat}/>
             </Form.Item>
-
-            {/*<Form.Item>
-              {/*}
-            <Button onClick={() => {return <div>{account?.key}</div>}}>{account?.key}</Button>
-            </Form.Item>*/}
-            
+           
             <Form.Item
             name="tag"
-            label="Tag"
-            >
-             <Input />
+            label="Tag">
+            <Input />
             </Form.Item>
 
             <Form.Item name="description" label="Description">
-              <Input type="textarea" value={selectedAccount?.balance}/>
+              <Input type="textarea" value=""/>
             </Form.Item>
         </Form>
       </Modal>

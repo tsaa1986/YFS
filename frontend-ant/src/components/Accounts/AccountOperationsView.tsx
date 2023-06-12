@@ -179,11 +179,11 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
 
     return (
         <Layout>
-        <Space wrap>
+        {/*<Space wrap>
             <div>{selectedAccountGroupData?.accountGroupId}</div>
             <div>{account?.balance}</div>
             <div>{selectedDateOption.period.startDate.toDateString()}</div>
-        </Space>
+        </Space>*/}
         <Table  size="small"  
                 columns={operationColumns} dataSource={operationsList} 
                 rowKey={record => record.id}

@@ -38,7 +38,7 @@ const onChangeMonth: DatePickerProps['onChange'] = (date, dateString) => {
   };
 
 const AccountSelectedPeriod: React.FC<IAccountSelectedPeriod> = ({selectedDateOption, setSelectedDateOption}) => {
-    const [size, setSize] = useState<SizeType>('small');
+    const [size, setSize] = useState<SizeType>('middle');
     const [selectOption, setSelectOption] = useState<SelectedVariantPeriod>(1);
     const [picker, setPicker] = useState("month");
     const [today, setToday] = useState(new Date());
