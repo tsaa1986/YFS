@@ -405,18 +405,6 @@ namespace YFS.Controllers
                     if (listAccountWithdrawMonthlyBalanceAfterOperationMonth.Count() > 0)
                         updatedAccountWithdrawMonthlyBalancesAfter = ChangeAccountMonthlyBalanceNew(operationWithdrawData, listAccountWithdrawMonthlyBalanceAfterOperationMonth, true);
 
-                    //if (updatedAccountTargetMonthlyBalancesAfter != null)
-                    //    foreach (AccountMonthlyBalance a in updatedAccountTargetMonthlyBalancesAfter)
-                    //    { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
-
-                    //if (updatedAccountWithdrawMonthlyBalancesAfter != null)
-                    //    foreach (AccountMonthlyBalance a in updatedAccountWithdrawMonthlyBalancesAfter) 
-                    //    { _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(a); }
-
-
-                    //await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountWithdrawCurrentMonthlyBalance);
-                    //await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountTargetCurrentMonthlyBalance);
-
                     await _repository.AccountBalance.UpdateAccountBalance(operationWithdrawData.Account.AccountBalance);
                     await _repository.AccountBalance.UpdateAccountBalance(operationIncomeData.Account.AccountBalance);
 

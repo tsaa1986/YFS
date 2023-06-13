@@ -5,7 +5,7 @@ namespace YFS.Core.Dtos
     public class AccountDto
     {
         public int Id { get; set; }
-        //add userid
+        public int AccountStatus { get; set; }
         public int Favorites { get; set; }
         public int AccountGroupId { get; set; }
         public int AccountTypeId { get; set; }
