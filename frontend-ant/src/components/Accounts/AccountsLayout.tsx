@@ -33,17 +33,10 @@ interface ITabItem {
   closable: false,
 }
 type tabItems = ITabItem[];
-/*
-interface Person {
-   name: string
-   age: number
-}
-type Workplace = Person[]*/ 
+
 
 export const AccountsTab: React.FC = () => { 
   const [activeTabKey, setActiveTabKey] = useState('0');
-  //const [itemsAccountsGroup2, setItems2] = useState<tabItems>([]);
-  //const newTabIndex = useRef(0);
   const [accountListSelectedTab, setAccountListSelectedTab] = useState<accountListType>();
   const [openAccounts, setOpenAccounts] = useState<accountType[]>([])
   const initialItemsAccountsGroup: initialItemsType = [
@@ -210,13 +203,14 @@ const handleSubmitAddGroupForm = () => {
     form.resetFields()
     setVisibleAddGroupForm(false)
 }
-const handleSubmitAddAccountForm = () => {
+const handleSubmitAddAccountForm = (accountStatus: number, selectedFavorites: Boolean) => {
   console.log('handle');
   console.log(formAddAccount.getFieldValue('nameAccount'));
-
+  //debugger
   account.add({
     "id": 0,
-    "favorites": formAddAccount.getFieldValue('favorites'),
+    "accountStatus": accountStatus,
+    "favorites": selectedFavorites == true ? 1 : 0,
     "accountGroupId": formAddAccount.getFieldValue('accountGroupId'),
     "accountTypeId": formAddAccount.getFieldValue('accountTypeId'),
     "currencyId": formAddAccount.getFieldValue('currencyId'),

@@ -1,9 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Button, Tabs, Form, Input, Modal, InputNumber, Divider,
-  Checkbox, Select, DatePicker } from "antd";
-import { account, accountGroups, accountTypesResponseType, bankType, currency, currencyType,
-accountListType, 
-accountType} from '../../api/api';
+import React, { useEffect, useState } from 'react';
+import { Form, Input, Modal, InputNumber, Checkbox, Select, DatePicker } from "antd";
+import { account, accountTypesResponseType, bankType, currency, currencyType} from '../../api/api';
 import './AccountsLayout.css';
 
 type initialItemsType = {
@@ -71,8 +68,11 @@ const AccountAddForm: React.FC<AddAccountFormPropsType> = (props) => {
         onOk={() => {
             props.form
               .validateFields()
-              .then((values: any) => {
-                props.onCreate(values);
+              .then((values: any) => {              
+                //debugger
+                accountClosed == false ? props.onCreate(1, selectedFavorites) : props.onCreate(0, selectedFavorites); //account disable check
+                //props.onCreate(values);
+                setSelectedFavorites(false);
               })
               .catch((info: any) => {
                 console.log("Validate Failed:", info);
@@ -80,7 +80,7 @@ const AccountAddForm: React.FC<AddAccountFormPropsType> = (props) => {
             }
           }
         //onOk={onCreate}
-      >
+      >        
         <Checkbox
           checked={accountClosed}
           onChange={(e) => setAccountClosed(e.target.checked)}

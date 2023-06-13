@@ -85,6 +85,7 @@ export type accountTypesResponseType = [{
 
 export type accountType = {
     id: number,
+    accountStatus: number,
     favorites: number,
     accountGroupId: number,
     accountTypeId: number,
@@ -143,15 +144,6 @@ export const account = {
             return null
         })
     }
-    /*getListByGroupId2(accountGroupId: string) {
-        return instancePrivate.get<AccountGroupsResponseType>(`${BASE_URL}/Accounts/${accountGroupId}`)
-        .then( res=> {
-            console.log(res.data)
-            return res.data} )
-        .catch((err) => {
-            console.log(err);
-            return null})
-    }*/
 }
 
 export interface ICategory {
