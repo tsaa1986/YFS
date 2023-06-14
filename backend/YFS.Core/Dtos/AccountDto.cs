@@ -10,6 +10,7 @@ namespace YFS.Core.Dtos
         public int AccountGroupId { get; set; }
         public int AccountTypeId { get; set; }
         public int CurrencyId { get; set; }
+        public string? CurrencyName { get; set; }
         public int BankId { get; set; }
         public string? Name { get; set; }
         public DateTime OpeningDate { get; set; }
