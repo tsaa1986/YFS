@@ -29,8 +29,6 @@ interface IOperationDataType {
 }
 
 const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAccountGroupData, selectedAccount, selectedDateOption, 
-    accountListDataSource, 
-    setAccountListSelectedTab,
     addedOperation,
     onChangeBalanceAccounts}) => {
     const [account, setAccount] = useState(selectedAccount);

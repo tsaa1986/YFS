@@ -6,6 +6,7 @@ import AccountOperationsView from './AccountOperationsView';
 import { Collapse } from 'antd';
 import AccountSelectedPeriod, { SelectedVariantPeriod } from './AccountSelectedPeriod';
 import OperationForm, { TypeOperation } from './AccountOperation';
+import { NumericFormat } from 'react-number-format';
 
 const { Panel } = Collapse;
 
@@ -96,7 +97,27 @@ const columns: ColumnsType<accountType> = [
     width:200,
     align:'center',
     dataIndex: 'balance',
-    key: 'balance'
+    key: 'balance',
+    render: (_, {balance} ) => {
+      let colorBalance: string = 'grey';
+      if (balance > 0) 
+        { colorBalance = 'green' }
+      if (balance < 0) 
+        { colorBalance = 'red' }
+      if (balance == 0) 
+        colorBalance = 'grey'
+      return (
+        //<a color={color}>{balance}</a>
+        <span style={{color: colorBalance}}>
+        <NumericFormat 
+          displayType="text" 
+          value={balance} 
+          thousandSeparator=", " 
+          renderText={(value) => <b>{value}</b>}
+        />
+        </span>
+      );
+    }
   },
   {
     title: 'Name',
