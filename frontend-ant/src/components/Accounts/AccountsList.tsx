@@ -74,8 +74,18 @@ const columns: ColumnsType<accountType> = [
     dataIndex: 'currencyName',
     key: 'currencyName',
     render: (_, { currencyName } ) => {
+      let color: string = "grey"
+      switch(currencyName) {
+        case 'UAH': color ='yellow'
+        break
+        case 'USD': color = 'green'
+        break
+        case 'EUR': color = 'blue'
+        break
+        default: color = "grey"
+      }
       return (
-        <Tag color={'green'} key={currencyName}>
+        <Tag color={color} key={currencyName}>
           {currencyName.toUpperCase()}  
         </Tag>
       );
