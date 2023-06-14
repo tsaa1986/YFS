@@ -90,6 +90,7 @@ export type accountType = {
     accountGroupId: number,
     accountTypeId: number,
     currencyId: number,
+    currencyName: string,
     bankId: number,
     name: string,
     openingDate: Date,

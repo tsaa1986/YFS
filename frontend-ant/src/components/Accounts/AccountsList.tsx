@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Divider } from "antd";
+import { Table, Divider, Tag } from "antd";
 import { account, accountGroups, AccountGroupType, accountListType, accountType, IOperation } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
@@ -25,6 +25,7 @@ export interface AccountDataType {
   key: React.Key;
   id: number;
   name: string;
+  currency: string;
   balance: number;
 }
 
@@ -67,20 +68,37 @@ const columns: ColumnsType<accountType> = [
     },
   },
   {
-    title: 'Name',
-    dataIndex: 'name',
-    key: 'name'
+    title: 'Currency',
+    width:100,
+    align:'center',
+    dataIndex: 'currencyName',
+    key: 'currencyName',
+    render: (_, { currencyName } ) => {
+      return (
+        <Tag color={'green'} key={currencyName}>
+          {currencyName.toUpperCase()}  
+        </Tag>
+      );
+    }
   },
   {
     title: 'Balance',
+    width:200,
+    align:'center',
     dataIndex: 'balance',
     key: 'balance'
   },
   {
+    title: 'Name',
+    //width:300,
+    dataIndex: 'name',
+    key: 'name'
+  },
+  /*{
     title: 'id',
     dataIndex: 'id',
     key: 'id'
-  },
+  },*/
 ];
     const [accountListDataSource, setAccountListSelectedTab] = useState<accountType[]>([]);
     const [selectedAccount, setSelectedAccount] = useState<accountType>();
@@ -172,6 +190,8 @@ const columns: ColumnsType<accountType> = [
           }
           columns={columns} 
           dataSource={accountListDataSource}
+          size='small'
+          
           //bordered
           
           />

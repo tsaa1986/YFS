@@ -47,7 +47,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         {
             title: 'CategoryName',
             dataIndex: 'categoryName',
-            width: 400
+            width: 300
         },
         {
             title: 'Amount',
@@ -62,7 +62,7 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         {
             title: 'Description',
             dataIndex: 'description',
-            width: 200,
+            width: 300,
         },
         {
             title: 'Action',

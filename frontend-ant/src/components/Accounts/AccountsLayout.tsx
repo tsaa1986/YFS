@@ -214,6 +214,7 @@ const handleSubmitAddAccountForm = (accountStatus: number, selectedFavorites: Bo
     "accountGroupId": formAddAccount.getFieldValue('accountGroupId'),
     "accountTypeId": formAddAccount.getFieldValue('accountTypeId'),
     "currencyId": formAddAccount.getFieldValue('currencyId'),
+    "currencyName": "",
     "bankId": formAddAccount.getFieldValue('bankId'),
     "name": formAddAccount.getFieldValue('nameAccount'),
     "balance": formAddAccount.getFieldValue('balance'),
