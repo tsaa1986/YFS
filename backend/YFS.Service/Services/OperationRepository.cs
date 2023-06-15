@@ -44,8 +44,8 @@ namespace YFS.Service.Services
 
         public async Task<Operation?> GetOperationById(int operationId)
             => await FindByConditionAsync(op => op.Id.Equals(operationId), false)
-            .Result.AsNoTracking()
-            .Include(p => p.Account.AccountBalance).AsNoTracking()
+            .Result
+            .Include(p => p.Account.AccountBalance)
             .Include(c => c.Category)
             .SingleOrDefaultAsync();            
             

@@ -35,7 +35,7 @@ namespace YFS.Service.Services
         public async Task<Account?> GetAccount(int _accountId) =>
             await FindByConditionAsync(a => a.Id.Equals(_accountId), false)
                 .Result
-                .Include(c => c.Currency)
+                .Include(c => c.Currency).AsNoTracking()
                 .Include(p => p.AccountBalance)
                 .SingleOrDefaultAsync();
 
