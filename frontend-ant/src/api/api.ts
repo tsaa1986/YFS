@@ -196,6 +196,9 @@ export const operationAccount = {
     remove(id: number) {
         return instancePrivate.delete<IOperation[]>(`${BASE_URL}/Operations/${id}`)
     },
+    removeTransfer(id: number) {
+        return instancePrivate.delete<IOperation[]>(`${BASE_URL}/Operations/transfer/${id}`)
+    },
     getOperationsAccountForPeriod(accountId: number, startDate: Date, endDate: Date) {
         let sDate: string = moment(startDate).format('YYYY-MM-DD');
         let eDate: string = moment(endDate).format('YYYY-MM-DD');

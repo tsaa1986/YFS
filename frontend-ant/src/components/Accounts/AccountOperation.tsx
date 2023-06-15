@@ -123,13 +123,27 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
         "tag": formOperation.getFieldValue('tag')
       }, targetAccountId).then(response => {
           if (response.status === 200)
-              {
-                  //debugger
+              {                  
                   console.log(response.data);
                   setAddedOperation(response.data);
                   formOperation.resetFields();                                                                      
                   setOpenOperationForm(false);
               }
+      }).catch(res => {
+        debugger
+        const errorData = res.response.data;
+        if (selectedTypeOperation == TypeOperation.Transfer)
+        {
+        const operationId = errorData.operationId
+        if (operationId !== undefined)
+          {
+            operationAccount.removeTransfer(operationId).then(
+              res => {console.log("error during create operation. on remove wrong operation:", res)}
+            )
+          } 
+        }
+        formOperation.resetFields();                                                                      
+        setOpenOperationForm(false);
       });  
     
     }
