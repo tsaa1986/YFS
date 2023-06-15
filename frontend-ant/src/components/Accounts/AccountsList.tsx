@@ -159,21 +159,6 @@ const columns: ColumnsType<accountType> = [
       
       }
     }
-/*
-    const onChangeBalanceAccount = (accountId: number, newBalance: number) => {
-      if (props.openAccounts != undefined)
-      {        
-        let tempAccounts = props.openAccounts.map( account => {          
-          if (account.id === accountId) {
-            {
-              return {...account, balance: newBalance}
-            }
-          }
-          return account;
-        })
-        props.setOpenAccounts(tempAccounts)
-      }
-    }*/
 
     const onChangeBalanceAccounts = (operations: IOperation[]) => {
       if (props.openAccounts != undefined)
@@ -222,15 +207,12 @@ const columns: ColumnsType<accountType> = [
           columns={columns} 
           dataSource={accountListDataSource}
           size='small'
-          
-          //bordered
-          
           />
           
     <div>
           <Divider />
           <Collapse defaultActiveKey={['1']} ghost>
-            <Panel header={`This is panel header ${selectedAccount?.name}`} key="1">
+           { selectedAccount !== undefined && <Panel header={<b>List of operations on account:  {selectedAccount.name}</b>} key="1">
               <AccountSelectedPeriod selectedDateOption={selectedDateOption} setSelectedDateOption={setSelectedDateOption}/>  
               <AccountOperationsView 
                 selectedAccountGroupData={props.accountGroupData} 
@@ -242,7 +224,9 @@ const columns: ColumnsType<accountType> = [
                 onChangeBalanceAccounts={onChangeBalanceAccounts}
               />
             </Panel>
+          }
           </Collapse>
+          
           <OperationForm open={openOperationForm} 
               setOpenOperationForm={setOpenOperationForm}
               selectedAccount={selectedAccount}
