@@ -29,8 +29,22 @@ namespace YFS.Controllers
             accountData.UserId = userid;
             accountData.AccountBalance = new AccountBalance { Balance = account.Balance };
             await _repository.Account.CreateAccount(accountData);
-            //await _repository.AccountBalance.CreateBalance(new AccountBalance());
-            //await _repository.Acc .CreateAccount(accountData);
+
+            if (account.Balance != 0)
+            {
+                accountData.Operations = new List<Operation>() { {
+                    new Operation {
+                        AccountId = account.Id,
+                        UserId= userid,
+                        OperationAmount = account.Balance,
+                        OperationCurrencyId = account.CurrencyId,
+                        CurrencyAmount = account.Balance,
+                        Description = "openning account",
+                        TypeOperation = account.Balance > 0 ? 2 : 1,
+                        CategoryId = -2, 
+                        OperationDate = account.OpeningDate,
+                    } } };
+            }
             await _repository.SaveAsync();
 
             var accountReturn = _mapper.Map<AccountDto>(accountData);

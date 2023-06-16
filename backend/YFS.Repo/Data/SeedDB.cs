@@ -34,8 +34,8 @@ namespace YFS.Repo.Data
                 {
                     if (accGroup.AccountGroupNameEn == "Cash") {
                          accounts.Add(new Account { UserId = _userid, AccountStatus=1, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
-                            CurrencyId = 980, BankId = 1, Name = "Wallet UAH", OpeningDate = new DateTime(),
-                            Note = "wallet uah", AccountBalance = new AccountBalance { Balance = 2000 }
+                            CurrencyId = 980, BankId = 1, Name = "Wallet", OpeningDate = new DateTime(),
+                            Note = "wallet uah", AccountBalance = new AccountBalance { Balance = 0 }
                          });
                         accounts.Add(new Account
                         {
@@ -46,7 +46,7 @@ namespace YFS.Repo.Data
                             AccountTypeId = 1,
                             CurrencyId = 840,
                             BankId = 1,
-                            Name = "Wallet USD",
+                            Name = "Wallet",
                             OpeningDate = new DateTime(),
                             Note = "wallet usd",
                             AccountBalance = new AccountBalance()
@@ -60,7 +60,7 @@ namespace YFS.Repo.Data
                             AccountTypeId = 1,
                             CurrencyId = 978,
                             BankId = 1,
-                            Name = "Wallet EURO",
+                            Name = "Wallet",
                             OpeningDate = new DateTime(),
                             Note = "wallet euro",
                             AccountBalance = new AccountBalance()
@@ -77,7 +77,7 @@ namespace YFS.Repo.Data
                             AccountTypeId = 4,
                             CurrencyId = 840,
                             BankId = 1,
-                            Name = "MonoBank USD",
+                            Name = "Mono",
                             OpeningDate = new DateTime(),
                             Note = "monobank usd",
                             AccountBalance = new AccountBalance()
@@ -108,6 +108,20 @@ namespace YFS.Repo.Data
                             Name = "WhiteMono",
                             OpeningDate = new DateTime(),
                             Note = "monobank uah",
+                            AccountBalance = new AccountBalance()
+                        });
+                        accounts.Add(new Account
+                        {
+                            UserId = _userid,
+                            Favorites = 0,
+                            AccountStatus = 1,
+                            AccountGroupId = accGroup.AccountGroupId,
+                            AccountTypeId = 4,
+                            CurrencyId = 978,
+                            BankId = 1,
+                            Name = "Mono",
+                            OpeningDate = new DateTime(),
+                            Note = "monobank euro",
                             AccountBalance = new AccountBalance()
                         });
                     }

@@ -10,6 +10,15 @@ namespace YFS.Repo.Data
         public void Configure(EntityTypeBuilder<Category> builder)
         {
             builder.HasData(
+               new Category
+               {
+                   Id = -2,
+                   RootId = 0,
+                   Name_UA = "Корегування балансу рахунка",
+                   Name_ENG = "Account Balance adjustment",
+                   Name_RU = "Корректировка баланса счета",
+                   Note = ""
+               },
                 new Category
                 {
                     Id = -1,
