@@ -22,7 +22,6 @@ namespace YFS.Service.Services
         public async Task<AccountBalance?> GetAccountBalance(int _accountId) =>
             await FindByConditionAsync(c => c.Id.Equals(_accountId), false)
                 .Result
-                //.AsNoTracking()
                 .SingleOrDefaultAsync();
     }
 }

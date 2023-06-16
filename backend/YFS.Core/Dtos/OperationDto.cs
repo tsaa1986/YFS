@@ -8,7 +8,7 @@ namespace YFS.Core.Dtos
     public class OperationDto
     {
         public int Id { get; set; }
-        //public int TransferOperationId { get; set; } //for transfer operation between accounts
+        public int TransferOperationId { get; set; } //for transfer operation between accounts
         //public string UserId { get; set; }
         public int CategoryId { get; set; }
         public string? CategoryName { get; set; }

@@ -20,7 +20,8 @@ namespace YFS.Service.Services
         public async Task RemoveOperation(Operation operation) =>
             await RemoveAsync(operation);
         public async Task<IEnumerable<Operation>> GetOperationsForAccount(int accountId, bool trackChanges)
-                => await FindByConditionAsync(op => ((op.AccountId == accountId)), trackChanges).Result.Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate).ToListAsync();
+                => await FindByConditionAsync(op => ((op.AccountId == accountId)), trackChanges)
+            .Result.Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate).ToListAsync();
         public async Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(int accountId, DateTime startDate, DateTime endDate, bool trackChanges)
             => await FindByConditionAsync(op => ((op.AccountId == accountId) && (op.OperationDate >= startDate && op.OperationDate <= endDate) ), trackChanges)
             .Result.Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate)
