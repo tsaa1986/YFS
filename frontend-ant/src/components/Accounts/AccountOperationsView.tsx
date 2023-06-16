@@ -6,6 +6,7 @@ import { AccountDataType, IDateOption } from "./AccountsList";
 
 import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
+import { TypeOperation } from "./AccountOperation";
 
 
 interface IAccountOperationViewProps {
@@ -80,6 +81,19 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         ]
 
     const handleDeleteOperation = (_removeOperation: IOperation) => {
+        if (_removeOperation.typeOperation === TypeOperation.Transfer) {
+            operationAccount.removeTransfer(_removeOperation.id).then(
+                res => { 
+                    if (res.status === 200) {
+  
+                        removeOperation(_removeOperation);
+                        
+                        onChangeBalanceAccounts(res.data);
+                    }
+                }
+            )
+        }
+        else {
             operationAccount.remove(_removeOperation.id).then(
                 res => { 
                     if (res.status === 200) {
@@ -90,6 +104,8 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
                     }
                 }
             )
+        }
+
     };
 
     const handleAddOperation = (operation: IOperation[]) => {
