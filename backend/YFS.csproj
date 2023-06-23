@@ -18,18 +18,22 @@
     <Compile Remove="YFS.Core\**" />
     <Compile Remove="YFS.Repo\**" />
     <Compile Remove="YFS.Service\**" />
+    <Compile Remove="YFS.Tests\**" />
     <Content Remove="Migrations\**" />
     <Content Remove="YFS.Core\**" />
     <Content Remove="YFS.Repo\**" />
     <Content Remove="YFS.Service\**" />
+    <Content Remove="YFS.Tests\**" />
     <EmbeddedResource Remove="Migrations\**" />
     <EmbeddedResource Remove="YFS.Core\**" />
     <EmbeddedResource Remove="YFS.Repo\**" />
     <EmbeddedResource Remove="YFS.Service\**" />
+    <EmbeddedResource Remove="YFS.Tests\**" />
     <None Remove="Migrations\**" />
     <None Remove="YFS.Core\**" />
     <None Remove="YFS.Repo\**" />
     <None Remove="YFS.Service\**" />
+    <None Remove="YFS.Tests\**" />
   </ItemGroup>
 
   <ItemGroup>
