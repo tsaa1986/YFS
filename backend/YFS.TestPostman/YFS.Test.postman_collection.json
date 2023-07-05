@@ -1,0 +1,18 @@
+{
+	"info": {
+		"_postman_id": "a3c9e443-48cb-40f7-ac1e-26a848cc9691",
+		"name": "YFS.Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "26263243"
+	},
+	"item": [
+		{
+			"name": "CheckLoginDemoser",
+			"request": {
+				"method": "GET",
+				"header": []
+			},
+			"response": []
+		}
+	]
+}

@@ -22,7 +22,7 @@ namespace YFS.IntegrationTests
 
                 services.AddDbContext<RepositoryContext>(options =>
                 {
-                    options.UseInMemoryDatabase("InMemoryYFSTest");
+                    options.UseInMemoryDatabase("YFSTest");
                 });
 
                 var sp = services.BuildServiceProvider();
