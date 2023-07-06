@@ -7,10 +7,613 @@
 	},
 	"item": [
 		{
-			"name": "CheckLoginDemoser",
+			"name": "Currency",
+			"item": [
+				{
+					"name": "ReturnCurrenciesList",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });\r",
+									"pm.test('Number of Currencies = ' + jsonData.length, function () {\r",
+									"    pm.expect(jsonData.length).to.be.above(0);\r",
+									"})\r",
+									"pm.test(\"Currency UAH is exist\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"UAH\");}\r",
+									"    );\r",
+									"pm.test(\"Currency USD is exist\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"USD\");}\r",
+									"    );\r",
+									"pm.test(\"Currency EUR is exist\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"EUR\");}\r",
+									"    );\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/api/Currency",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Currency"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "ReturnCategoriesLIst",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });\r",
+									"pm.test('Number of Categories = ' + jsonData.length, function () {\r",
+									"    pm.expect(jsonData.length).to.be.above(0);\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify JSON Array of Objects\", function () {\r",
+									"pm.expect(jsonData).to.be.an(\"array\");\r",
+									"jsonData.forEach(function (obj) {\r",
+									"        pm.expect(obj).to.have.property(\"id\");\r",
+									"    });\r",
+									"})\r",
+									"\r",
+									"pm.test(\"Verify Exist categories: Account Balance adjustment\" , function() {\r",
+									"    var accountBalanceAdjustmentCategory = jsonData.find(function(obj) {\r",
+									"        return obj.id === -2;\r",
+									"    });\r",
+									"\r",
+									"    pm.expect(accountBalanceAdjustmentCategory, \"Account Balance adjustment category not found\").to.exist;\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/api/Category",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Category"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AccountGroups",
+			"item": [
+				{
+					"name": "ReturnAccountGroupsForDemoUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test('Number of AccountGruops For DemoUser = ' + jsonData.length, function () {\r",
+									"    pm.expect(jsonData.length).to.equal(3);\r",
+									"})\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/api/AccountGroups",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"AccountGroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateAccountGroups1ForDemoUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });\r",
+									"\r",
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"AccountGroupsId1DemoUser\", jsonData.accountGroupId);\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"accountGroupNameRu\": \"DemoGroup1Ru\",\r\n  \"accountGroupNameEn\": \"DemoGroup1En\",\r\n  \"accountGroupNameUa\": \"DemoGroup1Ua\",\r\n  \"groupOrderBy\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/AccountGroups",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"AccountGroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreateAccountGroups2ForDemoUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });\r",
+									"\r",
+									"pm.environment.set(\"AccountGroupsId2DemoUser\", jsonData.accountGroupId);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"accountGroupNameRu\": \"DemoGroup2Ru\",\r\n  \"accountGroupNameEn\": \"DemoGroup2En\",\r\n  \"accountGroupNameUa\": \"DemoGroup2Ua\",\r\n  \"groupOrderBy\": 5\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/AccountGroups",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"AccountGroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateAccountGroups1ForDemoUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"accountGroupId\":{{AccountGroupsId1DemoUser}},\r\n  \"accountGroupNameRu\": \"DemoGroup1RuUpdated\",\r\n  \"accountGroupNameEn\": \"DemoGroup1EnUpdated\",\r\n  \"accountGroupNameUa\": \"DemoGroup1UaUpdated\",\r\n  \"groupOrderBy\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/AccountGroups",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"AccountGroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateAccountGroups2ForDemoUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"accountGroupId\":{{AccountGroupsId2DemoUser}},\r\n  \"accountGroupNameRu\": \"DemoGroup2RuUpdated\",\r\n  \"accountGroupNameEn\": \"DemoGroup2EnUpdated\",\r\n  \"accountGroupNameUa\": \"DemoGroup2UaUpdated\",\r\n  \"groupOrderBy\": 4\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/AccountGroups",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"AccountGroups"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReturnAccountGroupsCheckExistNewGroup",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test('Number of AccountGruops For DemoUser = ' + jsonData.length, function () {\r",
+									"    pm.expect(jsonData.length).to.be.above(3);\r",
+									"})\r",
+									"pm.test(\"DemoGroup1En is exist\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"DemoGroup1En\");\r",
+									"});\r",
+									"pm.test(\"DemoGroup2En is exist\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"DemoGroup2En\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/api/AccountGroups",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"AccountGroups"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Accounts",
+			"item": [
+				{
+					"name": "ReturnOpenAccountsByDemoUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.test('Number of Accounts For DemoUser = ' + jsonData.length, function () {\r",
+									"    pm.expect(jsonData.length).to.be.above(2);\r",
+									"})"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Accounts/openAccountsByUserId",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Accounts",
+								"openAccountsByUserId"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "ReturnDemoUserInfo",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"UserId\", jsonData.id);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"pm.test(\"Demo user is exist\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include(\"Demo\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{JwtToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/api/Authentication/me",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"Authentication",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ReturnJwtTokenLoginDemUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.environment.set(\"JwtToken\", jsonData.token);\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userName\": \"demo\",\r\n  \"password\": \"123$qweR\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{BaseUrl}}/api/Authentication/sign-in",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"Authentication",
+						"sign-in"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ReturnAccountTypes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"    });\r",
+							"pm.test('Number of AccountTypes = ' + jsonData.length, function () {\r",
+							"    pm.expect(jsonData.length).to.be.above(0);\r",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"url": {
+					"raw": "{{BaseUrl}}/api/AccountTypes",
+					"host": [
+						"{{BaseUrl}}"
+					],
+					"path": [
+						"api",
+						"AccountTypes"
+					]
+				}
 			},
 			"response": []
 		}

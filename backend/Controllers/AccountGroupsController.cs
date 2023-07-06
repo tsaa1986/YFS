@@ -64,7 +64,7 @@ namespace YFS.Data.Controllers
 
             await _repository.AccountGroup.UpdateAccountGroupForUser(accountGroupData);
             await _repository.SaveAsync();
-            return NoContent();
+            return Ok(accountGroupData);
         }
     }
 }
