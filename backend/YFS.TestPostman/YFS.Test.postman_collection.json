@@ -483,103 +483,540 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "ReturnAccountsByGroupIdForDemoUser",
+					"request": {
+						"method": "GET",
+						"header": []
+					},
+					"response": []
+				},
+				{
+					"name": "CreateAccount",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"accountStatus\": 1,\r\n  \"favorites\": 1,\r\n  \"accountGroupId\": 1,\r\n  \"accountTypeId\": 1,\r\n  \"currencyId\": 980,\r\n  \"bankId\": 1,\r\n  \"name\": \"wallet-test cash\",\r\n  \"openingDate\": \"2023-07-07T06:07:50.136Z\",\r\n  \"note\": \"note test\",\r\n  \"balance\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Accounts/openAccountsByUserId",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Accounts",
+								"openAccountsByUserId"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UpdateAccount For DemoUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Account is updated\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData.name).to.eql(\"wallet-test updated\");\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 1,\r\n  \"accountStatus\": 0,\r\n  \"favorites\": 0,\r\n  \"accountGroupId\": 1,\r\n  \"accountTypeId\": 1,\r\n  \"currencyId\": 980,\r\n  \"bankId\": 1,\r\n  \"name\": \"wallet-test updated\",\r\n  \"openingDate\": \"2023-07-07T06:16:16.778Z\",\r\n  \"note\": \"note upddated\",\r\n  \"balance\": 0\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Accounts",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Accounts"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
 		{
-			"name": "ReturnDemoUserInfo",
-			"event": [
+			"name": "Auth",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json();\r",
-							"\r",
-							"pm.environment.set(\"UserId\", jsonData.id);\r",
-							"\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    });\r",
-							"pm.test(\"Demo user is exist\", function () {\r",
-							"    pm.expect(pm.response.text()).to.include(\"Demo\");\r",
-							"});\r",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "bearer",
-					"bearer": [
+					"name": "ReturnDemoUserInfo",
+					"event": [
 						{
-							"key": "token",
-							"value": "{{JwtToken}}",
-							"type": "string"
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"UserId\", jsonData.id);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });\r",
+									"pm.test(\"Demo user is exist\", function () {\r",
+									"    pm.expect(pm.response.text()).to.include(\"Demo\");\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
 						}
-					]
-				},
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "{{BaseUrl}}/api/Authentication/me",
-					"host": [
-						"{{BaseUrl}}"
 					],
-					"path": [
-						"api",
-						"Authentication",
-						"me"
-					]
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BaseUrl}}/api/Authentication/me",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Authentication",
+								"me"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ReturnJwtTokenLoginDemUser",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var jsonData = pm.response.json();\r",
+									"\r",
+									"pm.environment.set(\"JwtToken\", jsonData.token);\r",
+									"\r",
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    });"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"userName\": \"demo\",\r\n  \"password\": \"123$qweR\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Authentication/sign-in",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Authentication",
+								"sign-in"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "ReturnJwtTokenLoginDemUser",
-			"event": [
+			"name": "Operations",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"var jsonData = pm.response.json();\r",
-							"\r",
-							"pm.environment.set(\"JwtToken\", jsonData.token);\r",
-							"\r",
-							"pm.test(\"Status code is 200\", function () {\r",
-							"    pm.response.to.have.status(200);\r",
-							"    });"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"userName\": \"demo\",\r\n  \"password\": \"123$qweR\"\r\n}",
-					"options": {
-						"raw": {
-							"language": "json"
+					"name": "CreataOperationIncome-01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"CreateOperationIncome-01\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].balance).to.eql(100000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
 						}
-					}
-				},
-				"url": {
-					"raw": "{{BaseUrl}}/api/Authentication/sign-in",
-					"host": [
-						"{{BaseUrl}}"
 					],
-					"path": [
-						"api",
-						"Authentication",
-						"sign-in"
-					]
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"transferOperationId\": 0,\r\n  \"categoryId\": 2,\r\n  \"typeOperation\": 2,\r\n  \"accountId\": 6,\r\n  \"operationCurrencyId\": 0,\r\n  \"currencyAmount\": 980,\r\n  \"operationAmount\": 100000,\r\n  \"operationDate\": \"2023-07-07T09:34:59.780Z\",\r\n  \"description\": \"test add operation income\",\r\n  \"tag\": \"tag operation\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Operations/0",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operations",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreataOperationIncome-02",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"CreateOperationIncome-01\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].balance).to.eql(100000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"transferOperationId\": 0,\r\n  \"categoryId\": 2,\r\n  \"typeOperation\": 2,\r\n  \"accountId\": 6,\r\n  \"operationCurrencyId\": 0,\r\n  \"currencyAmount\": 980,\r\n  \"operationAmount\": 100000,\r\n  \"operationDate\": \"2023-07-07T09:34:59.780Z\",\r\n  \"description\": \"test add operation income\",\r\n  \"tag\": \"tag operation\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Operations/0",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operations",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreataOperationIncome-03",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"CreateOperationExpenses\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].balance).to.eql(300000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"transferOperationId\": 0,\r\n  \"categoryId\": 2,\r\n  \"typeOperation\": 2,\r\n  \"accountId\": 6,\r\n  \"operationCurrencyId\": 0,\r\n  \"currencyAmount\": 980,\r\n  \"operationAmount\": 100000,\r\n  \"operationDate\": \"2023-05-07T09:34:59.780Z\",\r\n  \"description\": \"test add operation income1\",\r\n  \"tag\": \"tag operation\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Operations/0",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operations",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreataOperationExpenses-01",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"CreateOperationIncome-01\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].balance).to.eql(250000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"transferOperationId\": 0,\r\n  \"categoryId\": 2,\r\n  \"typeOperation\": 1,\r\n  \"accountId\": 6,\r\n  \"operationCurrencyId\": 0,\r\n  \"currencyAmount\": 980,\r\n  \"operationAmount\": 50000,\r\n  \"operationDate\": \"2023-07-07T09:34:59.780Z\",\r\n  \"description\": \"test add operation expenses1\",\r\n  \"tag\": \"tag operation\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Operations/0",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operations",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreataOperationExpenses-02",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"CreateOperationIncome-01\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].balance).to.eql(200000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"transferOperationId\": 0,\r\n  \"categoryId\": 2,\r\n  \"typeOperation\": 1,\r\n  \"accountId\": 6,\r\n  \"operationCurrencyId\": 0,\r\n  \"currencyAmount\": 980,\r\n  \"operationAmount\": 50000,\r\n  \"operationDate\": \"2023-06-07T09:34:59.780Z\",\r\n  \"description\": \"test add operation expenses2\",\r\n  \"tag\": \"tag operation expenses2\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Operations/0",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operations",
+								"0"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CreataOperationExpenses-03",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"pm.test(\"CreateOperationIncome-01\", function () {\r",
+									"    var jsonData = pm.response.json();\r",
+									"    pm.expect(jsonData[0].balance).to.eql(150000);\r",
+									"});"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{JwtToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"id\": 0,\r\n  \"transferOperationId\": 0,\r\n  \"categoryId\": 2,\r\n  \"typeOperation\": 1,\r\n  \"accountId\": 6,\r\n  \"operationCurrencyId\": 0,\r\n  \"currencyAmount\": 980,\r\n  \"operationAmount\": 50000,\r\n  \"operationDate\": \"2023-05-07T09:34:59.780Z\",\r\n  \"description\": \"test add operation expenses3\",\r\n  \"tag\": \"tag operation expenses3\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BaseUrl}}/api/Operations/0",
+							"host": [
+								"{{BaseUrl}}"
+							],
+							"path": [
+								"api",
+								"Operations",
+								"0"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
 			"name": "ReturnAccountTypes",

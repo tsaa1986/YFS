@@ -8,6 +8,7 @@ using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using YFS.Core.Models.Triggers;
 
 namespace YFS.Controllers
 {
@@ -89,11 +90,15 @@ namespace YFS.Controllers
         public async Task<IActionResult> UpdateAccount([FromBody] AccountDto account)
         {
             //var accountData = HttpContext.Items["account"] as Account;
+            string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
             var accountData = _mapper.Map<Account>(account);
+            accountData.UserId= userid;
             _mapper.Map(account, accountData);
             await _repository.Account.UpdateAccount(accountData);
             await _repository.SaveAsync();
-            return NoContent();
+            Account updatedAccount = await _repository.Account.GetAccount(accountData.Id);
+            var accountDto = _mapper.Map<AccountDto>(updatedAccount);
+            return Ok(accountDto);
         }
     }
 }
