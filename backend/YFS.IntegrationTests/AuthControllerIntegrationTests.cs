@@ -88,7 +88,6 @@ namespace YFS.IntegrationTests
 
             // Act
             var response = await _client.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
