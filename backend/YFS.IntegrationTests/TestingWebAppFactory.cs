@@ -6,7 +6,7 @@ using YFS.Repo.Data;
 
 namespace YFS.IntegrationTests
 {
-    public class TestingWebAppFactory<TEntryPoint> : WebApplicationFactory<Program> where TEntryPoint : Program
+    public class TestingWebAppFactory<TStartup> : WebApplicationFactory<Program> //where TEntryPoint : Program
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {

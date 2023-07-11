@@ -4,12 +4,18 @@ using YFS.Core.Dtos;
 
 namespace YFS.IntegrationTests
 {
-    public class CurrencyControllerIntegrationTests : IClassFixture<TestingWebAppFactory<Program>>
+    [Collection("IntegrationTests")]
+    public class CurrencyControllerIntegrationTests// : IClassFixture<TestingWebAppFactory<Program>>
     {
         private readonly HttpClient _client;
+        private readonly TestingWebAppFactory<Program> _factory;
 
         public CurrencyControllerIntegrationTests(TestingWebAppFactory<Program> factory)
-            => _client = factory.CreateClient(); 
+        {
+            _factory = factory;
+            _client = _factory.CreateClient();
+        }
+            //   => _client = factory.CreateClient(); 
 
         [Fact]
         public async Task Get_Returns_Currencies()
@@ -43,6 +49,6 @@ namespace YFS.IntegrationTests
                 // Set other expected property values
             };
             */
-        }
+        }        
     }
 }

@@ -66,22 +66,27 @@ namespace YFS.Data.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
         {
-            var userResult = await _repository.UserAuthentication.RegisterUserAsync(userRegistration);
-
-            if (userResult.Succeeded)
+            try
             {
-                UserLoginDto user = new UserLoginDto { UserName = userRegistration.UserName, Password = userRegistration.Password };
+                var userResult = await _repository.UserAuthentication.RegisterUserAsync(userRegistration);
 
-                var Token = await _repository.UserAuthentication.ValidateUserAsync(user);
-                string user_id = _repository.UserAuthentication.GetUserId(user).Result;
+                if (userResult.Succeeded)
+                {
+                    UserLoginDto user = new UserLoginDto { UserName = userRegistration.UserName, Password = userRegistration.Password };
+
+                    var Token = await _repository.UserAuthentication.ValidateUserAsync(user);
+                    string user_id = _repository.UserAuthentication.GetUserId(user).Result;
 
 
-                await _repository.AccountGroup.CreateAccountGroupsDefaultForUser(user_id);
-                await _repository.SaveAsync();
+                    await _repository.AccountGroup.CreateAccountGroupsDefaultForUser(user_id);
+                    await _repository.SaveAsync();
+                }
+                return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
             }
-
-
-            return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);          
+            catch(Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("sign-in")]
