@@ -27,7 +27,7 @@ namespace YFS.IntegrationTests
             var content = await response.Content.ReadAsStringAsync();
             var currencies = JsonConvert.DeserializeObject<CurrencyDto[]>(content);
 
-            var currencyUSDDto = currencies.Where(a => a.CurrencyId.Equals(840));//currencies.FirstOrDefault();
+            var currencyUSDDto = currencies.Where(a => a.CurrencyId.Equals(840));
             var currencyUAHDto = currencies.Where(a => a.CurrencyId.Equals(980));
             var currencyEuroDto = currencies.Where(a => a.CurrencyId.Equals(978));
 
@@ -35,19 +35,8 @@ namespace YFS.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             Assert.NotNull(currencyUSDDto.FirstOrDefault());
-            //Assert.Equal("840", currencyUSDDto.First().CurrencyId.ToString());
             Assert.NotNull(currencyUAHDto.FirstOrDefault());
             Assert.NotNull(currencyEuroDto.FirstOrDefault());
-
-            /*
-            // Alternatively, you can assert the entire object using the 'Assert.Equal' method
-            var expectedCurrencyDto = new CurrencyDto
-            {
-                CurrencyCode = "USD",
-                CurrencyName = "United States Dollar",
-                // Set other expected property values
-            };
-            */
         }        
     }
 }

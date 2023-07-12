@@ -29,7 +29,6 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             var requestUri = "/api/Authentication/sign-in";
-            var request = new HttpRequestMessage(HttpMethod.Post, requestUri);
             var requestBody = new
             {
                 userName = "demo",
