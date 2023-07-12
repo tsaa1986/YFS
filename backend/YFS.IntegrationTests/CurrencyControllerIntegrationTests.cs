@@ -5,7 +5,7 @@ using YFS.Core.Dtos;
 namespace YFS.IntegrationTests
 {
     [Collection("IntegrationTests")]
-    public class CurrencyControllerIntegrationTests// : IClassFixture<TestingWebAppFactory<Program>>
+    public class CurrencyControllerIntegrationTests
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
@@ -15,7 +15,6 @@ namespace YFS.IntegrationTests
             _factory = factory;
             _client = _factory.CreateClient();
         }
-            //   => _client = factory.CreateClient(); 
 
         [Fact]
         public async Task Get_Returns_Currencies()

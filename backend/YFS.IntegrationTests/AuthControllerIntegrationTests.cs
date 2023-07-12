@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 using Xunit.Priority;
 using YFS.Core.Dtos;
 
@@ -47,7 +48,6 @@ namespace YFS.IntegrationTests
             var responseContent = await response.Content.ReadAsStringAsync();
             var token = JObject.Parse(responseContent)["token"].ToString();
             Assert.NotNull(token);
-            _jwtTokenDemoUser = token;
         }
 
         [Fact, Priority(2)]
@@ -55,7 +55,7 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Authentication/me");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", AuthControllerIntegrationTests.getJwtTokenDemoUser());
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
 
             //Act
@@ -69,7 +69,7 @@ namespace YFS.IntegrationTests
             Assert.Equal("Demo", demoUserInfo.UserName);
         }
         [Fact, Priority(3)]
-        public async Task SignUp_Post_Returns_Success()
+        public async Task SignUp_Post_Returns_Success_CreateNewUser()
         {
             // Arrange
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/Authentication/sign-up");
@@ -92,6 +92,5 @@ namespace YFS.IntegrationTests
             // Assert
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
-        public static string getJwtTokenDemoUser() { return _jwtTokenDemoUser; } 
     }
 }

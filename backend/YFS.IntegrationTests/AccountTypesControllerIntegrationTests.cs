@@ -10,12 +10,12 @@ using YFS.Core.Dtos;
 namespace YFS.IntegrationTests
 {
     [Collection("IntegrationTests")]
-    public class AccountTypesControllerTests
+    public class AccountTypesControllerIntegrationTests
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
 
-        public AccountTypesControllerTests(TestingWebAppFactory<Program> factory)
+        public AccountTypesControllerIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
