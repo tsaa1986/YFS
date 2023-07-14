@@ -122,7 +122,7 @@ namespace YFS.IntegrationTests
         }
 
         [Fact, Priority(2)]
-        public async Task Get_LastOperationForPeriod_Returns_Success()
+        public async Task Get_OperationForPeriod_Returns_Success()
         {
             //Arrange
             int _accountId = 1;
