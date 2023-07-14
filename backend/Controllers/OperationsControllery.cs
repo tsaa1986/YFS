@@ -24,7 +24,12 @@ namespace YFS.Controllers
         public OperationsController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
         }
-
+        public enum OperationType
+        {
+            Expense = 1,
+            Income = 2,
+            Transfer  = 3
+        }
         [HttpPost("{targetAccountId}")]
         [Authorize]
         public async Task<IActionResult> CreateOperation([FromBody] OperationDto operation, int targetAccountId)
@@ -49,11 +54,11 @@ namespace YFS.Controllers
                 
                 operationData.OperationCurrencyId = account.CurrencyId;
 
-                if (operationData.TypeOperation == 1)
+                if ((OperationType)operationData.TypeOperation == OperationType.Expense)
                     operationData.OperationAmount = -operationData.OperationAmount;
-                if (operationData.TypeOperation == 2)
+                if ((OperationType)operationData.TypeOperation == OperationType.Income)
                     operationData.OperationAmount = Math.Abs(operationData.OperationAmount);
-                if (operationData.TypeOperation == 3)
+                if ((OperationType)operationData.TypeOperation == OperationType.Transfer)
                 {
                     accountTarget = await _repository.Account.GetAccount(targetAccountId);
                     operationData.OperationAmount = -operationData.OperationAmount;
