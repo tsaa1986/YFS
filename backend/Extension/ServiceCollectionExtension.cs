@@ -29,6 +29,7 @@ namespace YFS.Extension
                 map.AddProfile<AccountGroupMappingProfile>();
                 map.AddProfile<AccountTypeMappingProfile>();
                 map.AddProfile<AccountMappingProfile>();
+                map.AddProfile<AccountMonthlyBalanceMappingProfile>();
                 map.AddProfile<UserAccountMappingProfile>();
                 map.AddProfile<CurrencyMappingProfile>();
                 map.AddProfile<CategoryMappingProfile>();
