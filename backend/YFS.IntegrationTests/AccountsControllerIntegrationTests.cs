@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Azure.Core;
+using Microsoft.Identity.Client;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -139,6 +141,51 @@ namespace YFS.IntegrationTests
             Assert.Equal(updatedAccount.AccountStatus, 1); 
             Assert.Equal(updatedAccount.Note, "updated note"); 
             Assert.Equal(updatedAccount.Name, "updatedAccountName");
+        }
+        [Fact]
+        public async Task Get_AccountById_Return_Success()
+        {
+            //Arrange
+            var requestCreateAccount = new HttpRequestMessage(HttpMethod.Post, $"/api/Accounts/");
+            requestCreateAccount.Headers.Authorization = 
+                new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());   
+            string accountName = $"AccountTest_{Guid.NewGuid()}";
+            var requestAccountBody = new
+            {
+                id = 0,
+                accountStatus = 0,
+                favorites = 0,
+                accountGroupId = 0,
+                accountTypeId = 0,
+                currencyId = 840,
+                bankId = 1,
+                name = accountName,
+                openingDate = DateTime.Now,
+                note = "test note",
+                balance = 0
+            };
+            var jsonRequestBody = JsonConvert.SerializeObject(requestAccountBody);
+            var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");
+            requestCreateAccount.Content = content;
+            var response = await _client.SendAsync(requestCreateAccount);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            var newAccount = JsonConvert.DeserializeObject<AccountDto>(responseContent);
+            var requestGetAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{newAccount.Id}");
+            requestGetAccount.Headers.Authorization = 
+                new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());            
+
+            //Act
+            var responseAccount = await _client.SendAsync(requestGetAccount);
+            var responseAccountContent = await responseAccount.Content.ReadAsStringAsync();
+            var newGetAccount = JsonConvert.DeserializeObject<AccountDto>(responseAccountContent);
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, responseAccount.StatusCode);
+            Assert.NotNull(newGetAccount);
+            Assert.True(newGetAccount.Name?.Equals(accountName));
+            Assert.True(newGetAccount.Balance == 0);
+            Assert.True(newGetAccount.CurrencyId == 840);
         }
     }
 }

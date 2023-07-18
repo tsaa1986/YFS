@@ -52,7 +52,7 @@ namespace YFS.Controllers
             return Ok(accountReturn);
         }
 
-        [HttpGet("{accountId}")]
+        [HttpGet("byId/{accountId}")]
         [Authorize]
         public async Task<IActionResult> GetAccountById(int accountId)
         {
