@@ -52,6 +52,23 @@ namespace YFS.Controllers
             return Ok(accountReturn);
         }
 
+        [HttpGet("{accountId}")]
+        [Authorize]
+        public async Task<IActionResult> GetAccountById(int accountId)
+        {
+            try
+            {
+                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
+                var account = await _repository.Account.GetAccount(accountId);
+                var accountDto = _mapper.Map<AccountDto>(account);
+                return Ok(accountDto);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
+
         [HttpGet("{accountGroupId}")]
         [Authorize]
         public async Task<IActionResult> GetAccountsByGroup(int accountGroupId)
