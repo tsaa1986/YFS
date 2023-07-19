@@ -16,11 +16,19 @@ namespace YFS.IntegrationTests
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
-        public SeedDataIntegrationTests(TestingWebAppFactory<Program> factory)
+        private static readonly SeedDataIntegrationTests _instance = new SeedDataIntegrationTests();
+
+        /*public SeedDataIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
+        }*/
+        private SeedDataIntegrationTests()
+        {
+            _factory = new TestingWebAppFactory<Program>();
+            _client = _factory.CreateClient();
         }
+        public static SeedDataIntegrationTests Instance => _instance;
         public async Task<int> CreateAccountUAH()
         {
             var createAccountRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Accounts");

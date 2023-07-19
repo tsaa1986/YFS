@@ -23,7 +23,7 @@ namespace YFS.IntegrationTests
         {
             _factory = factory;
             _client = _factory.CreateClient();
-            _seedData = new SeedDataIntegrationTests(factory);
+            _seedData = SeedDataIntegrationTests.Instance;
         }
 
         [Fact]
