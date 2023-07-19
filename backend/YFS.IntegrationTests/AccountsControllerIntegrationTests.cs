@@ -1,14 +1,20 @@
-﻿using Azure.Core;
+﻿using Azure;
+using Azure.Core;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
+using NuGet.Frameworks;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
+using YFS.Controllers;
 using YFS.Core.Dtos;
+using YFS.Core.Models;
+using static YFS.Controllers.OperationsController;
 
 namespace YFS.IntegrationTests
 {
@@ -17,11 +23,13 @@ namespace YFS.IntegrationTests
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
+        private readonly SeedDataIntegrationTests _seedData;
 
         public AccountsControllerIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
+            _seedData = SeedDataIntegrationTests.Instance;
         }
 
         [Fact]
@@ -187,5 +195,26 @@ namespace YFS.IntegrationTests
             Assert.True(newGetAccount.Balance == 0);
             Assert.True(newGetAccount.CurrencyId == 840);
         }
+        [Fact]
+        public async Task Get_CheckAccountBalanceAfterIncomeOperation_Return_Success()
+        {
+            //Arrange
+            int _accountId = await _seedData.CreateAccountUAH();
+            var operationIncome = await _seedData.CreateOperation(_accountId, DateTime.Now, 
+                OperationType.Income, 100000.23M);
+            var requestAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
+            requestAccount.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+
+
+            //Act
+            var responseAccount = await _client.SendAsync(requestAccount);
+            var contentAccoount = await responseAccount.Content.ReadAsStringAsync();
+            var account = JsonConvert.DeserializeObject<AccountDto>(contentAccoount);
+
+            //Asset
+            Assert.Equal(HttpStatusCode.OK, responseAccount.StatusCode);
+            Assert.True(account.Balance == 100000.23M);
+        }
+
     }
 }

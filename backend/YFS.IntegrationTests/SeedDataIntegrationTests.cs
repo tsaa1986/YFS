@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using YFS.Controllers;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
+using static YFS.Controllers.OperationsController;
 
 namespace YFS.IntegrationTests
 {
@@ -60,7 +61,8 @@ namespace YFS.IntegrationTests
 
             return newAccount.Id;
         }
-        public async Task<IEnumerable<OperationDto>> CreateOperationIncome(int accountId, DateTime operationDate, decimal operationAmount)
+        public async Task<IEnumerable<OperationDto>> CreateOperation(int accountId, DateTime operationDate, 
+            OperationType operationType,decimal operationAmount)
         {
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
@@ -70,7 +72,7 @@ namespace YFS.IntegrationTests
             {
                 transferOperationId = 0,
                 categoryId = 2,
-                typeOperation = OperationsController.OperationType.Income, //income
+                typeOperation = operationType,
                 accountId = accountId,
                 operationCurrencyId = 980,
                 currencyAmount = operationAmount,
