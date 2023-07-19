@@ -62,7 +62,7 @@ namespace YFS.IntegrationTests
             return newAccount.Id;
         }
         public async Task<IEnumerable<OperationDto>> CreateOperation(int accountId, DateTime operationDate, 
-            OperationType operationType,decimal operationAmount)
+            OperationType operationType,int categoryId, decimal operationAmount)
         {
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
@@ -71,7 +71,7 @@ namespace YFS.IntegrationTests
             var createOperation1Body = new
             {
                 transferOperationId = 0,
-                categoryId = 2,
+                categoryId = categoryId,
                 typeOperation = operationType,
                 accountId = accountId,
                 operationCurrencyId = 980,

@@ -34,7 +34,7 @@ namespace YFS.IntegrationTests
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
             var operationIncome = await _seedData.CreateOperation(_accountId, DateTime.Now, 
-                OperationType.Income, 100000.23M);
+                OperationType.Income, 2, 100000.23M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
@@ -60,10 +60,10 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncomeCurrentMonth = await _seedData.CreateOperation(_accountId,DateTime.Now, 
-                OperationType.Income, 100000.23M);
+            var operationIncomeCurrentMonth = await _seedData.CreateOperation(_accountId,DateTime.Now,
+                OperationType.Income, 2, 100000.23M);
             var operationIncomePreviousMonth = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
-                OperationType.Income, 100000.21M);
+                OperationType.Income, 2, 100000.21M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
@@ -98,11 +98,11 @@ namespace YFS.IntegrationTests
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
             var operationIncomeCurrentMonth = await _seedData.CreateOperation(_accountId, DateTime.Now, 
-                OperationType.Income, 100000.23M);
+                OperationType.Income, 2, 100000.23M);
             var operationIncomePreviousMonth = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
-                OperationType.Income, 100000.21M);
+                OperationType.Income, 2, 100000.21M);
             var operationIncome3MonthAgo = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-2), 
-                OperationType.Income, 100000.11M);
+                OperationType.Income, 2, 100000.11M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
@@ -146,13 +146,13 @@ namespace YFS.IntegrationTests
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
             var operationIncome = await _seedData.CreateOperation(_accountId, DateTime.Now,
-                OperationType.Income, 100000.23M);
+                OperationType.Income, 2, 100000.23M);
             var operationIncomePreviousMonth = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
-                OperationType.Income, 100000.21M);
+                OperationType.Income, 2, 100000.21M);
             var operationIncome3MonthAgo = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-2),
-                OperationType.Income, 100000.11M);
+                OperationType.Income, 2, 100000.11M);
             var operationIncome2MonthAfterCurrent = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(2),
-                OperationType.Income, 100000.36M);
+                OperationType.Income, 2, 100000.36M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 

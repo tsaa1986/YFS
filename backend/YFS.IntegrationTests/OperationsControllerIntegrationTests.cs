@@ -2,6 +2,7 @@
 using Azure.Core;
 using Microsoft.Identity.Client;
 using Newtonsoft.Json;
+using NuGet.Frameworks;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection.Metadata;
@@ -11,6 +12,7 @@ using Xunit.Priority;
 using YFS.Controllers;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
+using static YFS.Controllers.OperationsController;
 
 namespace YFS.IntegrationTests
 {
@@ -20,83 +22,31 @@ namespace YFS.IntegrationTests
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
+        private readonly SeedDataIntegrationTests _seedData;
 
         public OperationsControllerIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
+            _seedData = SeedDataIntegrationTests.Instance;
         }
         //create 3 operation. per 100 000
         private async Task CreateOperationIncome3monthAutomatically(int _accountId)
         {
-            var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
-            createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-
+            var operationIncome1 = await _seedData.CreateOperation(_accountId, DateTime.Now,
+                OperationType.Income, 2, 100000M);
             // Create operation 1
-            var createOperation1Body = new
-            {
-                transferOperationId = 0,
-                categoryId = 2,
-                typeOperation = 2, //income
-                accountId = _accountId,
-                operationCurrencyId = 980,
-                currencyAmount = 100000,
-                operationAmount = 100000,
-                operationDate = DateTime.Now,
-                description = "description operation 1",
-                tag = "tag operation 1"
-            };
-
-            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
-            createOperation1Request.Content = new StringContent(createOperation1RequestBody, Encoding.UTF8, "application/json");
-            var createOperation1Response = await _client.SendAsync(createOperation1Request);
-            createOperation1Response.EnsureSuccessStatusCode();
+            if (operationIncome1.Count() == 0) { throw new Exception(); }
 
             // Create operation 2
-            var createOperation2Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
-            createOperation2Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-
-            var createOperation2Body = new
-            {
-                transferOperationId = 0,
-                categoryId = 2,
-                typeOperation = 2,
-                accountId = _accountId,
-                operationCurrencyId = 980,
-                currencyAmount = 100000,
-                operationAmount = 100000,
-                operationDate = DateTime.Now.AddMonths(-1),
-                description = "description operation 2",
-                tag = "tag operation 2"
-            };
-
-            var createOperation2RequestBody = JsonConvert.SerializeObject(createOperation2Body);
-            createOperation2Request.Content = new StringContent(createOperation2RequestBody, Encoding.UTF8, "application/json");
-            var createOperation2Response = await _client.SendAsync(createOperation2Request);
-            createOperation2Response.EnsureSuccessStatusCode();
+            var operationIncome2 = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
+                OperationType.Income, 2, 100000M);
+            if (operationIncome2.Count() == 0) { throw new Exception(); }
 
             // Create operation 3
-            var createOperation3Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
-            createOperation3Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-
-            var createOperation3Body = new
-            {
-                transferOperationId = 0,
-                categoryId = 2,
-                typeOperation = 2,
-                accountId = _accountId,
-                operationCurrencyId = 980,
-                currencyAmount = 100000,
-                operationAmount = 100000,
-                operationDate = DateTime.Now.AddMonths(-2),
-                description = "description operation 3",
-                tag = "tag operation 3"
-            };
-
-            var createOperation3RequestBody = JsonConvert.SerializeObject(createOperation3Body);
-            createOperation3Request.Content = new StringContent(createOperation3RequestBody, Encoding.UTF8, "application/json");
-            var createOperation3Response = await _client.SendAsync(createOperation3Request);
-            createOperation3Response.EnsureSuccessStatusCode();
+            var operationIncome3 = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-2),
+                OperationType.Income, 2, 100000M);
+            if (operationIncome3.Count() == 0) { throw new Exception(); }
         }
         private async Task<int> CreateAccountUAH()
         {
