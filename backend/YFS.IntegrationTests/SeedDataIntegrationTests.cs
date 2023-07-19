@@ -5,7 +5,9 @@ using System.Linq;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using YFS.Controllers;
 using YFS.Core.Dtos;
+using YFS.Core.Models;
 
 namespace YFS.IntegrationTests
 {
@@ -50,9 +52,36 @@ namespace YFS.IntegrationTests
 
             return newAccount.Id;
         }
-        public async Task CreateOperationIncome(int _accountId)
+        public async Task<IEnumerable<OperationDto>> CreateOperationIncome(int accountId, DateTime operationDate, decimal operationAmount)
         {
+            // Create operation 1
+            var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
+            createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
+            var createOperation1Body = new
+            {
+                transferOperationId = 0,
+                categoryId = 2,
+                typeOperation = OperationsController.OperationType.Income, //income
+                accountId = accountId,
+                operationCurrencyId = 980,
+                currencyAmount = operationAmount,
+                operationAmount = operationAmount,
+                operationDate = operationDate,
+                description = "description operation 1",
+                tag = "tag operation 1"
+            };
+
+            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
+            createOperation1Request.Content = new StringContent(createOperation1RequestBody, Encoding.UTF8, "application/json");
+            var createOperation1Response = await _client.SendAsync(createOperation1Request);
+            createOperation1Response.EnsureSuccessStatusCode();
+
+            var contentOperation = await createOperation1Response.Content.ReadAsStringAsync();
+            var operations = JsonConvert.DeserializeObject<OperationDto[]>(contentOperation);
+
+            return operations;
         }
+       
     }
 }
