@@ -211,7 +211,7 @@ namespace YFS.IntegrationTests
             var contentAccoount = await responseAccount.Content.ReadAsStringAsync();
             var account = JsonConvert.DeserializeObject<AccountDto>(contentAccoount);
 
-            //Asset
+            //Assert
             Assert.Equal(HttpStatusCode.OK, responseAccount.StatusCode);
             Assert.True(account.Balance == 100000.23M);
         }

@@ -258,6 +258,38 @@ namespace YFS.IntegrationTests
             Assert.True(operationsTarget.Length == 1);
             Assert.True(operationsTarget[0].Balance == 5000.13M);
         }
+        [Fact]
+        public async Task Delete_RemoveOperationIncomeCurrentMonth_Return_Success()
+        {
+            //Arrange
+            AuthenticationHeaderValue headerJwtKey = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            int _accountId = await _seedData.CreateAccountUAH();
+            var operationIncomeCurrentMonth = await _seedData.CreateOperation(_accountId, DateTime.Now,
+                OperationType.Income, 2, 100000.99M);
+            int operationId = operationIncomeCurrentMonth.First().Id;
+            var requestOperation = new HttpRequestMessage(HttpMethod.Delete, $"/api/Operations/{operationId}");
+            requestOperation.Headers.Authorization = headerJwtKey;
+            var requestAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
+            requestAccount.Headers.Authorization = headerJwtKey;
+            var requestAccountMonthlyBalance = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
+            requestAccountMonthlyBalance.Headers.Authorization = headerJwtKey;
 
+            //Act
+            var responseOperation = await _client.SendAsync(requestOperation);
+            var responseAccount = await _client.SendAsync(requestAccount);
+            var contentAccoount = await responseAccount.Content.ReadAsStringAsync();
+            var account = JsonConvert.DeserializeObject<AccountDto>(contentAccoount);
+            var responseAccountMonthlyBalance = await _client.SendAsync(requestAccountMonthlyBalance);
+            var contentAccoountMonthlyBalance = await responseAccountMonthlyBalance.Content.ReadAsStringAsync();
+            var accountMonthlyBalance = JsonConvert.DeserializeObject<AccountMonthlyBalanceDto[]>(contentAccoountMonthlyBalance);
+
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, responseOperation.StatusCode);
+            Assert.True(account.Balance == 0);
+            Assert.True(accountMonthlyBalance.Count().Equals(1));
+            Assert.True(accountMonthlyBalance[0].OpeningMonthBalance == 0 &&
+                accountMonthlyBalance[0].ClosingMonthBalance == 0);
+        }
     }
 }
