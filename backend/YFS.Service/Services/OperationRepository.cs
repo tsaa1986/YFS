@@ -47,11 +47,12 @@ namespace YFS.Service.Services
             => await FindByConditionAsync(op => op.Id.Equals(operationId), false)
             .Result
             .Include(p => p.Account.AccountBalance)
-            .Include(c => c.Category)
+            //.Include(c => c.Category)
             .SingleOrDefaultAsync();            
             
 
         public async Task<Operation?> GetTransferOperationById(int transferOperationId)
-            => await FindByConditionAsync(op => op.TransferOperationId.Equals(transferOperationId), false).Result.Include(p => p.Account.AccountBalance).SingleOrDefaultAsync();
+            => await FindByConditionAsync(op => op.TransferOperationId.Equals(transferOperationId), false)
+              .Result.Include(p => p.Account.AccountBalance).SingleOrDefaultAsync();
     }
 }
