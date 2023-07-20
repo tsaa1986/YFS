@@ -6,6 +6,7 @@ using NuGet.Frameworks;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection.Metadata;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using Xunit.Priority;
@@ -220,8 +221,8 @@ namespace YFS.IntegrationTests
             var createOperation1Body = new
             {
                 transferOperationId = 0,
-                categoryId = 7,
-                typeOperation = OperationsController.OperationType.Transfer, //expense
+                categoryId = -1,
+                typeOperation = OperationsController.OperationType.Transfer, 
                 accountId = accountWithdrawId,
                 operationCurrencyId = 980,
                 currencyAmount = 5000.13,
@@ -351,9 +352,51 @@ namespace YFS.IntegrationTests
             Assert.False(accountCurrentMonthlyBalanceAfterDeleteOperation.First().ClosingMonthBalance == 1000M);
         }
         [Fact]
-        public async Task Delete_RemoveOperationTransferCurrentMonth_Return_Success()
+        public async Task Delete_RemoveOperationIncomeTransferCurrentMonth_Return_Success()
         {
+            //Arrange
+            AuthenticationHeaderValue headerJwtKey = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            int _accountTargetId = await _seedData.CreateAccountUAH();
+            int _accountWithdrawId = await _seedData.CreateAccountUAH();
+            await _seedData.CreateOperation(_accountWithdrawId, DateTime.Now, OperationType.Income, 2, 100000.39M);
+            var operations = await _seedData.CreateTransferOperation(_accountWithdrawId, _accountTargetId, DateTime.Now, 10000.70M);
+            var operationTransferIncome = operations.Where(o => o.TransferOperationId > 0);
+            int operationTransferIncomeId = operationTransferIncome.First().Id;
+            var operationTransferExpense = operations.Where(o => o.TransferOperationId == 0);
+            var requestRemoveTransferOperation = new HttpRequestMessage(HttpMethod.Delete, $"/api/Operations/transfer/{operationTransferIncomeId}");
+            requestRemoveTransferOperation.Headers.Authorization = headerJwtKey;
+            var requestAccountBeforeRemoveOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountTargetId}");
+            requestAccountBeforeRemoveOperation.Headers.Authorization = headerJwtKey;
+            var requestAccountAfterRemoveOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountTargetId}");
+            requestAccountAfterRemoveOperation.Headers.Authorization = headerJwtKey;
 
+            var requestCheckRemoveTransferIncomeOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Operations/last10/{_accountTargetId}");
+            requestCheckRemoveTransferIncomeOperation.Headers.Authorization = headerJwtKey;
+
+            var responseAccountTargetBeforeRemoveOperation = await _client.SendAsync(requestAccountBeforeRemoveOperation);
+            Assert.Equal(HttpStatusCode.OK, responseAccountTargetBeforeRemoveOperation.StatusCode);
+            var contentAccoountTargetBeforeRemove = await responseAccountTargetBeforeRemoveOperation.Content.ReadAsStringAsync();
+            var accountTargetBeforeRemoveOperation = JsonConvert.DeserializeObject<AccountDto>(contentAccoountTargetBeforeRemove);
+            Assert.True(accountTargetBeforeRemoveOperation.Balance == 10000.70M);
+
+
+            //Act
+            var responseAccountRemoveOperation = await _client.SendAsync(requestRemoveTransferOperation);
+            var responseAccountTargetAfterRemoveOperation = await _client.SendAsync(requestAccountAfterRemoveOperation);
+            var contentAccoountTargetAfterRemove = await responseAccountTargetAfterRemoveOperation.Content.ReadAsStringAsync();
+            var accountTargetAfterRemoveOperation = JsonConvert.DeserializeObject<AccountDto>(contentAccoountTargetAfterRemove);
+
+            var responseCheckTransferIncomeOperation = await _client.SendAsync(requestCheckRemoveTransferIncomeOperation);
+            var contentCheckTransferIncomeOperation = await responseCheckTransferIncomeOperation.Content.ReadAsStringAsync();
+            var checkTransferIncomeOperation = JsonConvert.DeserializeObject<OperationDto[]>(contentCheckTransferIncomeOperation);
+
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, responseAccountRemoveOperation.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, responseAccountTargetBeforeRemoveOperation.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, responseCheckTransferIncomeOperation.StatusCode);
+            Assert.True(accountTargetAfterRemoveOperation.Balance == 0);
+            Assert.True(checkTransferIncomeOperation.Where(tr => tr.Id == operationTransferIncomeId).Count() == 0);
         }
     }
 }

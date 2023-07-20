@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,6 +66,8 @@ namespace YFS.IntegrationTests
             OperationType operationType,int categoryId, decimal operationAmount)
         {
             // Create operation 1
+            if (OperationType.Transfer == operationType)
+                throw new Exception("Transfer operation is restricted! Use only income/expense");
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
@@ -91,6 +94,36 @@ namespace YFS.IntegrationTests
             var operations = JsonConvert.DeserializeObject<OperationDto[]>(contentOperation);
 
             return operations;
+        }
+        public async Task<IEnumerable<OperationDto>> CreateTransferOperation(int _accountWithdrawId, int _accountTargetId,
+            DateTime _dateOperation, decimal _operationAmount)
+        {
+            // Create operation 1
+            var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, $"/api/Operations/{_accountTargetId}");
+            createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+
+            var createOperation1Body = new
+            {
+                    transferOperationId = 0,
+                    categoryId = -1,
+                    typeOperation = OperationsController.OperationType.Transfer, //expense
+                    accountId = _accountWithdrawId,
+                    operationCurrencyId = 980,
+                    currencyAmount = _operationAmount,
+                    operationAmount = _operationAmount,
+                    operationDate = _dateOperation,
+                    description = "description transfer operation 1",
+                    tag = "tag transfer operation 1"
+            };
+
+            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
+            createOperation1Request.Content = new StringContent(createOperation1RequestBody, Encoding.UTF8, "application/json");
+            var createOperation1Response = await _client.SendAsync(createOperation1Request);
+            createOperation1Response.EnsureSuccessStatusCode();
+            var contentTransferOperation = await createOperation1Response.Content.ReadAsStringAsync();
+            var operations = JsonConvert.DeserializeObject<OperationDto[]>(contentTransferOperation);
+
+            return operations;          
         }
        
     }
