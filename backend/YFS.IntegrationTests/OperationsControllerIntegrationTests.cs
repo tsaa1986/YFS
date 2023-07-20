@@ -291,5 +291,69 @@ namespace YFS.IntegrationTests
             Assert.True(accountMonthlyBalance[0].OpeningMonthBalance == 0 &&
                 accountMonthlyBalance[0].ClosingMonthBalance == 0);
         }
+        [Fact]
+        public async Task Delete_RemoveOperationExpenseCurrentMonth_Return_Success()
+        {
+            //Arrange
+            AuthenticationHeaderValue headerJwtKey = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            int _accountId = await _seedData.CreateAccountUAH();
+            var operationExpenseCurrentMonth = await _seedData.CreateOperation(_accountId, DateTime.Now,
+                OperationType.Expense, 5, 1000.39M);
+            int operationId = operationExpenseCurrentMonth.First().Id;
+            var requestOperation = new HttpRequestMessage(HttpMethod.Delete, $"/api/Operations/{operationId}");
+            requestOperation.Headers.Authorization = headerJwtKey;
+            var requestAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
+            requestAccount.Headers.Authorization = headerJwtKey;
+            var requestAccountAfterDeleteOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
+            requestAccountAfterDeleteOperation.Headers.Authorization = headerJwtKey;
+            var requestAccountMonthlyBalance = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
+            requestAccountMonthlyBalance.Headers.Authorization = headerJwtKey;
+            var requestAccountMonthlyBalanceAfterDeleteOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
+            requestAccountMonthlyBalanceAfterDeleteOperation.Headers.Authorization = headerJwtKey;
+
+            //Act
+            var responseAccount = await _client.SendAsync(requestAccount);
+            Assert.Equal(HttpStatusCode.OK, responseAccount.StatusCode);
+            var contentAccoount = await responseAccount.Content.ReadAsStringAsync();
+            var account = JsonConvert.DeserializeObject<AccountDto>(contentAccoount);
+            Assert.NotNull(account);
+            Assert.True(account.Balance == -1000.39M);
+            var responseAccountMonthlyBalance = await _client.SendAsync(requestAccountMonthlyBalance);
+            Assert.Equal(HttpStatusCode.OK, responseAccountMonthlyBalance.StatusCode);
+            var contentAccoountMonthlyBalance = await responseAccountMonthlyBalance.Content.ReadAsStringAsync();
+            var accountMonthlyBalance = JsonConvert.DeserializeObject<AccountMonthlyBalanceDto[]>(contentAccoountMonthlyBalance);
+            var accountCurrentMonthlyBalance = accountMonthlyBalance.Where(amb => (amb.StartDateOfMonth.Month == DateTime.Now.Month
+            && amb.StartDateOfMonth.Year == DateTime.Now.Year));
+            Assert.True(accountCurrentMonthlyBalance.Count() == 1);
+            Assert.True(accountCurrentMonthlyBalance.First().OpeningMonthBalance == 0);
+            Assert.True(accountCurrentMonthlyBalance.First().MonthDebit == 0);
+            Assert.True(accountCurrentMonthlyBalance.First().MonthCredit == -1000.39M);
+            Assert.True(accountCurrentMonthlyBalance.First().ClosingMonthBalance == -1000.39M);
+            Assert.False(accountCurrentMonthlyBalance.First().ClosingMonthBalance == 1000M);
+
+            var responseOperation = await _client.SendAsync(requestOperation);
+            var responseAccountAfterDeleteOperation = await _client.SendAsync(requestAccountAfterDeleteOperation);
+            var contentResponseAccountAfterDeleteOperation = await responseAccountAfterDeleteOperation.Content.ReadAsStringAsync();
+            account = JsonConvert.DeserializeObject<AccountDto>(contentResponseAccountAfterDeleteOperation);
+            var responseAccountMonthlyBalanceAfterDeleteOperation = await _client.SendAsync(requestAccountMonthlyBalanceAfterDeleteOperation);
+            var contentAccoountMonthlyBalanceAfterDeleteOperation = await responseAccountMonthlyBalanceAfterDeleteOperation.Content.ReadAsStringAsync();           
+            var accountMonthlyBalanceAfterDeleteOperation = JsonConvert.DeserializeObject<AccountMonthlyBalanceDto[]>(contentAccoountMonthlyBalanceAfterDeleteOperation);
+            var accountCurrentMonthlyBalanceAfterDeleteOperation = accountMonthlyBalanceAfterDeleteOperation.Where(amb => (amb.StartDateOfMonth.Month == DateTime.Now.Month
+            && amb.StartDateOfMonth.Year == DateTime.Now.Year));
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, responseOperation.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, responseAccountMonthlyBalanceAfterDeleteOperation.StatusCode);
+            Assert.True(account.Balance == 0);
+            Assert.True(accountCurrentMonthlyBalanceAfterDeleteOperation.First().MonthDebit == 0);
+            Assert.True(accountCurrentMonthlyBalanceAfterDeleteOperation.First().MonthCredit == 0);
+            Assert.True(accountCurrentMonthlyBalanceAfterDeleteOperation.First().ClosingMonthBalance == 0);
+            Assert.False(accountCurrentMonthlyBalanceAfterDeleteOperation.First().ClosingMonthBalance == 1000M);
+        }
+        [Fact]
+        public async Task Delete_RemoveOperationTransferCurrentMonth_Return_Success()
+        {
+
+        }
     }
 }
