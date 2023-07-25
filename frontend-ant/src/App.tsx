@@ -84,6 +84,7 @@ const App: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
   //const { token: { colorBgContainer } } = theme.useToken();
   const [isLoggedIn, setisLoggedIn] = useState(false);
+  const [languageDisplay, setLanguageDisplay] = useState("en")
   
   const [user, setUser] = useState(() => {
     authAPI.me()?.then( res => { 
@@ -140,8 +141,8 @@ const App: React.FC = () => {
 
 {/* переделать при логине устанавливать пользователя*/}
     <Routes>
-    <Route path="/" element={<WelcomeLayout />} /> {/*//<Login setisLoggedIn={setisLoggedIn} />}/>*/}
-      <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} loginDisplay="login"/>}/>
+    <Route path="/" element={<WelcomeLayout languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} />} /> {/*//<Login setisLoggedIn={setisLoggedIn} />}/>*/}
+      <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} loginDisplay="login" languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay}/>}/>
       <Route path="/register" element={<Register />}/>
 
       <Route element={
@@ -161,10 +162,12 @@ const App: React.FC = () => {
 const MainLayout: React.FC<any> = ( {children: Component, rest}: any) => {
 
   return(
+
     <Layout style={{ minHeight: '100vh' }}>
       <SideMenu />
+
       <Layout className="site-layout">
-        <HeaderLayout isLoggedIn={true}/>
+      <HeaderLayout isLoggedIn={true} languageDisplay={rest.language} setLanguageDisplay={rest.setLanguageDisplay}/>
         {/*<Header style={{ padding: 0, background: "colorBgContainer" }} />*/}
         <Content style={{ margin: "24px 16px",
               padding: 24,

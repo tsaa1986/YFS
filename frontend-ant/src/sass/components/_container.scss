@@ -7,6 +7,13 @@
   min-height: 280px;
 }
 
+.login-container {
+  background-color: lightyellow;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 100vh; /* Set the height of the container to the full viewport height */
+}
 /*
 @media (min-width: 576px) {
   .container {

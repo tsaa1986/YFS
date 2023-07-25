@@ -21,10 +21,12 @@ type handleFinishTypeProps = {
 
 type LoginTypeProps = {
     loginDisplay: string,
-    setisLoggedIn: React.Dispatch<React.SetStateAction<boolean>>
+    setisLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+    languageDisplay: string,
+    setLanguageDisplay: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const Login: React.FC<LoginTypeProps> = ({setisLoggedIn}, {loginDisplay}) => {
+export const Login: React.FC<LoginTypeProps> = ({setisLoggedIn, loginDisplay, languageDisplay, setLanguageDisplay}) => {
  const navigate = useNavigate();
  const [state, setState] = useState<StateTypeProps>({showError: false, errorMsg: "", display: "login"})
 
@@ -68,82 +70,86 @@ const handlePasswordReminder = (values:any) => {
 }
 
 return( 
-<Layout>
-<HeaderLayout isLoggedIn={false}/>
-<Card className="login-container">
-    {
-        state.display === "login" &&
+//<Layout>
+<div>
+<HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} />
+<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '5%'}}>
+    <Card className="login-container">
+        {
+            state.display === "login" &&
+                <div>
+                    <Title>Login</Title>
+                    <Form onFinish={handleFinish} style={{ width: "100%" }}>
+
+                        <Form.Item
+                            name="username"
+                            rules={[{ required: true, message: 'Enter a username' }]}>
+                            <Input 
+                                prefix={<UserOutlined className="site-form-item-icon" />}
+                                placeholder="username"
+                            />
+                        </Form.Item> 
+
+                        <Form.Item
+                            name="password"
+                            rules={[{ required: true, message: 'Enter a password' }]}>
+                            <Input 
+                                prefix={<LockOutlined className="site-form-item-icon" />}
+                                placeholder="password" type="password" 
+                            />
+                        </Form.Item>
+
+                        <div className="reset-password text-right mt-3 mb-3">
+                            <span className="pointer" onClick={() => setState({ showError: null, errorMsg: "", display: "password"})}>Forgot Password</span>
+                        </div>
+
+                        <div className="button-row mt-2 mb-3 text-center">
+                            <Button type="primary" htmlType="submit" className="btn-login" /*loading={this.context.loading}*/>
+                                Login
+                            </Button>              
+                        </div>
+
+                        <div className="reset-password text-right mt-3 mb-3">
+                            <span className="pointer" onClick={logInDemoUser}>Use demo mode</span>
+                        </div>
+                    </Form>
+
+                    <div className="text-center">
+                        <Typography.Text type="secondary">Don't have an account yet? &nbsp;</Typography.Text>
+                        <NavLink to="/register" className="ant-btn">Sign Up</NavLink>
+                    </div>
+
+                </div>
+        }
+
+        {
+            state.display === "password" &&
             <div>
-                <Title>Login</Title>
-                <Form onFinish={handleFinish} style={{ width: "100%" }}>
-
+                <Title>Password Reset</Title>
+                <Form onFinish={handlePasswordReminder} style={{ width: "100%" }}>
                     <Form.Item
-                        name="username"
-                        rules={[{ required: true, message: 'Enter a username' }]}>
-                        <Input 
-                            prefix={<UserOutlined className="site-form-item-icon" />}
-                            placeholder="username"
-                        />
-                    </Form.Item> 
-
-                    <Form.Item
-                        name="password"
-                        rules={[{ required: true, message: 'Enter a password' }]}>
-                        <Input 
-                            prefix={<LockOutlined className="site-form-item-icon" />}
-                            placeholder="password" type="password" 
-                        />
+                        name="email"
+                        rules={[{ type: 'email', message: 'Enter a Valid Email'},{ required: true, message: 'Enter an email' }]}
+                        >
+                        <Input placeholder="email" />
                     </Form.Item>
 
-                    <div className="reset-password text-right mt-3 mb-3">
-                        <span className="pointer" onClick={() => setState({ showError: null, errorMsg: "", display: "password"})}>Forgot Password</span>
+                    <div className="button-row mt-2">
+                        <Button type="primary" htmlType="submit" block>
+                            Reset Password
+                        </Button>
                     </div>
 
-                    <div className="button-row mt-2 mb-3 text-center">
-                        <Button type="primary" htmlType="submit" className="btn-login" /*loading={this.context.loading}*/>
-                            Login
-                        </Button>              
+                    <div className="reset-password text-right mt-3">
+                        <span className="pointer" onClick={() => setState({ showError: null, errorMsg:"", display: "login" })}>Back to Login</span>
                     </div>
-
-                    <div className="reset-password text-right mt-3 mb-3">
-                        <span className="pointer" onClick={logInDemoUser}>Use demo mode</span>
-                    </div>
-                </Form>
-
-                <div className="text-center">
-                    <Typography.Text type="secondary">Don't have an account yet? &nbsp;</Typography.Text>
-                    <NavLink to="/register" className="ant-btn">Sign Up</NavLink>
-                </div>
-
+                </Form>          
             </div>
-    }
-
-    {
-        state.display === "password" &&
-        <div>
-            <Title>Password Reset</Title>
-            <Form onFinish={handlePasswordReminder} style={{ width: "100%" }}>
-                <Form.Item
-                    name="email"
-                    rules={[{ type: 'email', message: 'Enter a Valid Email'},{ required: true, message: 'Enter an email' }]}
-                    >
-                    <Input placeholder="email" />
-                </Form.Item>
-
-                <div className="button-row mt-2">
-                    <Button type="primary" htmlType="submit" block>
-                        Reset Password
-                    </Button>
-                </div>
-
-                <div className="reset-password text-right mt-3">
-                    <span className="pointer" onClick={() => setState({ showError: null, errorMsg:"", display: "login" })}>Back to Login</span>
-                </div>
-            </Form>          
-        </div>
-    }
-    </Card>
-</Layout>
+        }
+        </Card>
+</div>
+</div>
+//</Layout>
 );
         }
 

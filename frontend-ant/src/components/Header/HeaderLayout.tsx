@@ -1,4 +1,4 @@
-import { Avatar, Col, Dropdown, Layout, Menu, Row } from 'antd';
+import { Avatar, Col, Dropdown, Layout, Menu, Row, Select } from 'antd';
 import { Header as HeaderAntd } from 'antd/es/layout/layout';
 import { NavLink } from 'react-router-dom';
 import { MailOutlined, LogoutOutlined,
@@ -8,13 +8,16 @@ import { MailOutlined, LogoutOutlined,
 import { Dispatch, SetStateAction, useState } from 'react';
 import { authAPI } from '../../api/api';
 //import { ReactComponent as Img } from "./images/user.svg";
+const { Option } = Select;
 
 type HeaderTypeProps = {
-    isLoggedIn: Boolean
+    isLoggedIn: Boolean,
+    languageDisplay: String,
+    setLanguageDisplay: Dispatch<SetStateAction<any>>
     //setisLoggedIn: Dispatch<SetStateAction<any>>
 }
 
-export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
+export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDisplay, setLanguageDisplay}) => {
     const [collapsed, setCollapsed] = useState<Boolean>(false)
     const [drawerVisible, setDrawerVisible] = useState<Boolean>(false)
 
@@ -39,9 +42,9 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
   
     return(
         <HeaderAntd 
-            style={{           
+           style={{
+                background: 'lightyellow',           
                 padding: 0, 
-                height: 50,
                 paddingBottom: 0,
                 width: "100%" }}> {/*//background: "colorBgContainer" }} />*/}
                 
@@ -52,7 +55,22 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
                      <NavLink to={"/"} className="navbar-logo-container">
                         Logo Here
                      </NavLink>
+                     <Select
+                        defaultValue={languageDisplay} // Set the default language value here
+                        style={{ width: 120 }}
+                        onChange={(value) => {
+                        // Handle language change
+                        console.log("Selected language:", value);
+                        setLanguageDisplay(value);
+                        // Implement your logic to change the language here
+                        }}
+                    >
+                        <Option id="en" value="en">English</Option>
+                        <Option id="ua" value="ua">Українська</Option>
+                        {/* Add more language options as needed */}
+                    </Select>
                 </Col>
+
                 <Col>   
                    {!isLoggedIn && <NavLink style={{
                         color:"red"                        
@@ -94,7 +112,6 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn}) => {
                             </Dropdown>
                     </div>
                 }
-
             </Row>        
         </HeaderAntd>
     )

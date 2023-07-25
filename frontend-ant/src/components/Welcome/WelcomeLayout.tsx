@@ -1,12 +1,13 @@
 import React from "react";
-import { Layout } from 'antd';
-//import { Header1 } from './components/Header/Header1';
-import { Header } from "antd/es/layout/layout";
 import { HeaderLayout } from "../Header/HeaderLayout";
-import { Login } from "../AccountManagement/Login";
 
-export const WelcomeLayout: React.FC = () => {
+type WelcomeTypeProps = {
+    setLanguageDisplay: React.Dispatch<React.SetStateAction<string>>,
+    languageDisplay: string,
+}
+
+export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({languageDisplay, setLanguageDisplay}) => {
     return (
-       <HeaderLayout isLoggedIn={false}/>     
+       <HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay}/>     
     );
 }
