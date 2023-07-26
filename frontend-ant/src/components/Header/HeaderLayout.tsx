@@ -97,7 +97,7 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
                 </Col>*/}
 
                 <Col style={{ textAlign: "right", paddingRight: 10 }}>
-                    { isLoggedIn && (user !== undefined) && (user !== null) ? (<div>Welcome {user.userName}</div>) : <div></div> }
+                    { isLoggedIn && (user !== undefined) && (user !== null) ? (<div style={{fontWeight: "bold"}}>Welcome: {user.userName}</div>) : <div></div> }
                 </Col>
 
                 {/*<Col
