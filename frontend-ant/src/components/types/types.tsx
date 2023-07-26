@@ -1,7 +1,10 @@
 export interface IUser {
     id: number;
-    name: string;
+    firstName: string;
+    lastName: string;
+    userName: string;    
     email: string;
+    phoneNumber: string | null;
 }
 
 /*

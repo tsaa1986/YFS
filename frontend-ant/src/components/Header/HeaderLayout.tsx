@@ -5,8 +5,9 @@ import { MailOutlined, LogoutOutlined,
     UserOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined } from "@ant-design/icons";
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { authAPI } from '../../api/api';
+import { IUser } from '../types/types';
 //import { ReactComponent as Img } from "./images/user.svg";
 const { Option } = Select;
 
@@ -14,10 +15,11 @@ type HeaderTypeProps = {
     isLoggedIn: Boolean,
     languageDisplay: String,
     setLanguageDisplay: Dispatch<SetStateAction<any>>
+    user: IUser | null;
     //setisLoggedIn: Dispatch<SetStateAction<any>>
 }
 
-export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDisplay, setLanguageDisplay}) => {
+export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDisplay, setLanguageDisplay, user}) => {
     const [collapsed, setCollapsed] = useState<Boolean>(false)
     const [drawerVisible, setDrawerVisible] = useState<Boolean>(false)
 
@@ -26,6 +28,10 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
         //setUser();
         //setisLoggedIn(false);
     }
+
+    useEffect(()=>{
+        console.log('user was changed', user);
+    }, [user])
 
     let userMenu = (
         <Menu>
@@ -57,7 +63,9 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
                      </NavLink>
                      <Select
                         defaultValue={languageDisplay} // Set the default language value here
-                        style={{ width: 120 }}
+                        style={{ width: 80 }}    
+                        className="custom-select"                    
+                        disabled={true}
                         onChange={(value) => {
                         // Handle language change
                         console.log("Selected language:", value);
@@ -89,7 +97,7 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
                 </Col>*/}
 
                 <Col style={{ textAlign: "right", paddingRight: 10 }}>
-                    { isLoggedIn && <div>Welcome UserName</div> }
+                    { isLoggedIn && (user !== undefined) && (user !== null) ? (<div>Welcome {user.userName}</div>) : <div></div> }
                 </Col>
 
                 {/*<Col

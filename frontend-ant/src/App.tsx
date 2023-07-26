@@ -13,7 +13,7 @@ import {
 import type { MenuProps } from 'antd';
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
 import { Register } from './components/AccountManagement/Register';
-import { authAPI, UserAccountType } from './api/api';
+import { authAPI } from './api/api';
 import { ReportsLayout } from './components/Reports/ReportsLayout';
 import { BudgetLayout } from './components/Budget/BudgetLayout';
 import { DepositsLayout } from './components/Deposits/DepositsLayout';
@@ -22,6 +22,7 @@ import { HomeLayout } from './components/Home/HomeLayout';
 import { HeaderLayout } from './components/Header/HeaderLayout';
 import { WelcomeLayout } from './components/Welcome/WelcomeLayout';
 import { Footer } from 'antd/es/layout/layout';
+import { IUser } from './components/types/types';
 
 
 //const { Content, Footer, Sider } = Layout;
@@ -93,29 +94,43 @@ const App: React.FC = () => {
   //const { token: { colorBgContainer } } = theme.useToken();
   const [isLoggedIn, setisLoggedIn] = useState(false);
   const [languageDisplay, setLanguageDisplay] = useState("en")
-  
-  const [user, setUser] = useState(() => {
-    authAPI.me()?.then( res => { 
-      console.log(res)
-      setisLoggedIn(true)
-    })
-  });
+  const [user, setUser] = useState<IUser | null>(null);
 
-  const handleLogin = () => 
-    setUser( () => { 
-      let res = authAPI.me()
-      if (res === undefined) 
-        return null
-        else return res
-    });
+  const handleLogin = () => {
+    authAPI.me()?.then((res) => {
+        if (res !== undefined) {
+          setUser(res);
+        } else {
+          setUser(null);
+          console.error('No user data received.');
+        }})
+      .catch((error) => {
+        console.error('No user data received.');
+        setUser(null);
+      })
+    };   
+
+  useEffect(() => {
+    authAPI.me()?.then((res) => {
+      setUser(res)
+      setisLoggedIn(true)
+    }).catch((error) => {
+      console.error('Error fetching user data:', error);
+    })
+  }, [])
+
+  useEffect(()=>{
+    if (isLoggedIn === true) {
+      handleLogin();
+    }
+  },[isLoggedIn]) 
 
   const handleLogout = () => {
     authAPI.logOut();
-    //setUser();
+    setUser(null);
     setisLoggedIn(false);
   }
-
-  console.log('loggedin: ' + isLoggedIn)
+  console.log('loggedin: ',isLoggedIn)
   console.log('RENDER')
  
   const selectedKey = useLocation().pathname
@@ -152,17 +167,17 @@ const App: React.FC = () => {
 
 {/* переделать при логине устанавливать пользователя*/}
     <Routes>
-    <Route path="/" element={<WelcomeLayout languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} />} /> {/*//<Login setisLoggedIn={setisLoggedIn} />}/>*/}
+    <Route path="/" element={<WelcomeLayout languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user}/>} /> {/*//<Login setisLoggedIn={setisLoggedIn} />}/>*/}
       <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} loginDisplay="login" languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay}/>}/>
       <Route path="/register" element={<Register />}/>
 
       <Route element={
         <ProtectedRoute isAllowed={ isLoggedIn } />}>
-          <Route path="/home" element={<MainLayout children={HomeLayout} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay}/>} />
-          <Route path="/accounts" element={<MainLayout children={AccountsLayout} />} />
-          <Route path="/budget" element={<MainLayout children={BudgetLayout} />} />
-          <Route path="/reports" element={<MainLayout children={ReportsLayout} />} />
-          <Route path="/deposits" element={<MainLayout children={DepositsLayout} />} 
+          <Route path="/home" element={<MainLayout children={HomeLayout} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} isLoggedIn={isLoggedIn} user={user}/>} />
+          <Route path="/accounts" element={<MainLayout children={AccountsLayout} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} isLoggedIn={isLoggedIn} user={user}/>} />
+          <Route path="/budget" element={<MainLayout children={BudgetLayout} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} isLoggedIn={isLoggedIn} user={user}/>} />
+          <Route path="/reports" element={<MainLayout children={ReportsLayout} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} isLoggedIn={isLoggedIn} user={user}/>} />
+          <Route path="/deposits" element={<MainLayout children={DepositsLayout} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} isLoggedIn={isLoggedIn} user={user}/>} 
         />
       </Route>
     </Routes>
@@ -170,11 +185,11 @@ const App: React.FC = () => {
   );
 };
 
-const MainLayout: React.FC<any> = ( {children: Component, languageDisplay, setLanguageDisplay}) => {
+const MainLayout: React.FC<any> = ( {children: Component, languageDisplay, setLanguageDisplay, isLoggedIn, user}) => {
 
   return(
 <div className="app-main"> 
-<HeaderLayout isLoggedIn={true} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay}/>
+<HeaderLayout isLoggedIn={isLoggedIn} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user} />
     <Layout >
       <Layout className="site-layout">
       <SideMenu />

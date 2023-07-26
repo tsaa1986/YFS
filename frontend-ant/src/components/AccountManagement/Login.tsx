@@ -4,6 +4,7 @@ import { Layout, Form, Button, Input, Typography, Alert, Card } from "antd";
 import { authAPI } from "../../api/api";
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { HeaderLayout } from "../Header/HeaderLayout";
+import { IUser } from "../types/types";
 
 
 const { Title } = Typography;
@@ -72,7 +73,7 @@ const handlePasswordReminder = (values:any) => {
 return( 
 //<Layout>
 <div>
-<HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} />
+   <HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={null}/>
 <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '5%'}}>
     <Card className="login-container">
         {

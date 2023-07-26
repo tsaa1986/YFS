@@ -2,6 +2,7 @@ import axios from "axios";
 import moment from "moment";
 import { getMaxListeners } from "process";
 import { start } from "repl";
+import { IUser } from "../components/types/types";
 import CookieService from "../services/CookieService";
 
 const BASE_URL = 'https://localhost:5001/api';
@@ -266,14 +267,6 @@ export type UserRegistrationType = {
     phoneNumber: string | null
 }
 
-export type UserAccountType = {
-    firstName: string | null,
-    lastName: string | null,
-    userName:	string,
-    email: string | null,
-    phoneNumber: string | null
-}
-
 export const authAPI = {
     //me() who am i from jwt
     me () {
@@ -284,7 +277,7 @@ export const authAPI = {
                 config.headers.Authorization = `Bearer ${jwt}`;
                 return config;});
         
-         return instancePrivate.get<UserAccountType>(`${BASE_URL}/Authentication/me`)
+         return instancePrivate.get<IUser>(`${BASE_URL}/Authentication/me`)
             .then(response => { 
                 //console.log(response.status);
                 //debugger
