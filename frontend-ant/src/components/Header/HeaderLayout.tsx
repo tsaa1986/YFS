@@ -65,8 +65,8 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
                         // Implement your logic to change the language here
                         }}
                     >
-                        <Option id="en" value="en">English</Option>
-                        <Option id="ua" value="ua">Українська</Option>
+                        <Option id="en" value="en">ENG</Option>
+                        <Option id="ua" value="ua">УКР</Option>
                         {/* Add more language options as needed */}
                     </Select>
                 </Col>

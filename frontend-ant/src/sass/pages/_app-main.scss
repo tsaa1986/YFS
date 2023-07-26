@@ -1,7 +1,9 @@
 .app-main {
     /* Your styles for the .app-main class go here */
     /* For example, you can set the background color */
-    background-color: yellowgreen;
-    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(255, 249, 158);
+    min-height: 100vh;
     /* Add other styles as needed */
   }
