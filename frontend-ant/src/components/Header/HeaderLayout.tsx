@@ -57,9 +57,9 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
             <Row
                 align="middle"
             >                
-                <Col flex={2}>   
-                     <NavLink to={"/"} className="navbar-logo-container">
-                        Logo Here
+                <Col flex={2} style={{ display: "flex", alignItems: "center" }}>   
+                      <NavLink to={"/"} className="navbar-logo-container">
+                     <img src="/logo-$.png" alt="Logo" style={{ height: 40}}/>
                      </NavLink>
                      <Select
                         defaultValue={languageDisplay} // Set the default language value here
