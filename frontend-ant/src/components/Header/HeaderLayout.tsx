@@ -8,6 +8,7 @@ import { MailOutlined, LogoutOutlined,
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { authAPI } from '../../api/api';
 import { IUser } from '../types/types';
+import { transpile } from 'typescript';
 //import { ReactComponent as Img } from "./images/user.svg";
 const { Option } = Select;
 
@@ -49,7 +50,7 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
     return(
         <HeaderAntd 
            style={{
-                background: 'lightyellow',           
+                background: 'transparent',         
                 padding: 0, 
                 paddingBottom: 0,
                 width: "100%" }}> {/*//background: "colorBgContainer" }} />*/}

@@ -3,7 +3,10 @@
     /* For example, you can set the background color */
     display: flex;
     flex-direction: column;
-    background-color: rgb(255, 249, 158);
+    //background-color: rgb(255, 249, 158);
+    background-image: url("/background.jpg"); 
+    background-size: cover; 
+    background-repeat: no-repeat;
     min-height: 100vh;
     /* Add other styles as needed */
   }
