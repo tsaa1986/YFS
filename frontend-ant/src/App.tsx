@@ -23,6 +23,7 @@ import { HeaderLayout } from './components/Header/HeaderLayout';
 import { WelcomeLayout } from './components/Welcome/WelcomeLayout';
 import { Footer } from 'antd/es/layout/layout';
 import { IUser } from './components/types/types';
+import "./sass/index.scss";
 
 
 //const { Content, Footer, Sider } = Layout;

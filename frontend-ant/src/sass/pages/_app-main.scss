@@ -1,12 +1,15 @@
 .app-main {
     /* Your styles for the .app-main class go here */
     /* For example, you can set the background color */
+    //display: flex;
+    //flex-direction: column;
+    //background-color: rgb(255, 249, 158);
+    //background-image: url("/background.jpg"); 
+    //background-size: cover; 
+    //background-repeat: no-repeat;
+    //min-height: 100vh;
+    /* Add other styles as needed */
+    height: 100%;
     display: flex;
     flex-direction: column;
-    //background-color: rgb(255, 249, 158);
-    background-image: url("/background.jpg"); 
-    background-size: cover; 
-    background-repeat: no-repeat;
-    min-height: 100vh;
-    /* Add other styles as needed */
   }
