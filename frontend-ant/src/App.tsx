@@ -159,7 +159,7 @@ const App: React.FC = () => {
   }, [navigate, isLoggedIn]);
 
   return (
-  <div className="app-main">
+  <div className='wrapper'>
     {/*{user ? (
         <button onClick={handleLogout}>Sign Out</button>
       ) : (
@@ -189,7 +189,7 @@ const App: React.FC = () => {
 const MainLayout: React.FC<any> = ( {children: Component, languageDisplay, setLanguageDisplay, isLoggedIn, user}) => {
 
   return(
-<div className="app-main"> 
+<div className="wrapper"> 
 <HeaderLayout isLoggedIn={isLoggedIn} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user} />
     <Layout >
       <Layout className="site-layout">

@@ -31,13 +31,13 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({languageDisplay, setL
                             This is your money manager. 
                         </div>
                         <div className="main-block__buttons">
-                            <a href="/login" className="main-block__button__yellow">Sign in</a>
-                            <a href="" className="main-block__button">Demo Account</a>
+                            <a href="/login" className="main-block__button main-block__button_border">Sign in</a>
+                            <a href="" className="main-block__button main-block__button_border">Demo Account</a>
                         </div>
                     </div>
                 </div>
                 <div className="main-block__image _ibg">
-                    <img src="/background.jpg" alt="cover" />
+                    <img src="/background.jpg" alt="background" />
                 </div>
             </div>
         </main>
