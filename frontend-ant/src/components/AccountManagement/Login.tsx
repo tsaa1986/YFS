@@ -1,4 +1,4 @@
-import React, {useState, useEffect, Dispatch} from "react";
+import React, {useState, useEffect, Dispatch, Component} from "react";
 import { NavLink,redirect, useNavigate} from 'react-router-dom';
 import { Layout, Form, Button, Input, Typography, Alert, Card } from "antd";
 import { authAPI } from "../../api/api";
@@ -22,12 +22,12 @@ type handleFinishTypeProps = {
 
 type LoginTypeProps = {
     loginDisplay: string,
-    setisLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
     languageDisplay: string,
     setLanguageDisplay: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const Login: React.FC<LoginTypeProps> = ({setisLoggedIn, loginDisplay, languageDisplay, setLanguageDisplay}) => {
+export const Login: React.FC<LoginTypeProps> = ({setIsLoggedIn, loginDisplay, languageDisplay, setLanguageDisplay}) => {
  const navigate = useNavigate();
  const [state, setState] = useState<StateTypeProps>({showError: false, errorMsg: "", display: "login"})
 
@@ -38,6 +38,7 @@ useEffect( ()=> {
             newState = {...state, display: loginDisplay}
             //setState(newState)
         }
+        console.log("chnge login display state",loginDisplay)
     }, [loginDisplay])
 
  const handleFinish = (values: handleFinishTypeProps) => {        
@@ -47,7 +48,7 @@ useEffect( ()=> {
         res => { 
             if (res != false) {
                 console.log(res)
-                setisLoggedIn(true);
+                setIsLoggedIn(true);
                 navigate("/home");
             } else console.log(res);
         }
@@ -59,7 +60,7 @@ const logInDemoUser = () => {
     authAPI.login("demo", "123$qweR").then(
         res => { 
             if (res != false) {
-                setisLoggedIn(true);
+                setIsLoggedIn(true);
                 navigate("/home");
             } 
         }
@@ -73,8 +74,9 @@ const handlePasswordReminder = (values:any) => {
 return( 
 //<Layout>
 <div>
-   <HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={null}/>
-<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '5%'}}>
+   {/*<HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={null}/>*/}
+{/*<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '5%'}}>*/}
+<div>
     <Card className="login-container">
         {
             state.display === "login" &&

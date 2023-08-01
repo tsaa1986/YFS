@@ -1,24 +1,41 @@
-import React from "react";
+import { Button, Typography } from "antd";
+import { Content } from "antd/es/layout/layout";
+import Select from "antd/es/select";
+import React, { Component, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { authAPI } from "../../api/api";
+import { Login } from "../AccountManagement/Login";
 import { HeaderLayout } from "../Header/HeaderLayout";
+import { HeaderNew } from "../Header/HeaderNew";
 import { IUser } from "../types/types";
+const { Option } = Select;
+
+const { Title } = Typography;
+
+export type StateTypeProps = {
+    showError: Boolean | null
+    errorMsg: string | null
+    display: string | null
+}
+
+type handleFinishTypeProps = {
+    username: "string"
+    password: "string"
+}
 
 type WelcomeTypeProps = {
     setLanguageDisplay: React.Dispatch<React.SetStateAction<string>>,
+    setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
     languageDisplay: string,
     user: IUser | null
 }
 
-export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({languageDisplay, setLanguageDisplay, user}) => {
-    
+export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, languageDisplay, setLanguageDisplay, user}) => {
+   const[loginDisplay, setLoginDisplay] = useState("hide");
+
     return (
     <div className="wrapper">
-        <header className="header">
-            <div className="header__container _container">
-                <a href="" className="header__logo">
-                    YFS
-                </a>
-            </div>
-        </header>
+        <HeaderNew isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user}/>
 
         <main className="page">
             <div className="page__main-block main-block">
@@ -31,9 +48,19 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({languageDisplay, setL
                             This is your money manager. 
                         </div>
                         <div className="main-block__buttons">
-                            <a href="/login" className="main-block__button main-block__button_border">Sign in</a>
-                            <a href="" className="main-block__button main-block__button_border">Demo Account</a>
+                            <Button className="main-block__button main-block__button_border" onClick={()=>{setLoginDisplay("login"); console.log(loginDisplay)}}>Sign in </Button>
+                            <Button className="main-block__button main-block__button_border" onClick={()=>{}}>Demo Account </Button>
                         </div>
+                    </div>
+                    <div className="main-block__login">
+                        {
+                            <Login  setIsLoggedIn={setIsLoggedIn} 
+                                    loginDisplay={loginDisplay}
+                                    languageDisplay={languageDisplay}
+                                    setLanguageDisplay={setLanguageDisplay}
+                                    />
+                        //Component && <Component />
+                        }
                     </div>
                 </div>
                 <div className="main-block__image _ibg">

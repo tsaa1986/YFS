@@ -75,6 +75,10 @@ body {
     font-weight: 700;
     color: inherit;
 }
+.header__language {
+    margin-left: 50px;
+    color: gold;
+}
 .header__container img {
     height: 100%; 
 }
@@ -99,6 +103,11 @@ body {
 }
 .main-block__body > *:not(:last-child) {
     margin: 0px 0px 35px 0px;
+}
+.main-block__login {
+    position: relative;
+    z-index: 3;
+    max-width: 300px;
 }
 .main-block__image {
     position: absolute;

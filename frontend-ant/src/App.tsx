@@ -168,8 +168,17 @@ const App: React.FC = () => {
 
 {/* переделать при логине устанавливать пользователя*/}
     <Routes>
-    <Route path="/" element={<WelcomeLayout languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user}/>} /> {/*//<Login setisLoggedIn={setisLoggedIn} />}/>*/}
-      <Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} loginDisplay="login" languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay}/>}/>
+    <Route path="/" element={<WelcomeLayout languageDisplay={languageDisplay} 
+                                            setIsLoggedIn={setisLoggedIn}    
+                                            setLanguageDisplay={setLanguageDisplay} 
+                                            user={user}/>} /> {/*//<Login setisLoggedIn={setisLoggedIn} />}/>*/}
+      {/*<Route path="/login" element={<Login setisLoggedIn={setisLoggedIn} loginDisplay="login" languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay}/>}/>*/}
+      {/*<Route path="/login" element={<WelcomeLayout children={Login} 
+                                                    languageDisplay={languageDisplay} 
+                                                    setIsLoggedIn={setisLoggedIn}                                                     
+                                                    setLanguageDisplay={setLanguageDisplay} 
+                                                    user={user}/>} />*/}
+
       <Route path="/register" element={<Register />}/>
 
       <Route element={
