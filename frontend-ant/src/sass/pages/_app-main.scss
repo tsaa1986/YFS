@@ -1,15 +1,23 @@
-.app-main {
-    /* Your styles for the .app-main class go here */
-    /* For example, you can set the background color */
-    //display: flex;
-    //flex-direction: column;
-    //background-color: rgb(255, 249, 158);
-    //background-image: url("/background.jpg"); 
-    //background-size: cover; 
-    //background-repeat: no-repeat;
-    //min-height: 100vh;
-    /* Add other styles as needed */
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
+.header-main {
+  height: 60px;
+  background: 'black';     
+  padding: 0;
+  width: "100%"
+}
+.header-main-navarbar_container {
+  text-align: center;
+  font-weight: 700;
+  font-size: 28px;
+  width:80px;
+  color: $text-gold;
+}
+.header-main-select {
+  width: 80px;
+}
+.header-main-select .ant-select{
+  background-color: black;
+  background: black;
+}
+.header-main-select .ant-select-selector{
+  color: black;
+}

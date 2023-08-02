@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from "react";
+
 export interface IUser {
     id: number;
     firstName: string;
@@ -5,6 +7,14 @@ export interface IUser {
     userName: string;    
     email: string;
     phoneNumber: string | null;
+}
+
+export interface HeaderTypeProps {
+    isLoggedIn: Boolean,
+    languageDisplay: String,
+    setLanguageDisplay: Dispatch<SetStateAction<any>>
+    user: IUser | null;
+    //setisLoggedIn: Dispatch<SetStateAction<any>>
 }
 
 /*

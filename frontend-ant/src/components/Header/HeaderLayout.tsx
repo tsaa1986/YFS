@@ -7,18 +7,9 @@ import { MailOutlined, LogoutOutlined,
     MenuUnfoldOutlined } from "@ant-design/icons";
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { authAPI } from '../../api/api';
-import { IUser } from '../types/types';
-import { transpile } from 'typescript';
+import { HeaderTypeProps } from '../types/types';
 //import { ReactComponent as Img } from "./images/user.svg";
 const { Option } = Select;
-
-type HeaderTypeProps = {
-    isLoggedIn: Boolean,
-    languageDisplay: String,
-    setLanguageDisplay: Dispatch<SetStateAction<any>>
-    user: IUser | null;
-    //setisLoggedIn: Dispatch<SetStateAction<any>>
-}
 
 export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDisplay, setLanguageDisplay, user}) => {
     const [collapsed, setCollapsed] = useState<Boolean>(false)
@@ -48,35 +39,28 @@ export const HeaderLayout: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDis
 
   
     return(
-        <HeaderAntd 
-           style={{
-                background: 'transparent',         
-                padding: 0, 
-                paddingBottom: 0,
-                width: "100%" }}> {/*//background: "colorBgContainer" }} />*/}
-                
+        <HeaderAntd className='header-main'> {/*//background: "colorBgContainer" }} />*/}                
             <Row
                 align="middle"
             >                
-                <Col flex={2} style={{ display: "flex", alignItems: "center" }}>   
-                      <NavLink to={"/"} className="navbar-logo-container">
-                     <img src="/logo-$.png" alt="Logo" style={{ height: 40}}/>
-                     </NavLink>
+                <Col flex={2} style={{ display: "flex", alignItems: "center"}}>   
+                    <NavLink to={"/"} className="header-main-navarbar_container">
+                        YFS
+                     {/*<img src="/logo-$.png" alt="Logo" style={{ height: 40}}/>*/}
+                    </NavLink>
                      <Select
-                        defaultValue={languageDisplay} // Set the default language value here
-                        style={{ width: 80 }}    
-                        className="custom-select"                    
-                        disabled={true}
+                        defaultValue={languageDisplay}
+                        //style={{ color: 'gold', padding: 5, width: 80 }}    
+                        className="header-main-select"                    
+                        disabled={false}
                         onChange={(value) => {
                         // Handle language change
                         console.log("Selected language:", value);
                         setLanguageDisplay(value);
-                        // Implement your logic to change the language here
                         }}
                     >
                         <Option id="en" value="en">ENG</Option>
                         <Option id="ua" value="ua">УКР</Option>
-                        {/* Add more language options as needed */}
                     </Select>
                 </Col>
 

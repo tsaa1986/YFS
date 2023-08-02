@@ -67,7 +67,7 @@ const SideMenu:React.FC = () => {
 
 const MainLayout: React.FC<any> = ( {children: Component, languageDisplay, setLanguageDisplay, isLoggedIn, user}) => {
 
-    return(
+return(
   <div className="wrapper"> 
   <HeaderLayout isLoggedIn={isLoggedIn} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user} />
       <Layout >
