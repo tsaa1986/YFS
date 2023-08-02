@@ -1,7 +1,7 @@
 import { Button, Typography } from "antd";
 import { Content } from "antd/es/layout/layout";
 import Select from "antd/es/select";
-import React, { Component, useEffect, useState } from "react";
+import React, { Component, useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../api/api";
 import { Login } from "../AccountManagement/Login";
@@ -32,6 +32,18 @@ type WelcomeTypeProps = {
 
 export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, languageDisplay, setLanguageDisplay, user}) => {
    const[loginDisplay, setLoginDisplay] = useState("hide");
+   const navigate = useNavigate();
+
+   const logInDemoUser = () => {
+    authAPI.login("demo", "123$qweR").then(
+        res => { 
+            if (res != false) {
+                setIsLoggedIn(true);
+                navigate("/home");
+            } 
+        }
+    )
+    }
 
     return (
     <div className="wrapper">
@@ -49,13 +61,14 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, langua
                         </div>
                         <div className="main-block__buttons">
                             <Button className="main-block__button main-block__button_border" onClick={()=>{setLoginDisplay("login"); console.log(loginDisplay)}}>Sign in </Button>
-                            <Button className="main-block__button main-block__button_border" onClick={()=>{}}>Demo Account </Button>
+                            <Button className="main-block__button main-block__button_border" onClick={()=>{ logInDemoUser(); }}>Demo Account </Button>
                         </div>
                     </div>
                     <div className="main-block__login">
                         {
                             <Login  setIsLoggedIn={setIsLoggedIn} 
                                     loginDisplay={loginDisplay}
+                                    setLoginDisplay={setLoginDisplay}
                                     languageDisplay={languageDisplay}
                                     setLanguageDisplay={setLanguageDisplay}
                                     />

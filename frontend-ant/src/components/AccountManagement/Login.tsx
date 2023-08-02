@@ -22,23 +22,24 @@ type handleFinishTypeProps = {
 
 type LoginTypeProps = {
     loginDisplay: string,
+    setLoginDisplay: React.Dispatch<React.SetStateAction<string>>,
     setIsLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
     languageDisplay: string,
     setLanguageDisplay: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const Login: React.FC<LoginTypeProps> = ({setIsLoggedIn, loginDisplay, languageDisplay, setLanguageDisplay}) => {
+export const Login: React.FC<LoginTypeProps> = ({setIsLoggedIn, setLoginDisplay, loginDisplay, languageDisplay, setLanguageDisplay}) => {
  const navigate = useNavigate();
- const [state, setState] = useState<StateTypeProps>({showError: false, errorMsg: "", display: "login"})
+ const [state, setState] = useState<StateTypeProps>({showError: false, errorMsg: "", display: "hide"})
 
 useEffect( ()=> {
       let newState: StateTypeProps;
         if (state.display !== null)
         {
             newState = {...state, display: loginDisplay}
-            //setState(newState)
+            setState(newState)
         }
-        console.log("chnge login display state",loginDisplay)
+        console.log("chnge login display state", loginDisplay)
     }, [loginDisplay])
 
  const handleFinish = (values: handleFinishTypeProps) => {        
@@ -72,11 +73,8 @@ const handlePasswordReminder = (values:any) => {
 }
 
 return( 
-//<Layout>
 <div>
-   {/*<HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={null}/>*/}
-{/*<div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '5%'}}>*/}
-<div>
+    {(state.display === "login" || state.display === "password") &&
     <Card className="login-container">
         {
             state.display === "login" &&
@@ -110,10 +108,6 @@ return(
                             <Button type="primary" htmlType="submit" className="btn-login" /*loading={this.context.loading}*/>
                                 Login
                             </Button>              
-                        </div>
-
-                        <div className="reset-password text-right mt-3 mb-3">
-                            <span className="pointer" onClick={logInDemoUser}>Use demo mode</span>
                         </div>
                     </Form>
 
@@ -149,81 +143,7 @@ return(
                 </Form>          
             </div>
         }
-        </Card>
+        </Card>}
 </div>
-</div>
-//</Layout>
 );
-        }
-
-
-
-{/*
-<Layout>
-    <Card className="login-container">
-    {   
-        state.display === "login" &&
-            <div>
-                            <Title>Login</Title>
-                            <Form onFinish={this.handleFinish} style={{ width: "100%" }}>
-
-                                <Form.Item
-                                    name="username"
-                                    rules={[{ required: true, message: 'Enter a username' }]}
-                                >
-                                    <Input placeholder="username" />
-                                </Form.Item>
-
-                                <Form.Item
-                                    name="password"
-                                    rules={[{ required: true, message: 'Enter a password' }]}
-                                >
-                                    <Input placeholder="password" type="password" />
-                                </Form.Item>
-                                
-                                <div className="reset-password text-right mt-3 mb-3">
-                                    <span className="pointer" onClick={() => this.setState({ display: "password"})}>Forgot Password</span>
-                                </div>
-                                
-                                <div className="button-row mt-2 mb-3 text-center">
-                                    <Button type="primary" htmlType="submit" className="btn-login" loading={this.context.loading}>
-                                        Login
-                                    </Button>
-                                </div>
-                            </Form>
-
-                            <div className="text-center">
-                                <Typography.Text type="secondary">Don't have an account yet? &nbsp;</Typography.Text>
-                                <NavLink to="/register" className="ant-btn">Sign Up</NavLink>
-                            </div>
-            </div>
-    }
-
-    {   
-        state.display === "password" &&
-            <div>
-                        <Title>Password Reset</Title>
-                        <Form onFinish={this.handlePasswordReminder} style={{ width: "100%" }}>
-
-                            <Form.Item
-                                name="email"
-                                rules={[{ type: 'email', message: 'Enter a Valid Email'},{ required: true, message: 'Enter an email' }]}
-                            >
-                                <Input placeholder="email" />
-                            </Form.Item>
-
-                            <div className="button-row mt-2">
-                                <Button type="primary" htmlType="submit" block>
-                                    Reset Password
-                                </Button>
-                            </div>
-                            
-                            <div className="reset-password text-right mt-3">
-                                <span className="pointer" onClick={() => this.setState({ display: "login" })}>Back to Login</span>
-                            </div>
-                        </Form>
-        </div>
-    }
-        </Card>
-    </Layout>*/
-}
+} 

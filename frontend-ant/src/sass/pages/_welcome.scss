@@ -93,7 +93,7 @@ body {
     position: relative;
 }
 .main-block__container {
-
+    display: flex;
 }
 .main-block__body {
     padding: 104px 0px 191px 0px;
@@ -105,9 +105,9 @@ body {
     margin: 0px 0px 35px 0px;
 }
 .main-block__login {
+    padding: 104px 0px 191px 60px;
     position: relative;
-    z-index: 3;
-    max-width: 300px;
+    z-index: 50;
 }
 .main-block__image {
     position: absolute;
