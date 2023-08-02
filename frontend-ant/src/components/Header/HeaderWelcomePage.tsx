@@ -17,12 +17,11 @@ type HeaderTypeProps = {
     //setisLoggedIn: Dispatch<SetStateAction<any>>
 }
 
-export const HeaderNew: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDisplay, setLanguageDisplay, user}) => {
+export const HeaderWelcomePage: React.FC<HeaderTypeProps> = ({isLoggedIn, languageDisplay, setLanguageDisplay, user}) => {
     useEffect(()=>{
         console.log('user was changed', user);
     }, [user])
 
-  
     return(
         <header className="header">
             <div className="header__container _container">

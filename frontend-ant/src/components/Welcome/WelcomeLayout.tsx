@@ -1,16 +1,11 @@
 import { Button, Typography } from "antd";
-import { Content } from "antd/es/layout/layout";
-import Select from "antd/es/select";
-import React, { Component, useEffect, useState} from "react";
+import { Content, Footer } from "antd/es/layout/layout";
+import React, { useState} from "react";
 import { useNavigate } from "react-router-dom";
 import { authAPI } from "../../api/api";
 import { Login } from "../AccountManagement/Login";
-import { HeaderLayout } from "../Header/HeaderLayout";
-import { HeaderNew } from "../Header/HeaderNew";
+import { HeaderWelcomePage } from "../Header/HeaderWelcomePage";
 import { IUser } from "../types/types";
-const { Option } = Select;
-
-const { Title } = Typography;
 
 export type StateTypeProps = {
     showError: Boolean | null
@@ -47,7 +42,7 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, langua
 
     return (
     <div className="wrapper">
-        <HeaderNew isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user}/>
+        <HeaderWelcomePage isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user}/>
 
         <main className="page">
             <div className="page__main-block main-block">
@@ -57,7 +52,7 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, langua
                             Your Financial Space
                         </h1>
                         <div className="main-block__text">
-                            This is your money manager. 
+                            This is your financial manager. 
                         </div>
                         <div className="main-block__buttons">
                             <Button className="main-block__button main-block__button_border" onClick={()=>{setLoginDisplay("login"); console.log(loginDisplay)}}>Sign in </Button>
@@ -81,10 +76,6 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, langua
                 </div>
             </div>
         </main>
-
-        <footer className="footer">
-        I am footer
-        </footer>
+        <Footer className="footer">Ant Design ©2023 Created by <span style={{color: "red"}}>Ton@</span></Footer>
     </div>);
     }
-    //<HeaderLayout isLoggedIn={false} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user}/>     

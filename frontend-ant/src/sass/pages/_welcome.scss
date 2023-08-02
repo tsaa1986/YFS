@@ -71,8 +71,8 @@ body {
     align-items: center;    
 }
 .header__logo {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 34px;
+    font-weight: 900;
     color: inherit;
 }
 .header__language {
@@ -176,7 +176,9 @@ body {
 /*-----------footer-----------*/
 .footer {
     margin-top: auto;
-    padding: 20px;
-    background-color: #f0f0f0;
+    padding: 5px;
+    //background-color: #1f1f1f;
+    background-color: rgba(0, 0, 0, 0.829);
+    color: #ffffff;
     text-align: center;
 }

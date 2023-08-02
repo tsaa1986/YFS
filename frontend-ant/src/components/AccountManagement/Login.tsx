@@ -1,10 +1,11 @@
 import React, {useState, useEffect, Dispatch, Component} from "react";
 import { NavLink,redirect, useNavigate} from 'react-router-dom';
 import { Layout, Form, Button, Input, Typography, Alert, Card } from "antd";
-import { authAPI } from "../../api/api";
+import { authAPI, UserRegistrationType } from "../../api/api";
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import { HeaderLayout } from "../Header/HeaderLayout";
 import { IUser } from "../types/types";
+import { RegisterUser } from "./RegisterUser";
 
 
 const { Title } = Typography;
@@ -72,9 +73,41 @@ const handlePasswordReminder = (values:any) => {
     console.log('handlePasswordReminder')
 }
 
+const loginUser = (values:  UserRegistrationType) => {
+    //this.context.setLoading(true);
+
+    authAPI.login(values.userName, values.password)
+        .then(data => {
+            //debugger
+            console.log('loginuser: ' + data);
+            handleLogin(data);
+        })
+        .catch(err => {
+             console.log(err);
+            //setState({
+                //showError: true,
+                //errorMsg: err
+            //});
+            //this.context.setLoading(false);
+        }); 
+}
+
+const handleLogin = (data:any) => {
+    //this.context.setLoading(true);
+    //this.context.setUser(data);
+
+    let to: any = "/";
+    if(localStorage.getItem("redirect_url")) {
+        to = localStorage.getItem("redirect_url");
+        localStorage.removeItem("redirect_url");
+    }
+        
+        window.location.href = to; // go home or wherever directed to
+    }
+
 return( 
 <div>
-    {(state.display === "login" || state.display === "password") &&
+    {(state.display === "login" || state.display === "password" || state.display === "register") &&
     <Card className="login-container">
         {
             state.display === "login" &&
@@ -109,13 +142,13 @@ return(
                                 Login
                             </Button>              
                         </div>
-                    </Form>
 
-                    <div className="text-center">
+                        <div className="text-center">
                         <Typography.Text type="secondary">Don't have an account yet? &nbsp;</Typography.Text>
-                        <NavLink to="/register" className="ant-btn">Sign Up</NavLink>
-                    </div>
-
+                        <span className="pointer" onClick={() => setState({ showError: null, errorMsg: "", display: "register"})}>Sign Up</span>
+                        {/*<NavLink to="/register" className="ant-btn">Sign Up</NavLink>*/}
+                        </div>
+                    </Form>
                 </div>
         }
 
@@ -142,6 +175,20 @@ return(
                     </div>
                 </Form>          
             </div>
+        }
+        {
+            state.display === "register" &&
+                <div>
+                    <Title>Register</Title>
+                    <RegisterUser  
+                        onSuccess={loginUser}
+                        showTerms={true}
+                    />
+        
+                    <div className="reset-password text-right mt-3">
+                        <span className="pointer" onClick={() => setState({ showError: null, errorMsg:"", display: "login" })}>Back to Login</span>
+                    </div>
+                </div>
         }
         </Card>}
 </div>
