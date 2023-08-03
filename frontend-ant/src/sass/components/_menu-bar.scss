@@ -48,3 +48,17 @@
 .side-nav.ant-layout-sider-collapsed + section {
   margin-left: 0;
 }
+/* ant-menu */
+.ant-menu-item {
+  /* Your custom styles for the menu item (non-active) */
+  color: rgb(255, 255, 255); /* Example: Black text color for non-active menu items */
+}
+.ant-menu-item-active {
+  color: red !important;
+}
+
+.ant-menu-item-selected {
+  /* Your custom styles for the active menu item */
+  background-color: gold !important;/* Example: Background color for the active menu item */
+  color: black !important; /* Example: Text color for the active menu item */
+}

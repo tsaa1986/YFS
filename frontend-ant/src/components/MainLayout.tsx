@@ -51,7 +51,12 @@ const siderStyle: React.CSSProperties = {
     textAlign: 'center',
     lineHeight: '120px',
     color: '#fff',
-    backgroundColor: 'lightgray',
+    backgroundColor: '#001529',
+  };
+const menuStyle = {
+    backgroundColor: '#001529', 
+    color: '#fff', 
+
   };
 
 const SideMenu:React.FC = () => {
@@ -60,7 +65,7 @@ const SideMenu:React.FC = () => {
     return(
       <Sider style={siderStyle} collapsible={false} collapsed={collapsed} onCollapse={(value) => setCollapsed(value)}>
         {/*<div style={{ height: 32, margin: 16, background: 'rgba(255, 255, 255, 0.2)' }} />*/}
-        <Menu defaultSelectedKeys={['1']} mode="inline" items={items} />
+        <Menu style={menuStyle} defaultSelectedKeys={['1']} mode="inline" items={items} />
       </Sider>
     );
   }
