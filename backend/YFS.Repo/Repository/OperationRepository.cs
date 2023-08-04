@@ -43,11 +43,11 @@ namespace YFS.Service.Services
         //.Include(p => p.Account.AccountBalance)            
         //.AsNoTracking().Take(10));
 
-        public async Task<Operation?> GetOperationById(int operationId)
-            => await FindByConditionAsync(op => op.Id.Equals(operationId), false)
-            .Result
+        public async Task<Operation?> GetOperationById(int operationId, bool trackChanges)
+            => await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges)
+            .Result.AsNoTracking()
             .Include(p => p.Account.AccountBalance)
-            //.Include(c => c.Category)
+            .Include(c => c.Category).AsNoTracking()
             .SingleOrDefaultAsync();            
             
 

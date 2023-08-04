@@ -14,6 +14,7 @@ using YFS.Repo.Data;
 using System.Collections;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using System.Net;
+using YFS.Service.Services;
 
 namespace YFS.Controllers
 {
@@ -21,8 +22,10 @@ namespace YFS.Controllers
     [ApiController]
     public class OperationsController : BaseApiController
     {
-        public OperationsController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        private readonly IOperationsService _operationsService;
+        public OperationsController(IOperationsService operationsService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
+            _operationsService = operationsService;
         }
         public enum OperationType
         {
@@ -81,7 +84,7 @@ namespace YFS.Controllers
                     List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>();
                     listAccountMonthly.Add(accountMonthlyBalance);
 
-                    ChangeAccountMonthlyBalance(operationData, (IEnumerable<AccountMonthlyBalance>)listAccountMonthly, false);
+                    ChangeAccountMonthlyBalance(operationData, listAccountMonthly, false);
                 }
 
                 ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
@@ -92,7 +95,7 @@ namespace YFS.Controllers
                 await _repository.Account.UpdateAccount(account);
                 await _repository.SaveAsync();
 
-                var operationReturnData = await _repository.Operation.GetOperationById(operationData.Id);
+                var operationReturnData = await _repository.Operation.GetOperationById(operationData.Id, false);
 
                 var operationDataReturnDto = _mapper.Map<OperationDto>(operationReturnData);
 
@@ -141,7 +144,7 @@ namespace YFS.Controllers
                         await _repository.Operation.CreateOperation(transferOperaitonData);
                         await _repository.SaveAsync();
 
-                        transferOperaitonData = await _repository.Operation.GetOperationById(transferOperaitonData.Id);
+                        transferOperaitonData = await _repository.Operation.GetOperationById(transferOperaitonData.Id, false);
                         var operationTransferDataReturnDto = _mapper.Map<OperationDto>(transferOperaitonData);
 
                         listOperationReturn.Add(operationTransferDataReturnDto);
@@ -303,9 +306,7 @@ namespace YFS.Controllers
             }
         }
 
-        [HttpPut]
-        [Authorize]
-        public async Task<IActionResult> UpdateOperation([FromBody] OperationDto operation)
+        public async Task<IActionResult> UpdateOperation_old([FromBody] OperationDto operation)
         {
             //var accountData = HttpContext.Items["account"] as Account;
             var operationData = _mapper.Map<Operation>(operation);
@@ -314,6 +315,13 @@ namespace YFS.Controllers
             await _repository.SaveAsync();
             return NoContent();
         }
+        [HttpPut]
+        [Authorize]
+        public async Task<IActionResult> UpdateOperation([FromBody] OperationDto operationDto)
+        {
+            var result = await _operationsService.UpdateOperation(operationDto);
+            return result;
+        }
 
         [HttpDelete("{operationId:int}")]
         [Authorize]
@@ -321,7 +329,7 @@ namespace YFS.Controllers
         {
             try
             {
-                var operationData = await _repository.Operation.GetOperationById(operationId);
+                var operationData = await _repository.Operation.GetOperationById(operationId, false);
 
                 if (operationData == null)
                 {
@@ -350,7 +358,7 @@ namespace YFS.Controllers
                     if (operationData.TransferOperationId > 0)
                     {
                         operationIncomeData = operationData;
-                        operationWithdrawData = await _repository.Operation.GetOperationById(operationData.TransferOperationId);
+                        operationWithdrawData = await _repository.Operation.GetOperationById(operationData.TransferOperationId, false);
 
                         if (operationWithdrawData != null)
                         {
@@ -442,13 +450,20 @@ namespace YFS.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
         [HttpDelete("transfer/{operationId:int}")]
         [Authorize]
         public async Task<ActionResult> RemoveTransferOperation(int operationId)
         {
+            var result = await _operationsService.RemoveTransferOperation(operationId);
+            return result;
+        }
+
+        public async Task<ActionResult> RemoveTransferOperation_old(int operationId)
+        {
             try
             {
-                var operationData = await _repository.Operation.GetOperationById(operationId);
+                var operationData = await _repository.Operation.GetOperationById(operationId, false);
 
                 if (operationData == null)
                 {
@@ -473,7 +488,7 @@ namespace YFS.Controllers
                 if (operationData.TransferOperationId > 0)
                  {
                         operationIncomeData = operationData;
-                        operationWithdrawData = await _repository.Operation.GetOperationById(operationData.TransferOperationId);
+                        operationWithdrawData = await _repository.Operation.GetOperationById(operationData.TransferOperationId, false);
 
                         if (operationWithdrawData != null)
                         {

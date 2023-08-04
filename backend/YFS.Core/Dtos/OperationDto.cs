@@ -11,7 +11,7 @@ namespace YFS.Core.Dtos
         public int TransferOperationId { get; set; } //for transfer operation between accounts
         //public string UserId { get; set; }
         public int CategoryId { get; set; }
-        public string? CategoryName { get; set; }
+        public string CategoryName { get; set; }
         public int TypeOperation { get; set; } //1-income,2-expense,3-transfer
                                                //
         public int AccountId { get; set; }
