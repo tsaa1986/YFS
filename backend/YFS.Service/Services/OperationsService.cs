@@ -12,7 +12,8 @@ using YFS.Service.Interfaces;
 namespace YFS.Service.Services
 {
     public class OperationsService : IOperationsService
-    {/*
+    {
+        /*
         private readonly IOperationRepository _operationRepository;
         private readonly IAccountRepository _accountRepository;
         private readonly IAccountMonthlyBalanceRepository _accountMonthlyBalanceRepository;
@@ -30,7 +31,7 @@ namespace YFS.Service.Services
         }*/
         private readonly IMapper _mapper;
         private readonly IRepositoryManager _repository;
-        public OperationsService(IMapper mapper, IRepositoryManager repository)
+        public OperationsService(IRepositoryManager repository, IMapper mapper)
         {
             _mapper = mapper;
             _repository = repository;
@@ -43,7 +44,7 @@ namespace YFS.Service.Services
 
                 if (operationData == null)
                 {
-                    return NotFoundObjectResult($"Operation with Id = {operationId} not found");
+                    return new NotFoundObjectResult($"Operation with Id = {operationId} not found");
                 }
                 //check if transfer before delete operation, remove child/parent operation
                 //change ballance account after remove operation
@@ -51,13 +52,13 @@ namespace YFS.Service.Services
                 Account accountTarget = operationData.Account;
 
                 AccountMonthlyBalance accountWithdrawCurrentMonthlyBalance = null;
-                AccountMonthlyBalance accountTargetCurrentMonthlyBalance = await _repository.AccountMonthlyBalanceRepository.CheckAccountMonthlyBalance(operationData, false);
+                AccountMonthlyBalance accountTargetCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
                 var updatedAccountTargetCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
                 var updatedAccountWithdrawCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
 
                 var operationWithdrawData = (Operation)null;
                 var operationIncomeData = (Operation)null;
-                var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalanceRepository.GetAccountMonthlyBalanceAfterOperation(operationData, false);
+                var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
                 var listAccountWithdrawMonthlyBalanceAfterOperationMonth = (IEnumerable<AccountMonthlyBalance>)null;
                 var updatedAccountTargetMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
                 var updatedAccountWithdrawMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
@@ -75,7 +76,7 @@ namespace YFS.Service.Services
                             accountWithdraw = operationWithdrawData.Account;
                             accountTarget = operationIncomeData.Account;
                         }
-                        else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
+                        else return new NotFoundObjectResult($"Operation with Id = {operationData.TransferOperationId} not found");
                     }
                     else
                     {
@@ -87,14 +88,14 @@ namespace YFS.Service.Services
                             accountWithdraw = operationWithdrawData.Account;
                             accountTarget = operationIncomeData.Account;
                         }
-                        else return NotFound($"Operation with Id = {operationData.TransferOperationId} not found");
+                        else return new NotFoundObjectResult($"Operation with Id = {operationData.TransferOperationId} not found");
                     }
 
                     accountTarget.AccountBalance.Balance = accountTarget.AccountBalance.Balance - operationIncomeData.CurrencyAmount;
                     accountWithdraw.AccountBalance.Balance = accountWithdraw.AccountBalance.Balance - operationWithdrawData.CurrencyAmount;
 
-                    accountWithdrawCurrentMonthlyBalance = await _repository.AccountMonthlyBalanceRepository.CheckAccountMonthlyBalance(operationWithdrawData, false);
-                    accountTargetCurrentMonthlyBalance = await _repository.AccountMonthlyBalanceRepository.CheckAccountMonthlyBalance(operationIncomeData, false);
+                    accountWithdrawCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationWithdrawData, false);
+                    accountTargetCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationIncomeData, false);
 
                     listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationIncomeData, false);
                     listAccountWithdrawMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationWithdrawData, false);
@@ -149,11 +150,11 @@ namespace YFS.Service.Services
 
                 var operationReturn = _mapper.Map<List<OperationDto>>(listOperationReturn);
 
-                return Ok(operationReturn);
+                return new OkObjectResult(operationReturn);
             }
             catch (Exception ex)
             {
-                return BadRequestObjectResult(ex.Message);
+                return new BadRequestObjectResult(ex.Message);
             }
         }
 
