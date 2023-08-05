@@ -43,28 +43,36 @@ export const AccountsList = (props: accountListPropsType) => {
 
 const columns: ColumnsType<accountType> = [
   {
-    title: 'action',
+    title: 'Action',
     dataIndex: '',
     key: 'x',
     width:100,
-    render: () => {return(<div>
-                  <button onClick={()=> {                      
-                      setSelectedTypeOperation(TypeOperation.Expense)
+    render: () => {return(<div className='button-operation-container'>
+                  <button className='button-operation-income' onClick={()=> {                      
+                      setSelectedTypeOperation(TypeOperation.Income)
                       setOpenOperationForm(true)
                     }
                   } 
-                      title='Add expens'>-</button>
-                  <button onClick={()=> {                      
-                      setSelectedTypeOperation(TypeOperation.Income)     
+                      title='Add Income'>
+                        <img className="icon-img" src="/ico/income-icon.png" alt="Income" />
+                        </button>
+                  <button className='button-operation-expense' onClick={()=> {                      
+                      setSelectedTypeOperation(TypeOperation.Expense)     
                       setOpenOperationForm(true)               
                       }
-                  } 
-                      title='Add income'>+</button>
-                  <button onClick={()=> {                                           
+                  }                   
+                      title='Add Expnese'>
+                        <img className="icon-img" src="/ico/expense-icon.png" alt="Expense" />
+                        
+                  </button>
+                  <button className='button-operation-transfer' onClick={()=> {                                           
                       setSelectedTypeOperation(TypeOperation.Transfer)
                       setOpenOperationForm(true) 
                     }
-                  }   title='Add transfer'>=</button>
+                  }   title='Transfer money'>
+                    <img className="icon-img" src="/ico/transfer-icon.png" alt="Transfer" />
+                    
+                  </button>
                   </div>)
     },
   },

@@ -1,7 +1,6 @@
 import { Button, Divider } from "antd";
 import React, { useEffect, useState } from "react";
 import { AccountGroupType, accountType } from "../../api/api";
-import AccountSelectedPeriod from "./AccountSelectedPeriod";
 import { AccountsList } from "./AccountsList";
 
 interface tabDetailsPropsType {

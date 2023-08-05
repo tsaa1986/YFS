@@ -1,0 +1,52 @@
+//this style for buttons operation Account income , expense, transfer
+.button-operation-container {
+    display: flex;
+    width: 124px;
+    height: 40px;
+    justify-content: center;
+    align-items: center;
+}
+.button-operation-income,
+.button-operation-expense,
+.button-operation-transfer {
+  width: 36px;
+  height: 40px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  i {
+    font-size: 1.2rem; 
+    margin-right: 5px; 
+  }
+
+  &:hover {
+    background-color: gold; 
+  }
+}
+
+.button-operation-income {
+    background-color: transparent;
+    color: white;
+    margin-right: 5px;
+  }
+  
+  .button-operation-expense {
+    background-color: transparent;
+    color: white;
+    margin-right: 5px;
+  }
+  
+  .button-operation-transfer {
+    background-color: transparent;
+    color: white;
+  }
+
+.icon-img {
+    width: 36px; 
+    height: 36px; 
+    margin-right: 5px;
+}
