@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Form, Input, Modal, InputNumber, Checkbox, Select, DatePicker } from "antd";
 import { account, accountTypesResponseType, bankType, currency, currencyType} from '../../api/api';
-import './AccountsLayout.css';
 
 type initialItemsType = {
     label: string,

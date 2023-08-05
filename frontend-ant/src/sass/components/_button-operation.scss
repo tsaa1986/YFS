@@ -50,3 +50,15 @@
     height: 36px; 
     margin-right: 5px;
 }
+
+.tabs-extra-add-account-button {
+    background-color: gold;
+     width: 38px;
+    margin: 0px;
+    padding: 0px;
+    height: 40px;
+
+    &:hover {
+        background-color: gold; 
+      }
+}

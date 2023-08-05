@@ -4,7 +4,6 @@ import { Button, Tabs, Form, Input, Modal, InputNumber, Divider,
 import { account, accountGroups, accountTypesResponseType, bankType, currency, currencyType,
 accountListType, 
 accountType} from '../../api/api';
-import './AccountsLayout.css';
 import TabDetails from './TabDetails';
 import AccountAddForm from './AccountAddForm';
 
@@ -234,7 +233,13 @@ const handleSubmitAddAccountForm = (accountStatus: number, selectedFavorites: Bo
 }
 
 const AccountTabButton: Record<'left', React.ReactNode> = {
-  left: <Button className="tabs-extra-demo-button" onClick={showModalAddAccountForm}>Add Account</Button>,
+  left: <Button className="tabs-extra-add-account-button" onClick={showModalAddAccountForm}>
+          <img src="/ico/add-account-icon.png"
+            alt="add-account"
+            className="icon-img"
+            title='Add Account'
+          />
+          </Button>,
 };
 
 const [form] = Form.useForm();
