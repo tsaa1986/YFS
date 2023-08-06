@@ -56,6 +56,12 @@
     font-size: calc(.2vw + 12px);
     width: 160px;
     text-transform: uppercase;
+    border: 1px solid gold !important;
+  }
+  .btn-login:hover {
+    background-color: gold !important; /* Change to the color you want on hover */
+    color: red !important; /* Change to the color you want on hover */
+    border: 1px solid red !important; /* Change to the border color you want on hover */
   }
 
   .btn-facebook-login {

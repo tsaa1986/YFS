@@ -113,7 +113,7 @@ const handleOk = (values: UserRegistrationType) => {
         </Form.Item>
 
         <Form.Item wrapperCol={{ span: 14, offset: 10 }}>
-            <Button type="primary" htmlType="submit" /*loading={state.loading}*/>Submit</Button>
+            <Button type="primary" htmlType="submit" className="btn-register-submit"/*loading={state.loading}*/>Submit</Button>
         </Form.Item>
     </Form>
     );

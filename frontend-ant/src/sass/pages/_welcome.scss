@@ -168,7 +168,24 @@ body {
 }
 .main-block__button_border {
     color:black;
-    border: 1px solid gold;
+    border: 1px solid gold !important;
+}
+
+/* Hover effect */
+.main-block__button:hover {
+  background-color: gold !important; /* Change to the color you want on hover */
+  color: red !important; /* Change to the color you want on hover */
+  border: 1px solid red !important; 
+}
+.btn-register-submit:hover {
+    background-color: gold !important; /* Change to the color you want on hover */
+    color: red !important; /* Change to the color you want on hover */
+    border: 1px solid red !important; 
+  }
+.btn-reset-password:hover {
+    background-color: gold !important; /* Change to the color you want on hover */
+    color: red !important; /* Change to the color you want on hover */
+    border: 1px solid red !important; 
 }
 /*.main-block__image img{
     object-position: top;

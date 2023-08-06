@@ -165,7 +165,7 @@ return(
                     </Form.Item>
 
                     <div className="button-row mt-2">
-                        <Button type="primary" htmlType="submit" block>
+                        <Button type="primary" className="btn-reset-password" htmlType="submit" block>
                             Reset Password
                         </Button>
                     </div>

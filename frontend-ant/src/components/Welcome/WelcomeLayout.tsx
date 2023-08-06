@@ -72,7 +72,7 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, langua
                     </div>
                 </div>
                 <div className="main-block__image _ibg">
-                    <img src="/background.jpg" alt="background" />
+                    <img src="/background.webp" alt="background" />
                 </div>
             </div>
         </main>

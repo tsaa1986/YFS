@@ -31,10 +31,11 @@
 .ant-btn {
   @include button-style($light-gray, $ant-table-border-color, $text-dark);
   @include button-glow($light-gray);
+  border: 1px solid gold !important;
 }
 
 .ant-btn-primary {
-  @include button-style($primary-alt, transparent, white);
+  @include button-style($primary-alt, transparent, black);
   @include button-glow($primary-alt);
 }
 
