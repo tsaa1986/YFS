@@ -79,6 +79,7 @@ namespace YFS.Extension
         public static void RegisterDependencies(this IServiceCollection services)
         {
             services.AddScoped<ValidationFilterAttribute>();
+            services.AddScoped<IOperationsService, OperationsService>();
         }
     }
 }
