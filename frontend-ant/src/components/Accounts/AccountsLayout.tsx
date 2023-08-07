@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Tabs, Form, Input, Modal, InputNumber, Divider,
-  Checkbox, Select, DatePicker } from "antd";
+  Checkbox, Select, DatePicker, Layout } from "antd";
 import { account, accountGroups, accountTypesResponseType, bankType, currency, currencyType,
 accountListType, 
 accountType} from '../../api/api';
@@ -245,9 +245,10 @@ const AccountTabButton: Record<'left', React.ReactNode> = {
 const [form] = Form.useForm();
 const [formAddAccount] = Form.useForm();
 
-return(<div>
-        <div className="accountsTab__container">
-        {/*<div className="button__container">
+return(<Layout>
+        
+        {/*<div className="accountsTab__container">
+        <div className="button__container">
             <Button onClick={ getAccountGroups }>getAccountsGroup</Button>
             <Button onClick={ () => { 
               setItems([{ label: 'Tab Reset', children: <TabDetails accountData={null}/>, key: '0' }]);
@@ -257,8 +258,8 @@ return(<div>
             </Button>
 
         <ModalWithFormExample></ModalWithFormExample>
-        </div>*/}
-        <div className="accountsTab">
+        </div>        <div className="accountsTab">*/}
+
         <Tabs 
             type="editable-card"
             onChange={onChangeActiveTab}
@@ -283,17 +284,14 @@ return(<div>
             itemsAccountsGroup={itemsAccountsGroup}
             activeAccountsGroupKey={activeTabKey}>
         </AccountAddForm>
-
-        </div>
-    </div>
-    </div>)
+    </Layout>)
 }
 
 
 export const AccountsLayout: React.FC = () => {
-    return (<div>
+    return (<Layout>
             <AccountsTab />
-        </div>
+            </Layout>
     );
 }
 
@@ -311,7 +309,7 @@ const AddAccountGroupForm: React.FC<AddAccountGroupFormPropsType> = (props) => {
     const [accountGroupName, setAccountGroupName] = useState('');
 
     //debugger
-    return(<div>
+    return(<Layout>
       <Modal
         open={props.visible}
         title="Create a new Account Group"
@@ -353,6 +351,6 @@ const AddAccountGroupForm: React.FC<AddAccountGroupFormPropsType> = (props) => {
           </Form.Item>
         </Form>
       </Modal>
-    </div>);
+      </Layout>);
   }
 

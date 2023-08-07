@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Divider, Tag } from "antd";
+import { Table, Divider, Tag, Layout } from "antd";
 import { account, accountGroups, AccountGroupType, accountListType, accountType, IOperation } from '../../api/api';
 import { ColumnsType } from 'antd/es/table';
 import AccountOperationsView from './AccountOperationsView';
@@ -202,7 +202,7 @@ const columns: ColumnsType<accountType> = [
     },[selectedDateOption])
 
     return(
-    <div>
+      <Layout>
         <Table 
           onRow={(record, rowIndex) => {
               return {
@@ -215,9 +215,8 @@ const columns: ColumnsType<accountType> = [
           columns={columns} 
           dataSource={accountListDataSource}
           size='small'
-          />
-          
-    <div>
+          pagination={{ position: ["bottomLeft"] }}   
+          />          
           <Divider />
           <Collapse defaultActiveKey={['1']} ghost>
            { selectedAccount !== undefined && <Panel header={<b>List of operations on account:  {selectedAccount.name}</b>} key="1">
@@ -243,7 +242,6 @@ const columns: ColumnsType<accountType> = [
               openAccounts={props.openAccounts}
           />
           {/*<div>{(accountListDataSource !== undefined && accountListDataSource !== null && Array.isArray(accountListDataSource)) ?  accountListDataSource.map( item => {return <div>1</div>} ) : 'hi' }</div>*/}
-        </div>
-    </div>
+        </Layout>
     )
 }

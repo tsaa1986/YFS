@@ -1,16 +1,16 @@
 //this style for buttons operation Account income , expense, transfer
 .button-operation-container {
     display: flex;
-    width: 124px;
-    height: 40px;
+    width: 100px;
+    height: 20px;
     justify-content: center;
     align-items: center;
 }
 .button-operation-income,
 .button-operation-expense,
 .button-operation-transfer {
-  width: 36px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   border-radius: 5px;
   cursor: pointer;
   border: none;

@@ -8,6 +8,7 @@ import type { ColumnsType } from "antd/es/table";
 import moment from "moment";
 import { TypeOperation } from "./AccountOperation";
 
+const { Content } = Layout;
 
 interface IAccountOperationViewProps {
     selectedAccountGroupData: AccountGroupType | null
@@ -193,12 +194,14 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
 
     return (
         <Layout>
-        <Table  size="small"  
-                columns={operationColumns} dataSource={operationsList} 
-                rowKey={record => record.id}
-                pagination={{ position: ["bottomLeft"] }}                
-                scroll={{ x: 250, y: 300 }}
-                />
+            <Content>
+                <Table  size="small"  
+                        columns={operationColumns} dataSource={operationsList} 
+                        rowKey={record => record.id}
+                        pagination={{ position: ["bottomLeft"] }}                
+                        scroll={{ x: 250, y: 300 }}
+                        />
+            </Content>
         </Layout>
     )
 }

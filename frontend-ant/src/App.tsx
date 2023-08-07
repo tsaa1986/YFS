@@ -110,8 +110,9 @@ const App: React.FC = () => {
   }, [navigate, isLoggedIn]);
 
   return (
-  <div className='wrapper'>
-    {/*{user ? (
+  //<div className='wrapper'>
+  <Layout>
+  {/*{user ? (
         <button onClick={handleLogout}>Sign Out</button>
       ) : (
         <button onClick={handleLogin}>Sign In</button>
@@ -142,7 +143,7 @@ const App: React.FC = () => {
         />
       </Route>
     </Routes>
-  </div>
+  </Layout>
   );
 };
 

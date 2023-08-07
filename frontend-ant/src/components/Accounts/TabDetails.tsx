@@ -1,4 +1,4 @@
-import { Button, Divider } from "antd";
+import { Button, Divider, Layout } from "antd";
 import React, { useEffect, useState } from "react";
 import { AccountGroupType, accountType } from "../../api/api";
 import { AccountsList } from "./AccountsList";
@@ -19,12 +19,12 @@ const TabDetails: React.FC<tabDetailsPropsType> = ({accountGroupData, activeTabK
     },[activeTabKey])
   
     return (           
-        <div>
+        <Layout>
             <AccountsList   accountGroupData= {accountGroupData} 
                             openAccounts= {openAccounts} 
                             setOpenAccounts={setOpenAccounts} 
                             activeTabKey= {activeTabKey} />  
-        </div>
+        </Layout>
     );
 }
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, DatePicker, Form, Input, InputNumber, Modal, Radio, RadioChangeEvent, Select, TreeSelect } from "antd";
+import { Button, DatePicker, Form, Input, InputNumber, Layout, Modal, Radio, RadioChangeEvent, Select, TreeSelect } from "antd";
 import { AccountDataType } from "./AccountsList";
 import { Value } from "sass";
 import { accountType, account, ICategory, category, operationAccount, IOperation } from "../../api/api";
@@ -188,6 +188,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
     }
 
     return(
+      <Layout>
     <Modal
       open={open}
       title="Create a new transaction"
@@ -342,6 +343,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             </Form.Item>
         </Form>
       </Modal>
+      </Layout>
 )
 }
 export default OperationForm;

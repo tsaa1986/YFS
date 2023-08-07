@@ -51,7 +51,7 @@ const siderStyle: React.CSSProperties = {
     textAlign: 'center',
     lineHeight: '120px',
     color: '#fff',
-    backgroundColor: '#001529',
+    backgroundColor: '#001529'
   };
 const menuStyle = {
     backgroundColor: '#001529', 
@@ -73,22 +73,20 @@ const SideMenu:React.FC = () => {
 const MainLayout: React.FC<any> = ( {children: Component, languageDisplay, setLanguageDisplay, isLoggedIn, user}) => {
 
 return(
-  <div className="wrapper"> 
+  <Layout>
   <HeaderLayout isLoggedIn={isLoggedIn} languageDisplay={languageDisplay} setLanguageDisplay={setLanguageDisplay} user={user} />
-      <Layout >
-        <Layout className="site-layout">
+        <Layout style={{overflowY: 'auto'}}>
         <SideMenu />
-          {/*<Header style={{ padding: 0, background: "colorBgContainer" }} />*/}
           <Content style={{ margin: "20px 16px",
                 padding: 20,
-                background: "#fff"
+                background: "#fff",
+                overflowY: 'auto'
                 }}>
                   <Component/>
-          </Content>
+          </Content>          
         </Layout>
-      </Layout>
-      <Footer className='footer'>Ant Design ©2023 Created by <span style={{color: "red"}}>Ton@</span></Footer>
-    </div>
+        <Footer className='footer'>Ant Design ©2023 Created by <span style={{color: "red"}}>Ton@</span></Footer>
+</Layout>
     )
   }
 
