@@ -190,11 +190,11 @@ namespace YFS.Controllers
             }
             else
             {
-                var accountMonthlyBalanceBeforeOperationMonth = _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceBeforeOperation(_operation, false);
+                var accountMonthlyBalanceBeforeOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceBeforeOperation(_operation, false);
                 decimal openningBalance = 0;
-                if (accountMonthlyBalanceBeforeOperationMonth.Result != null)
+                if (accountMonthlyBalanceBeforeOperationMonth != null)
                 {
-                    openningBalance = accountMonthlyBalanceBeforeOperationMonth.Result.ClosingMonthBalance;
+                    openningBalance = accountMonthlyBalanceBeforeOperationMonth.ClosingMonthBalance;
                 }
                 else
                 {

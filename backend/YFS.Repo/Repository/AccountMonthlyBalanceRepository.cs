@@ -32,7 +32,7 @@ namespace YFS.Service.Services
 
             return res;
         }
-        public async Task<AccountMonthlyBalance?> CheckAccountMonthlyBalance(Operation _operation, bool trackChages) =>
+        public async Task<AccountMonthlyBalance?> CheckAccountMonthlyBalance(Operation _operation, bool trackChages) =>            
             await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
             (amb.StartDateOfMonth.Month == _operation.OperationDate.Date.Month) && (amb.StartDateOfMonth.Year == _operation.OperationDate.Date.Year), trackChages)
             .Result.SingleOrDefaultAsync();

@@ -1,8 +1,9 @@
 ﻿using YFS.Repo.GenericRepository.Interfaces;
 using YFS.Repo.Data;
-using System.Linq.Expressions;
+using System.Linq;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace YFS.Repo.GenericRepository.Services;
 

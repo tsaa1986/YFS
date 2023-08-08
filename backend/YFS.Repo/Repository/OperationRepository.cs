@@ -44,15 +44,22 @@ namespace YFS.Service.Services
         //.AsNoTracking().Take(10));
 
         public async Task<Operation?> GetOperationById(int operationId, bool trackChanges)
-            => await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges)
+           => await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges)
             .Result.AsNoTracking()
             .Include(p => p.Account.AccountBalance)
-            .Include(c => c.Category).AsNoTracking()
-            .SingleOrDefaultAsync();            
+            .Include(c => c.Category)
+            .SingleOrDefaultAsync();    
             
 
         public async Task<Operation?> GetTransferOperationById(int transferOperationId)
             => await FindByConditionAsync(op => op.TransferOperationId.Equals(transferOperationId), false)
-              .Result.Include(p => p.Account.AccountBalance).SingleOrDefaultAsync();
+                .Result
+                .Include(p => p.Account.AccountBalance).SingleOrDefaultAsync();
+
+        public async Task<Operation?> GetOperationByIdWithoutCategory(int operationId, bool trackChanges)
+           => await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges)
+            .Result.AsNoTracking()
+            .Include(p => p.Account.AccountBalance)
+            .SingleOrDefaultAsync();
     }
 }
