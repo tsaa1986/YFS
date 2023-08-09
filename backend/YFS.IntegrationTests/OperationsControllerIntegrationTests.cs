@@ -446,5 +446,16 @@ namespace YFS.IntegrationTests
             Assert.True(accountWithdrawAfterRemoveOperation.Balance == 100000.39M);
             Assert.True(checkTransferExpenseOperation.Where(tr => tr.Id == operationTransferExpenseId).Count() == 0);
         }
+        [Fact]
+        public async Task Put_UpdateOperation_Return_Success()
+        {
+            //Arrange
+
+            //Act
+
+
+            //Assert
+            Assert.True(false);
+        }
     }
 }

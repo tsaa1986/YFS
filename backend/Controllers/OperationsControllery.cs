@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using System.Linq;
 using YFS.Core.Models;
 using YFS.Core.Dtos;
+using YFS.Service.Services;
+using Microsoft.Identity.Client;
 
 namespace YFS.Controllers
 {
@@ -27,9 +29,8 @@ namespace YFS.Controllers
             Income = 2,
             Transfer  = 3
         }
-        [HttpPost("{targetAccountId}")]
-        [Authorize]
-        public async Task<IActionResult> CreateOperation([FromBody] OperationDto operation, int targetAccountId)
+        /*
+        private async Task<IActionResult> CreateOperation_old([FromBody] OperationDto operation, int targetAccountId)
         {
             var operationData = _mapper.Map<Operation>(operation);
 
@@ -67,7 +68,6 @@ namespace YFS.Controllers
 
                 accountMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
                 var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
-                //var updatedAccountCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
 
                 if (accountMonthlyBalance == null)
                 {
@@ -163,7 +163,23 @@ namespace YFS.Controllers
                 else return BadRequest(e.Message);
             }
         }
+        */
+        [HttpPost("{targetAccountId}")]
+        [Authorize]
+        public async Task<IActionResult> CreateOperation([FromBody] OperationDto operation, int targetAccountId)
+        {
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var serviceResult = await _operationsService.CreateOperation(operation, targetAccountId, userId);
 
+            if (serviceResult.IsSuccess)
+            {
+                return Ok(serviceResult.Data);
+            }
+            else
+            {
+                return BadRequest(serviceResult.ErrorMessage);
+            }
+        }
         private async Task<AccountMonthlyBalance> AddAccountMonthlyBalance(Account _account, Operation _operation)
         {
             decimal MonthCreadit = 0;
@@ -270,16 +286,19 @@ namespace YFS.Controllers
         [Authorize]
         public async Task<IActionResult> GetOperationsAccountForPeriod(int accountId, DateTime startDate, DateTime endDate)
         {
-            try
+            var result = await _operationsService.GetOperationsAccountForPeriod(accountId, startDate, endDate);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var operations = await _repository.Operation.GetOperationsForAccountForPeriod(accountId, startDate, endDate, trackChanges: false);
-                var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
-                return Ok(operationsDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
 
@@ -287,16 +306,19 @@ namespace YFS.Controllers
         [Authorize]
         public async Task<IActionResult> GetLast10OperationsAccount(int accountId)
         {
-            try
+            var result = await _operationsService.GetLast10OperationsAccount(accountId);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var operations = await _repository.Operation.GetLast10OperationsForAccount(accountId, trackChanges: false);
-                var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
-                return Ok(operationsDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
         [HttpPut]
@@ -304,9 +326,20 @@ namespace YFS.Controllers
         public async Task<IActionResult> UpdateOperation([FromBody] OperationDto operationDto)
         {
             var result = await _operationsService.UpdateOperation(operationDto);
-            return result;
-        }
 
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else if (result.IsNotFound)
+            {
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+        }
         [HttpDelete("{operationId:int}")]
         [Authorize]
         public async Task<ActionResult> RemoveOperation(int operationId)
@@ -440,7 +473,19 @@ namespace YFS.Controllers
         public async Task<ActionResult> RemoveTransferOperation(int operationId)
         {
             var result = await _operationsService.RemoveTransferOperation(operationId);
-            return result;
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else if (result.IsNotFound)
+            {
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
         }
     }
  }
