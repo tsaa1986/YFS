@@ -177,7 +177,7 @@ namespace YFS.Service.Services
                 return ServiceResult<OperationDto>.Error(ex.Message);
             }
         }
-        public async Task<ServiceResult<OperationDto>> RemoveOperation(int operationId)
+        public async Task<ServiceResult<IEnumerable<OperationDto>>> RemoveOperation(int operationId)
         {
             try 
             {
@@ -185,7 +185,7 @@ namespace YFS.Service.Services
 
                 if (operationData == null)
                 {
-                    return ServiceResult<OperationDto>.NotFound($"Operation with Id = {operationId} not found");
+                    return ServiceResult<IEnumerable<OperationDto>>.NotFound($"Operation with Id = {operationId} not found");
                 }
 
                 Account account = operationData.Account;
@@ -196,7 +196,6 @@ namespace YFS.Service.Services
                 var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
                 var updatedAccountMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
 
-                Operation operationReturn = new Operation();
                 account.AccountBalance.Balance -= operationData.CurrencyAmount;
                 if (listAccountMonthlyBalanceAfterOperationMonth.Count() > 0)
                     updatedAccountMonthlyBalancesAfter = ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalanceAfterOperationMonth, true);
@@ -207,19 +206,19 @@ namespace YFS.Service.Services
 
                 await _repository.Operation.RemoveOperation(operationData);
                 await _repository.AccountBalance.UpdateAccountBalance(account.AccountBalance);
-
-                operationReturn = operationData;
-
                 await _repository.SaveAsync();
 
-                var operationReturnDto = _mapper.Map<OperationDto>(operationReturn);
+                List<Operation> operationReturn = new List<Operation>();
+                operationReturn.Add(operationData);
 
-                return ServiceResult<OperationDto>.Success(operationReturnDto);
+                var operationReturnDto = _mapper.Map<IEnumerable<OperationDto>>(operationReturn);
+
+                return ServiceResult<IEnumerable<OperationDto>>.Success(operationReturnDto);
 
             }
             catch (Exception ex)
             {
-                return ServiceResult<OperationDto>.Error(ex.Message);
+                return ServiceResult<IEnumerable<OperationDto>>.Error(ex.Message);
             }
         }
         public async Task<ServiceResult<IEnumerable<OperationDto>>> RemoveTransferOperation(int operationId)
