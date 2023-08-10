@@ -177,6 +177,51 @@ namespace YFS.Service.Services
                 return ServiceResult<OperationDto>.Error(ex.Message);
             }
         }
+        public async Task<ServiceResult<OperationDto>> RemoveOperation(int operationId)
+        {
+            try 
+            {
+                var operationData = await _repository.Operation.GetOperationByIdWithoutCategory(operationId, false);
+
+                if (operationData == null)
+                {
+                    return ServiceResult<OperationDto>.NotFound($"Operation with Id = {operationId} not found");
+                }
+
+                Account account = operationData.Account;
+
+                AccountMonthlyBalance accountCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
+                var updatedAccountCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
+
+                var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
+                var updatedAccountMonthlyBalancesAfter = (IEnumerable<AccountMonthlyBalance>)null;
+
+                Operation operationReturn = new Operation();
+                account.AccountBalance.Balance -= operationData.CurrencyAmount;
+                if (listAccountMonthlyBalanceAfterOperationMonth.Count() > 0)
+                    updatedAccountMonthlyBalancesAfter = ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalanceAfterOperationMonth, true);
+
+                List<AccountMonthlyBalance> listAccountMonthlyBalance = new List<AccountMonthlyBalance>();
+                listAccountMonthlyBalance.Add(accountCurrentMonthlyBalance);
+                updatedAccountCurrentMonthlyBalance = ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalance, true);
+
+                await _repository.Operation.RemoveOperation(operationData);
+                await _repository.AccountBalance.UpdateAccountBalance(account.AccountBalance);
+
+                operationReturn = operationData;
+
+                await _repository.SaveAsync();
+
+                var operationReturnDto = _mapper.Map<OperationDto>(operationReturn);
+
+                return ServiceResult<OperationDto>.Success(operationReturnDto);
+
+            }
+            catch (Exception ex)
+            {
+                return ServiceResult<OperationDto>.Error(ex.Message);
+            }
+        }
         public async Task<ServiceResult<IEnumerable<OperationDto>>> RemoveTransferOperation(int operationId)
         {
             try
