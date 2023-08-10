@@ -434,7 +434,7 @@ namespace YFS.Service.Services
             }
             else
             {
-                openingBalance = account.AccountBalance.Balance;
+                openingBalance = 0;//account.AccountBalance.Balance;
             }
 
             return openingBalance;
