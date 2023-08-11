@@ -191,6 +191,12 @@ namespace YFS.Service.Services
                 Account account = operationData.Account;
 
                 AccountMonthlyBalance accountCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
+                if (accountCurrentMonthlyBalance == null)
+                {
+                    if (accountCurrentMonthlyBalance == null) 
+                        return ServiceResult<IEnumerable<OperationDto>>.Error("AccountMonthlyBalance is empty");
+                }
+                    
                 var updatedAccountCurrentMonthlyBalance = (IEnumerable<AccountMonthlyBalance>)null;
 
                 var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);

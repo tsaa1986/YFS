@@ -201,7 +201,7 @@ namespace YFS.IntegrationTests
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
             var operationIncome = await _seedData.CreateOperation(_accountId, DateTime.Now, 
-                OperationType.Income, 2,100000.23M);
+                OperationDto.OperationType.Income, 2,100000.23M);
             var requestAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
             requestAccount.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 

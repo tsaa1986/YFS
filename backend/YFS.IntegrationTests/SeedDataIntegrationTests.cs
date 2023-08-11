@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using YFS.Controllers;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
-using static YFS.Controllers.OperationsController;
+
 
 namespace YFS.IntegrationTests
 {
@@ -63,10 +63,10 @@ namespace YFS.IntegrationTests
             return newAccount.Id;
         }
         public async Task<IEnumerable<OperationDto>> CreateOperation(int accountId, DateTime operationDate, 
-            OperationType operationType,int categoryId, decimal operationAmount)
+            OperationDto.OperationType operationType,int categoryId, decimal operationAmount)
         {
             // Create operation 1
-            if (OperationType.Transfer == operationType)
+            if (OperationDto.OperationType.Transfer == operationType)
                 throw new Exception("Transfer operation is restricted! Use only income/expense");
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -106,7 +106,7 @@ namespace YFS.IntegrationTests
             {
                     transferOperationId = 0,
                     categoryId = -1,
-                    typeOperation = OperationsController.OperationType.Transfer, //expense
+                    typeOperation = OperationDto.OperationType.Transfer, //expense
                     accountId = _accountWithdrawId,
                     operationCurrencyId = 980,
                     currencyAmount = _operationAmount,

@@ -7,6 +7,12 @@ namespace YFS.Core.Dtos
 {
     public class OperationDto
     {
+        public enum OperationType
+        {
+            Expense = 1,
+            Income = 2,
+            Transfer = 3
+        }
         public int Id { get; set; }
         public int TransferOperationId { get; set; } //for transfer operation between accounts
         //public string UserId { get; set; }
