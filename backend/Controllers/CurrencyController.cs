@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System;
 using YFS.Core.Dtos;
 using YFS.Service.Interfaces;
+using Microsoft.Identity.Client;
+using YFS.Service.Services;
 
 namespace YFS.Controllers
 {
@@ -13,22 +15,27 @@ namespace YFS.Controllers
     [ApiController]
     public class CurrencyController : BaseApiController
     {
-        public CurrencyController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        private readonly ICurrencyService _currencyService;
+        public CurrencyController(ICurrencyService currencyService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
+            _currencyService = currencyService;
         }
-
-        [HttpGet()]
+        [HttpGet]
         public async Task<IActionResult> GetCurrencies()
         {
-            try
+            var result = await _currencyService.GetCurrencies();
+
+            if (result.IsSuccess)
             {
-                var currency = await _repository.Currency.GetCurrencies(trackChanges: false);
-                var currencyDto = _mapper.Map<IEnumerable<CurrencyDto>>(currency);
-                return Ok(currencyDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
 

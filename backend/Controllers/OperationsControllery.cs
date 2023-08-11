@@ -17,13 +17,7 @@ namespace YFS.Controllers
         public OperationsController(IOperationsService operationsService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
             _operationsService = operationsService;
-        }/*
-        public enum OperationType
-        {
-            Expense = 1,
-            Income = 2,
-            Transfer  = 3
-        }*/
+        }
         [HttpPost("{targetAccountId}")]
         [Authorize]
         public async Task<IActionResult> CreateOperation([FromBody] OperationDto operation, int targetAccountId)
