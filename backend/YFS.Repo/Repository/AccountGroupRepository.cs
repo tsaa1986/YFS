@@ -43,12 +43,12 @@ namespace YFS.Service.Services
             await CreateAsync(acGroup_internetmoney);
             await CreateAsync(acGroup_bank);
         }
-        public Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
+           => await FindByConditionAsync(c => c.AccountGroupId.Equals(accountGroupId), trackChanges).Result.SingleOrDefaultAsync();
+        
         public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, bool trackChanges)
             => await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges).Result.OrderBy(c => c.GroupOrderBy).ToListAsync();
+        
         public async Task UpdateAccountGroupForUser(AccountGroup accountGroup) => 
             await UpdateAsync(accountGroup);
     }

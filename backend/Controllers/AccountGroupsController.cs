@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Azure;
 using Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
+using YFS.Service.Services;
 
 namespace YFS.Data.Controllers
 {
@@ -17,54 +20,69 @@ namespace YFS.Data.Controllers
     [ApiController]
     public class AccountGroupsController : BaseApiController
     {
-        public AccountGroupsController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        private readonly IAccountGroupsService _accountGroupsService;
+        public AccountGroupsController(IAccountGroupsService accountGroupsService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {            
+            _accountGroupsService = accountGroupsService;
         }
 
         [HttpGet()]
         [Authorize]
         public async Task<IActionResult> GetAccountGroupsForUser()
         {
-            try
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var result = await _accountGroupsService.GetAccountGroupsForUser(userId);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var accountGroups = await _repository.AccountGroup.GetAccountGroupsForUser(userid, trackChanges: false);
-                var accountGroupsDto = _mapper.Map<IEnumerable<AccountGroupDto>>(accountGroups);
-                return Ok(accountGroupsDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
-
+        
         [HttpPost()]
         [Authorize]
         public async Task<IActionResult> CreateAccountGroupForUser([FromBody] AccountGroupDto accountGroup)
         {
-            accountGroup.UserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
-            var accountGroupData = _mapper.Map<AccountGroup>(accountGroup);
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var serviceResult = await _accountGroupsService.CreateAccountGroupForUser(accountGroup, userId);
 
-            await _repository.AccountGroup.CreateAccountGroupForUser(accountGroupData);
-            await _repository.SaveAsync();
-
-            var accountGroupReturn = _mapper.Map<AccountGroupDto>(accountGroupData);
-            return Ok(accountGroupReturn);
+            if (serviceResult.IsSuccess)
+            {
+                return Ok(serviceResult.Data);
+            }
+            else
+            {
+                return BadRequest(serviceResult.ErrorMessage);
+            }
         }
-
+ 
         [HttpPut()]
         [Authorize]
-        public async Task<IActionResult> UpdateCreateGroupForUser([FromBody] AccountGroupDto accountGroup)
+        public async Task<IActionResult> UpdateGroupForUser([FromBody] AccountGroupDto accountGroup)
         {
-            accountGroup.UserId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var result = await _accountGroupsService.UpdateGroupForUser(accountGroup, userId);
 
-            var accountGroupData = _mapper.Map<AccountGroup>(accountGroup);
-
-            _mapper.Map(accountGroup, accountGroupData);
-
-            await _repository.AccountGroup.UpdateAccountGroupForUser(accountGroupData);
-            await _repository.SaveAsync();
-            return Ok(accountGroupData);
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else if (result.IsNotFound)
+            {
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
         }
     }
 }
