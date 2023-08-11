@@ -81,6 +81,7 @@ namespace YFS.Extension
             services.AddScoped<ValidationFilterAttribute>();
             services.AddScoped<IOperationsService, OperationsService>();
             services.AddScoped<ICurrencyService, CurrencyService>();
+            services.AddScoped<ICategoryService, CategoryService>();
         }
     }
 }

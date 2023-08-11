@@ -10,14 +10,10 @@ using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
 {
-    public class CurrencyService : ICurrencyService
+    public class CurrencyService : BaseService, ICurrencyService
     {
-        private readonly IMapper _mapper;
-        private readonly IRepositoryManager _repository;
-        public CurrencyService(IRepositoryManager repository, IMapper mapper)
+        public CurrencyService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
-            _mapper = mapper;
-            _repository = repository;
         }
         public async Task<ServiceResult<IEnumerable<CurrencyDto>>> GetCurrencies()
         {

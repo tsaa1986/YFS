@@ -6,20 +6,16 @@ using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
 {
-    public class OperationsService : IOperationsService
+    public class OperationsService : BaseService, IOperationsService
     {
-        private readonly IMapper _mapper;
-        private readonly IRepositoryManager _repository;
+        public OperationsService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        {
+        }
         public enum OperationType
         {
             Expense = 1,
             Income = 2,
             Transfer = 3
-        }
-        public OperationsService(IRepositoryManager repository, IMapper mapper)
-        {
-            _mapper = mapper;
-            _repository = repository;
         }
         public async Task<ServiceResult<IEnumerable<OperationDto>>> CreateOperation(OperationDto operation, int targetAccountId, string userId)
         {

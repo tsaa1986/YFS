@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
+using YFS.Service.Services;
 
 namespace YFS.Data.Controllers
 {
@@ -17,26 +18,32 @@ namespace YFS.Data.Controllers
     [ApiController]
     public class CategoryController : BaseApiController
     {
-        public CategoryController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
-        {            
+        private readonly ICategoryService _categoryService;
+        public CategoryController(ICategoryService categoryService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        {
+            _categoryService = categoryService;
         }
 
         [HttpGet()]
         [Authorize]
         public async Task<IActionResult> GetCategoriesForUser()
         {
-            try
-            {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var categories = await _repository.Category.GetCategoryForUser(userid, trackChanges: false);
-                var categoriesDto = _mapper.Map<IEnumerable<CategoryDto>>(categories);
-                return Ok(categoriesDto);
+             string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+             var result = await _categoryService.GetCategoriesForUser(userId);
+
+             if (result.IsSuccess)
+                {
+                    return Ok(result.Data);
+                }
+                else if (result.IsNotFound)
+                {
+                    return NotFound(result.ErrorMessage);
+                }
+                else
+                {
+                    return BadRequest(result.ErrorMessage);
+                }
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-        }
         /*
         [HttpPost()]
         [Authorize]
