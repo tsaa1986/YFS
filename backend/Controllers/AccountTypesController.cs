@@ -8,6 +8,7 @@ using YFS.Service.Interfaces;
 using YFS.Core.Dtos;
 using System.Collections.Generic;
 using YFS.Core.Models;
+using YFS.Service.Services;
 
 namespace YFS.Controllers
 {
@@ -15,24 +16,29 @@ namespace YFS.Controllers
     [ApiController]
     public class AccountTypesController : BaseApiController
     {
-        public AccountTypesController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        private readonly IAccountTypesService _accountTypesService;
+        public AccountTypesController(IAccountTypesService accountTypesService,IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
+            _accountTypesService = accountTypesService;
         }
-
         [HttpGet]
         public async Task<IActionResult> GetAccountTypes()
         {
-            try
+            var result = await _accountTypesService.GetAccountTypes();
+
+            if (result.IsSuccess)
             {
-                var accountTypes = await _repository.AccountType.GetAllAccountTypes(trackChanges: false);
-                var accountTypeDto = _mapper.Map<IEnumerable<AccountTypeDto>>(accountTypes);
-                return Ok(accountTypeDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                //_logger.LogError($"Something went wrong in the {nameof(GetAccountTypes)} action {ex}");
-                return StatusCode(500, "Internal server error");
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
+        //_logger.LogError($"Something went wrong in the {nameof(GetAccountTypes)} action {ex}");
     }
 }

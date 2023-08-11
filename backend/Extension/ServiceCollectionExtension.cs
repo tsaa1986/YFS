@@ -82,6 +82,7 @@ namespace YFS.Extension
             services.AddScoped<IOperationsService, OperationsService>();
             services.AddScoped<ICurrencyService, CurrencyService>();
             services.AddScoped<ICategoryService, CategoryService>();
+            services.AddScoped<IAccountTypesService, AccountTypesService>();
         }
     }
 }
