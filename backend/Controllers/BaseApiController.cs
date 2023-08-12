@@ -8,7 +8,7 @@ using YFS.Service.Interfaces;
 namespace Controllers
 {
     public class BaseApiController : ControllerBase
-    {
+    {        
         protected readonly IRepositoryManager _repository;
         protected readonly IMapper _mapper;
 
@@ -16,8 +16,7 @@ namespace Controllers
         {
             _repository = repository;
             _mapper = mapper;
-        }
-        
+        }       
         protected string GetUserIdFromJwt(string _authHeader)
         {
             var handler = new JwtSecurityTokenHandler();

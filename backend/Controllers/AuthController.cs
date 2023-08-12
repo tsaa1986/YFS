@@ -25,29 +25,6 @@ namespace YFS.Data.Controllers
             _authService = authService;
         }
 
-        /*
-        private async Task<IActionResult> CreateAdminAccount()
-        {
-            const string adminUser = "Admin";
-            const string adminPassword = "Secret123$";
-
-            UserRegistrationDto user = new UserRegistrationDto {
-                FirstName = "Administrator",
-                LastName = "",
-                UserName = adminUser,
-                Password = adminPassword,
-                Email = "admin@admin.com",
-                PhoneNumber = ""};
-            /*UserLoginDto user = new UserLoginDto
-            {
-                UserName = adminUser,
-                Password = adminPassword
-            };*/
-
-        /*  var userResult = await _repository.UserAuthentication.RegisterUserAsync(user);
-          return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
-
-      }*/
         [HttpGet("me")]
         [Authorize]
         public async Task<IActionResult> Me()

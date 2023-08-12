@@ -18,7 +18,7 @@ namespace YFS.Extension
     public static class ServiceExtension
     {
         public static void ConfigureRepositoryManager(this IServiceCollection services)
-    => services.AddScoped<IRepositoryManager, RepositoryManager>();
+            => services.AddScoped<IRepositoryManager, RepositoryManager>();
 
         public static void ConfigureMapping(this IServiceCollection services)
         {
