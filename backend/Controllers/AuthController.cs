@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Service.Filters.ActionFilters;
 using YFS.Service.Interfaces;
+using YFS.Core.Models;
+using YFS.Service.Services;
 
 namespace YFS.Data.Controllers
 {
@@ -15,11 +17,12 @@ namespace YFS.Data.Controllers
     [ApiController]
     public class AuthController : BaseApiController
     {
-        public AuthController(IRepositoryManager repository, 
+        private readonly IAuthService _authService;
+        public AuthController(IAuthService authService ,IRepositoryManager repository, 
             IMapper mapper) 
             : base(repository, mapper)
         {
-
+            _authService = authService;
         }
 
         /*
@@ -49,16 +52,20 @@ namespace YFS.Data.Controllers
         [Authorize]
         public async Task<IActionResult> Me()
         {
-            try
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var result = await _authService.GetMe(userId);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var userAccount = await _repository.UserAuthentication.GetUserAccountById(userid);
-                var userAccountDto = _mapper.Map<UserAccountDto>(userAccount);
-                return Ok(userAccountDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
 
@@ -66,26 +73,15 @@ namespace YFS.Data.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> RegisterUser([FromBody] UserRegistrationDto userRegistration)
         {
-            try
+            var serviceResult = await _authService.RegisterUser(userRegistration);
+
+            if (serviceResult.IsSuccess)
             {
-                var userResult = await _repository.UserAuthentication.RegisterUserAsync(userRegistration);
-
-                if (userResult.Succeeded)
-                {
-                    UserLoginDto user = new UserLoginDto { UserName = userRegistration.UserName, Password = userRegistration.Password };
-
-                    var Token = await _repository.UserAuthentication.ValidateUserAsync(user);
-                    string user_id = _repository.UserAuthentication.GetUserId(user).Result;
-
-
-                    await _repository.AccountGroup.CreateAccountGroupsDefaultForUser(user_id);
-                    await _repository.SaveAsync();
-                }
-                return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
+                return StatusCode(201, serviceResult.Data); //Ok(serviceResult.Data);
             }
-            catch(Exception ex)
+            else
             {
-                return StatusCode(500, ex.Message);
+                return BadRequest(serviceResult.ErrorMessage);
             }
         }
 
@@ -93,9 +89,20 @@ namespace YFS.Data.Controllers
         [ServiceFilter(typeof(ValidationFilterAttribute))]
         public async Task<IActionResult> Authenticate([FromBody] UserLoginDto user)
         {
-            return !await _repository.UserAuthentication.ValidateUserAsync(user)
-                ? Unauthorized()
-                : Ok(new { Token = await _repository.UserAuthentication.CreateTokenAsync() });
+            var result = await _authService.Authenticate(user);
+
+            if (result.IsSuccess)
+            {
+                return Ok(new { Token = result.Data });
+            }
+            else if (result.IsNotFound)
+            {
+                return Unauthorized();
+            }
+            else
+            {
+                return Unauthorized();//BadRequest(result.ErrorMessage);
+            }
         }
     }
 }

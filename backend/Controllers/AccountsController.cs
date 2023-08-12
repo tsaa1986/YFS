@@ -9,6 +9,9 @@ using YFS.Core.Models;
 using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using YFS.Core.Models.Triggers;
+using YFS.Service.Services;
+using Microsoft.Identity.Client;
+using Azure;
 
 namespace YFS.Controllers
 {
@@ -16,56 +19,46 @@ namespace YFS.Controllers
     [ApiController]
     public class AccountsController : BaseApiController
     {
-        public AccountsController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        private readonly IAccountService _accountService;
+        public AccountsController(IAccountService accountService,IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
+            _accountService = accountService;
         }
 
         [HttpPost]
         [Authorize]
         public async Task<IActionResult> CreateAccountForUser([FromBody] AccountDto account)
         {
-            var accountData = _mapper.Map<Account>(account);
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var serviceResult = await _accountService.CreateAccountForUser(account, userId);
 
-            string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-            accountData.UserId = userid;
-            accountData.AccountBalance = new AccountBalance { Balance = account.Balance };
-            await _repository.Account.CreateAccount(accountData);
-
-            if (account.Balance != 0)
+            if (serviceResult.IsSuccess)
             {
-                accountData.Operations = new List<Operation>() { {
-                    new Operation {
-                        AccountId = account.Id,
-                        UserId= userid,
-                        OperationAmount = account.Balance,
-                        OperationCurrencyId = account.CurrencyId,
-                        CurrencyAmount = account.Balance,
-                        Description = "openning account",
-                        TypeOperation = account.Balance > 0 ? 2 : 1,
-                        CategoryId = -2, 
-                        OperationDate = account.OpeningDate,
-                    } } };
+                return Ok(serviceResult.Data);
             }
-            await _repository.SaveAsync();
-
-            var accountReturn = _mapper.Map<AccountDto>(accountData);
-            return Ok(accountReturn);
+            else
+            {
+                return BadRequest(serviceResult.ErrorMessage);
+            }
         }
 
         [HttpGet("byId/{accountId}")]
         [Authorize]
         public async Task<IActionResult> GetAccountById(int accountId)
         {
-            try
+            var result = await _accountService.GetAccountById(accountId);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var account = await _repository.Account.GetAccount(accountId);
-                var accountDto = _mapper.Map<AccountDto>(account);
-                return Ok(accountDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
 
@@ -73,16 +66,20 @@ namespace YFS.Controllers
         [Authorize]
         public async Task<IActionResult> GetAccountsByGroup(int accountGroupId)
         {
-            try
+            string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var result = await _accountService.GetAccountsByGroup(accountGroupId, userid, trackChanges: false);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var accounts = await _repository.Account.GetAccountsByGroup(accountGroupId, userid, trackChanges: false);
-                var accountDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
-                return Ok(accountDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
         
@@ -90,32 +87,40 @@ namespace YFS.Controllers
         [Authorize]
         public async Task<IActionResult> GetOpenAccountsByUserId()
         {
-            try
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+            var result = await _accountService.GetOpenAccountsByUserId(userId, trackChanges: false);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var accounts = await _repository.Account.GetOpenAccountsByUserId(userid, trackChanges: false);
-                var accountDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
-                return Ok(accountDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }
 
         [HttpPut]
         public async Task<IActionResult> UpdateAccount([FromBody] AccountDto account)
         {
-            //var accountData = HttpContext.Items["account"] as Account;
-            string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-            var accountData = _mapper.Map<Account>(account);
-            accountData.UserId= userid;
-            _mapper.Map(account, accountData);
-            await _repository.Account.UpdateAccount(accountData);
-            await _repository.SaveAsync();
-            Account updatedAccount = await _repository.Account.GetAccount(accountData.Id);
-            var accountDto = _mapper.Map<AccountDto>(updatedAccount);
-            return Ok(accountDto);
+            var result = await _accountService.UpdateAccount(account);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else if (result.IsNotFound)
+            {
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
         }
     }
 }
