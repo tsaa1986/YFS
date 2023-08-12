@@ -207,6 +207,7 @@ namespace YFS.IntegrationTests
             Assert.True(operations.Length == 1);
             Assert.True(operations[0].Balance == -1000.23M);
         }
+
         [Fact]
         public async Task Post_CreateTransferOperation_Return_Success()
         {
@@ -258,6 +259,7 @@ namespace YFS.IntegrationTests
             Assert.True(operationsTarget.Length == 1);
             Assert.True(operationsTarget[0].Balance == 5000.13M);
         }
+
         [Fact]
         public async Task Delete_RemoveOperationIncomeCurrentMonth_Return_Success()
         {
@@ -291,6 +293,7 @@ namespace YFS.IntegrationTests
             Assert.True(accountMonthlyBalance[0].OpeningMonthBalance == 0 &&
                 accountMonthlyBalance[0].ClosingMonthBalance == 0);
         }
+
         [Fact]
         public async Task Delete_RemoveOperationExpenseCurrentMonth_Return_Success()
         {
@@ -349,7 +352,8 @@ namespace YFS.IntegrationTests
             Assert.True(accountCurrentMonthlyBalanceAfterDeleteOperation.First().MonthCredit == 0);
             Assert.True(accountCurrentMonthlyBalanceAfterDeleteOperation.First().ClosingMonthBalance == 0);
             Assert.False(accountCurrentMonthlyBalanceAfterDeleteOperation.First().ClosingMonthBalance == 1000M);
-        }             
+        }    
+        
         [Fact]
         public async Task Delete_RemoveOperationIncomeTransferCurrentMonth_Return_Success()
         {
@@ -396,7 +400,8 @@ namespace YFS.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, responseCheckTransferIncomeOperation.StatusCode);
             Assert.True(accountTargetAfterRemoveOperation.Balance == 0);
             Assert.True(checkTransferIncomeOperation.Where(tr => tr.Id == operationTransferIncomeId).Count() == 0);
-        }       
+        }      
+        
         [Fact]
         public async Task Delete_RemoveOperationWithdrawTransferCurrentMonth_Return_Success()
         {
@@ -445,6 +450,7 @@ namespace YFS.IntegrationTests
             Assert.True(accountWithdrawAfterRemoveOperation.Balance == 100000.39M);
             Assert.True(checkTransferExpenseOperation.Where(tr => tr.Id == operationTransferExpenseId).Count() == 0);
         }
+
         [Fact]
         public async Task Put_UpdateOperation_Return_Success()
         {

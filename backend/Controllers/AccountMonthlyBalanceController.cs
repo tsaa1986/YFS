@@ -10,6 +10,7 @@ using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using YFS.Core.Models.Triggers;
 using System.Collections;
+using YFS.Service.Services;
 
 namespace YFS.Controllers
 {
@@ -17,24 +18,29 @@ namespace YFS.Controllers
     [ApiController]
     public class AccountMonthlyBalanceController : BaseApiController
     {
-        public AccountMonthlyBalanceController(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        private readonly IAccountMonthlyBalanceService _accountMonthlyBalanceService;
+        public AccountMonthlyBalanceController(IAccountMonthlyBalanceService accountMonthlyBalanceService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
         {
+            _accountMonthlyBalanceService = accountMonthlyBalanceService;
         }
 
         [HttpGet("{accountId}")]
         [Authorize]
         public async Task<IActionResult> GetAccountMonthlyBalanceByAccountId(int accountId)
         {
-            try
+            var result = await _accountMonthlyBalanceService.GetAccountMonthlyBalanceByAccountId(accountId);
+
+            if (result.IsSuccess)
             {
-                string userid = GetUserIdFromJwt(Request.Headers["Authorization"]);
-                var accountMonthlyBalance = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceByAccountId(accountId, false);
-                var accountMonthlyBalanceDto = _mapper.Map<IEnumerable<AccountMonthlyBalanceDto>>(accountMonthlyBalance);
-                return Ok(accountMonthlyBalanceDto);
+                return Ok(result.Data);
             }
-            catch (Exception ex)
+            else if (result.IsNotFound)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
             }
         }   
     }

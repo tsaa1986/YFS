@@ -79,11 +79,12 @@ namespace YFS.Extension
         public static void RegisterDependencies(this IServiceCollection services)
         {
             services.AddScoped<ValidationFilterAttribute>();
+            services.AddScoped<IAccountMonthlyBalanceService, AccountMonthlyBalanceService>();
+            services.AddScoped<IAccountTypesService, AccountTypesService>();
+            services.AddScoped<IAccountGroupsService, AccountGroupsService>();
             services.AddScoped<IOperationsService, OperationsService>();
             services.AddScoped<ICurrencyService, CurrencyService>();
             services.AddScoped<ICategoryService, CategoryService>();
-            services.AddScoped<IAccountTypesService, AccountTypesService>();
-            services.AddScoped<IAccountGroupsService, AccountGroupsService>();
         }
     }
 }
