@@ -52,7 +52,7 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, langua
                             Your Financial Space
                         </h1>
                         <div className="main-block__text">
-                            This is your financial manager. 
+                            This is your home financial manager. 
                         </div>
                         <div className="main-block__buttons">
                             <Button className="main-block__button main-block__button_border" onClick={()=>{setLoginDisplay("login"); console.log(loginDisplay)}}>Sign in </Button>
