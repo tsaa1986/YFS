@@ -202,6 +202,11 @@ const handleSubmitAddGroupForm = () => {
     form.resetFields()
     setVisibleAddGroupForm(false)
 }
+const addAccount = (accountData: accountType) => {
+  const newAccounts = [...openAccounts];
+  newAccounts.push(accountData);
+  setOpenAccounts(newAccounts);
+}
 const handleSubmitAddAccountForm = (accountStatus: number, selectedFavorites: Boolean) => {
   console.log('handle');
   console.log(formAddAccount.getFieldValue('nameAccount'));
@@ -224,7 +229,7 @@ const handleSubmitAddAccountForm = (accountStatus: number, selectedFavorites: Bo
           {
               //debugger
               console.log(response.data)
-              //addAccount(response.data)
+              addAccount(response.data)
               formAddAccount.resetFields()
               setVisibleAddAccountForm(false)
           }
