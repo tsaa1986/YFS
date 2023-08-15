@@ -44,9 +44,9 @@ namespace YFS.Service.Services
                     } } };
                 }
                 await _repository.SaveAsync();
-
-                var accountReturn = _mapper.Map<AccountDto>(accountData);
-                return ServiceResult<AccountDto>.Success(accountReturn);
+                var accountReturnData = _repository.Account.GetAccountWithCurrency(accountData.Id);
+                var accountReturnDto = _mapper.Map<AccountDto>(accountReturnData.Result);
+                return ServiceResult<AccountDto>.Success(accountReturnDto);
             }
             catch (Exception ex)
             {

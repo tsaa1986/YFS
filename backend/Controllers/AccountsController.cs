@@ -8,10 +8,6 @@ using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using YFS.Core.Models.Triggers;
-using YFS.Service.Services;
-using Microsoft.Identity.Client;
-using Azure;
 
 namespace YFS.Controllers
 {
