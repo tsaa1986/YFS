@@ -21,6 +21,7 @@ namespace YFS.Service.Services
             }
             catch(Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(GetAccountMonthlyBalanceByAccountId)} action {ex}");
                 return ServiceResult<IEnumerable<AccountMonthlyBalanceDto>>.Error(ex.Message);
             }
         }
