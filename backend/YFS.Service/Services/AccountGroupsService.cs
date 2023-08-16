@@ -32,9 +32,10 @@ namespace YFS.Service.Services
                 var accountGroupReturn = _mapper.Map<AccountGroupDto>(accountGroupDataReturn);
                 return ServiceResult<AccountGroupDto>.Success(accountGroupReturn);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return ServiceResult<AccountGroupDto>.Error(e.Message);
+                _logger.LogError(ex, "Error while CreateAccountGroup: {UserId}", userId);
+                return ServiceResult<AccountGroupDto>.Error(ex.Message);
             }
         }
 
@@ -48,6 +49,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while GetAccountGroupsForUser: {UserId}", userId);
                 return ServiceResult<IEnumerable<AccountGroupDto>>.Error(ex.Message);
             }
         }
@@ -63,12 +65,11 @@ namespace YFS.Service.Services
                 await _repository.SaveAsync();
                 AccountGroup accountGroupDataReturn = await _repository.AccountGroup.GetAccountGroup(accountGroupData.AccountGroupId, false);
                 var accountGroupsDtoUpdated = _mapper.Map<AccountGroupDto>(accountGroupDataReturn);
-
                 return ServiceResult<AccountGroupDto>.Success(accountGroupsDtoUpdated);
             }
             catch (Exception ex)
             {
-                //_logger.LogError($"Something went wrong in the {nameof(GetAccountTypes)} action {ex}");
+                _logger.LogError($"Something went wrong in the {nameof(UpdateGroupForUser)} action {ex}");
                 return ServiceResult<AccountGroupDto>.Error(ex.Message);
             }
 
