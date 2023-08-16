@@ -27,6 +27,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(GetCategoriesForUser)} action {ex}");
                 return ServiceResult<IEnumerable<CategoryDto>>.Error(ex.Message);
             }
         }
