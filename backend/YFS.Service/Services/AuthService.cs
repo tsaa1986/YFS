@@ -41,6 +41,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(Authenticate)} action {ex}");
                 return ServiceResult<string>.Error(ex.Message);
             }
         }
@@ -55,6 +56,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(GetMe)} action {ex}");
                 return ServiceResult<UserAccountDto>.Error(ex.Message);
             }
         }
@@ -79,7 +81,7 @@ namespace YFS.Service.Services
                     return userResult.Succeeded ? ServiceResult<UserAccountDto>.Success(returnUser.Data) : ServiceResult<UserAccountDto>.CustomError(userResult);
                 }
                 else
-                {
+                {                    
                     return ServiceResult<UserAccountDto>.CustomError(userResult);
                 }
                 //return !userResult.Succeeded ? new BadRequestObjectResult(userResult) : StatusCode(201);
@@ -87,6 +89,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(RegisterUser)} action {RegisterUser}");
                 return ServiceResult<UserAccountDto>.Error(ex.Message);
             }
         }
