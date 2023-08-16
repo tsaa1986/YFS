@@ -52,6 +52,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while  CreateAccount: userid: {UserId}, account: {account}", userId, account.Name);
                 return ServiceResult<AccountDto>.Error(ex.Message);
             }
         }
@@ -81,6 +82,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while GetAccountsByGroup: userid: {UserId}, accountgroupId: {accountGroupId}", userId, accountGroupId);
                 return ServiceResult<IEnumerable<AccountDto>>.Error(ex.Message);
             }
         }
@@ -114,7 +116,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error while updating account Account: {Account}", account);
+                _logger.LogError(ex, "Error while updating account: {Account}", account);
                 return ServiceResult<AccountDto>.Error(ex.Message);
             }
         }
