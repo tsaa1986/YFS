@@ -26,7 +26,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
-                //_logger.LogError($"Something went wrong in the {nameof(GetAccountTypes)} action {ex}");
+                _logger.LogError($"Something went wrong in the {nameof(GetAccountTypes)} action {ex}");
                 return ServiceResult<IEnumerable<AccountTypeDto>>.Error(ex.Message);
             }
         }
