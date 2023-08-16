@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ namespace YFS.Service.Services
 {
     public class AccountTypesService : BaseService, IAccountTypesService
     {
-        public AccountTypesService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountTypesService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
 

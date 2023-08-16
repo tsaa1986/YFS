@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Azure.Core;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
@@ -14,7 +16,7 @@ namespace YFS.Service.Services
 {
     public class AccountService : BaseService, IAccountService
     {
-        public AccountService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
 
@@ -57,13 +59,14 @@ namespace YFS.Service.Services
         public async Task<ServiceResult<AccountDto>> GetAccountById(int accountId)
         {
             try
-            {
+            {                
                 var account = await _repository.Account.GetAccount(accountId);
                 var accountDto = _mapper.Map<AccountDto>(account);
                 return ServiceResult<AccountDto>.Success(accountDto);
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while getting account with ID: {AccountId}", accountId);
                 return ServiceResult<AccountDto>.Error(ex.Message);
             }
         }
@@ -92,6 +95,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while GetOpenAccountsByUserId: {UserId}", userId);
                 return ServiceResult<IEnumerable<AccountDto>>.Error(ex.Message);
             }
         }
@@ -110,6 +114,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError(ex, "Error while updating account Account: {Account}", account);
                 return ServiceResult<AccountDto>.Error(ex.Message);
             }
         }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace YFS.Service.Services
 {
     public class CategoryService : BaseService, ICategoryService
     {
-        public CategoryService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public CategoryService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
 

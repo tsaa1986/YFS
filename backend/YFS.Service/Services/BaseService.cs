@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +13,12 @@ namespace YFS.Service.Services
     {
         protected readonly IMapper _mapper;
         protected readonly IRepositoryManager _repository;
-        public BaseService(IRepositoryManager repository, IMapper mapper)
+        protected readonly ILogger<BaseService> _logger;
+        public BaseService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger)
         {
             _mapper = mapper;
             _repository = repository;
+            _logger = logger;
         }
     }
 }

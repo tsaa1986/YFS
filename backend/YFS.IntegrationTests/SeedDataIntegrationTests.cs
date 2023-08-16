@@ -125,6 +125,23 @@ namespace YFS.IntegrationTests
 
             return operations;          
         }
-       
+        public async Task CreateOperationIncome3monthAutomatically(int accountId)
+        {
+            var operationType = OperationDto.OperationType.Income;
+            var incomeAmount = 100000M;
+
+            for (int i = 0; i < 3; i++)
+            {
+                var monthOffset = -i;
+                var operationDate = DateTime.Now.AddMonths(monthOffset);
+
+                var createdOperations = await CreateOperation(accountId, operationDate, operationType, 2, incomeAmount);
+
+                if (createdOperations.Count() == 0)
+                {
+                    throw new Exception($"Failed to create income operation for {operationDate}");
+                }
+            }
+        }
     }
 }

@@ -7,6 +7,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using YFS.Extension;
 using YFS.Repo.Data;
+using Microsoft.Extensions.Logging;
+using Serilog;
 
 namespace YFS
 {
@@ -53,6 +55,14 @@ namespace YFS
             //The AddScoped method means that only one instance of the DataRepository class is created in a given HTTP request.This means
             //the lifetime of the class that is created lasts for the whole HTTP request
             services.AddControllers();
+
+            services.AddLogging(builder =>
+            {
+                //builder.AddSerilog(Log.Logger);
+                builder.AddConfiguration(Configuration.GetSection("Logging"));
+                builder.AddConsole();
+                builder.AddDebug();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -31,8 +31,9 @@ namespace YFS.IntegrationTests
             _seedData = SeedDataIntegrationTests.Instance;
         }
         //create 3 operation. per 100 000
-        private async Task CreateOperationIncome3monthAutomatically(int _accountId)
-        {
+        //private async Task CreateOperationIncome3monthAutomatically(int _accountId)
+        //{
+            /*
             var operationIncome1 = await _seedData.CreateOperation(_accountId, DateTime.Now,
                 OperationDto.OperationType.Income, 2, 100000M);
             // Create operation 1
@@ -46,8 +47,8 @@ namespace YFS.IntegrationTests
             // Create operation 3
             var operationIncome3 = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-2),
                 OperationDto.OperationType.Income, 2, 100000M);
-            if (operationIncome3.Count() == 0) { throw new Exception(); }
-        }
+            if (operationIncome3.Count() == 0) { throw new Exception(); }*/
+        //}
         private async Task<int> CreateAccountUAH()
         {
             var createAccountRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Accounts");
@@ -87,7 +88,7 @@ namespace YFS.IntegrationTests
             int _accountId = 1;
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/operations/last10/{_accountId}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            await CreateOperationIncome3monthAutomatically(_accountId);
+            await _seedData.CreateOperationIncome3monthAutomatically(_accountId);
 
             //Act
             var responseOperation = await _client.SendAsync(requestOperation);
@@ -110,7 +111,7 @@ namespace YFS.IntegrationTests
             //2023 - 04 - 01 / 2023 - 04 - 28
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Operations/period/{_accountId}/{startDate}/{endDate}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            await CreateOperationIncome3monthAutomatically(_accountId);
+            await _seedData.CreateOperationIncome3monthAutomatically(_accountId);
 
             //Act
             var responseOperation = await _client.SendAsync(requestOperation);

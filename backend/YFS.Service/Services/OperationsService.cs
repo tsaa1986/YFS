@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
@@ -8,9 +9,10 @@ namespace YFS.Service.Services
 {
     public class OperationsService : BaseService, IOperationsService
     {
-        public OperationsService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public OperationsService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
+
         public enum OperationType
         {
             Expense = 1,

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure;
 using Azure.Core;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace YFS.Service.Services
 {
     public class AccountGroupsService : BaseService, IAccountGroupsService
     {
-        public AccountGroupsService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountGroupsService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
 

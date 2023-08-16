@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using YFS.Core.Dtos;
 using YFS.Service.Interfaces;
 
@@ -6,7 +7,7 @@ namespace YFS.Service.Services
 {
     public class AccountMonthlyBalanceService : BaseService, IAccountMonthlyBalanceService
     {
-        public AccountMonthlyBalanceService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountMonthlyBalanceService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
 

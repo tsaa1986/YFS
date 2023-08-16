@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Azure.Core;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using RTools_NTS.Util;
 using System;
 using System.Collections.Generic;
@@ -15,7 +16,7 @@ namespace YFS.Service.Services
 {
     public class AuthService : BaseService, IAuthService
     {
-        public AuthService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AuthService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
 

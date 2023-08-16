@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Microsoft.Identity.Client;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,10 @@ namespace YFS.Service.Services
 {
     public class CurrencyService : BaseService, ICurrencyService
     {
-        public CurrencyService(IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public CurrencyService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
+
         public async Task<ServiceResult<IEnumerable<CurrencyDto>>> GetCurrencies()
         {
             try
