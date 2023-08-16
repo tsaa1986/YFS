@@ -172,6 +172,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(CreateOperation)} action {ex}");
                 return ServiceResult<OperationDto>.Error(ex.Message);
             }
         }
@@ -222,6 +223,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(RemoveOperation)} action {ex}");
                 return ServiceResult<IEnumerable<OperationDto>>.Error(ex.Message);
             }
         }
@@ -317,6 +319,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(RemoveTransferOperation)} action {ex}");
                 return ServiceResult<IEnumerable<OperationDto>>.Error(ex.Message);
             }
         }
@@ -330,6 +333,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(GetOperationsAccountForPeriod)} action {ex}");
                 return ServiceResult<IEnumerable<OperationDto>>.Error(ex.Message);
             }
         }
@@ -343,6 +347,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(GetLast10OperationsAccount)} action {ex}");
                 return ServiceResult<IEnumerable<OperationDto>>.Error(ex.Message);
             }
         }
