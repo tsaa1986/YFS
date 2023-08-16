@@ -27,6 +27,7 @@ namespace YFS.Service.Services
             }
             catch (Exception ex)
             {
+                _logger.LogError($"Something went wrong in the {nameof(GetCurrencies)} action {ex}");
                 return ServiceResult<IEnumerable<CurrencyDto>>.Error(ex.Message);
             }
         }
