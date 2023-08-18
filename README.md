@@ -28,3 +28,20 @@ MSSQL DataBase\
 xUnit\
 
 ### Getting Started
+- download project or git clone/
+- Switch to develop branch. /
+	git checkout develop/
+- Ensure you have MS SQL Express installed and running/
+- Launch the solution(YFS.sln in backend folder) in visual studio/
+- Change configuration for db connect. 
+Edit file appsettings.json
+ "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost;Database=YFS;Trusted_Connection=True;Encrypt=False;"
+  },
+Set your address server in the line Server(localhost)
+- DB create automatically after run app
+- Start Debuggin(F5 button)
+
+You get the following screen: 
+![image](https://github.com/tsaa1986/YFS/assets/26444246/d294738e-4fbe-4766-ab77-608414df1d8c)
+
