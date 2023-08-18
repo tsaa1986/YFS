@@ -16,13 +16,13 @@ interface that seamlessly communicates with the backend API. This is Single Page
   
 ### Getting Started
 
-Before you begin, ensure you have the necessary tools and dependencies installed. /
+Before you begin, ensure you have the necessary tools and dependencies installed. 
 This project was built using [React], so make sure you're familiar with those technologies.
 
-- Clone this repository to your local machine./
-- Switch to develop branch. / git checkout develop-frontend/
-- Navigate to the project directory: `cd frontend-ant`./
-- Launch the solution in visual code./
+- Clone this repository to your local machine.
+- Switch to develop branch.  git checkout develop-frontend
+- Navigate to the project directory: `cd frontend-ant`.
+- Launch the solution in visual code.
 - Install dependencies: `npm install`.
 - `npm start`
 - Important step!!! You need to run YFS.backend for fully work with YFS
