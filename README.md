@@ -9,7 +9,7 @@ interface that seamlessly communicates with the backend API. This is Single Page
 ### Features
 
 ### Technology Stack
-- React JS
+- React
 - AntDesign
 - TypeScript
 - SCSS
