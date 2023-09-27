@@ -1,0 +1,9 @@
+# Use the official SQL Server Express Linux image from Microsoft
+FROM mcr.microsoft.com/mssql/server:2019-latest
+
+# Set environment variables
+ENV SA_PASSWORD=1234qweR
+ENV ACCEPT_EULA=Y
+
+# Expose port 1433 for SQL Server
+EXPOSE 1433
