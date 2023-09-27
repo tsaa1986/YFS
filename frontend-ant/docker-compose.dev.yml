@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+  yfs-app:
+    container_name: YFS-Frontend-dev
+    image: yfs-frontend-dev
+    build:
+      context: .
+      target: development
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src:/yfs-app/src
+    networks:
+      - yfs-network
+    ports:
+      - 3000:3000
+networks:
+  yfs-network:
+    driver: bridge
