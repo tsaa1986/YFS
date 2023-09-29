@@ -1,0 +1,33 @@
+# Use the official ASP.NET Core runtime image
+FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal-amd64 AS base
+WORKDIR /app
+ENV ASPNETCORE_URLS=http://+:5001
+
+# Use the official ASP.NET Core SDK image for building
+FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+WORKDIR /src
+
+# Copy the .csproj and restore as distinct layers
+COPY ["backend/YFS.csproj", "backend/"]
+RUN dotnet restore "backend/YFS.csproj"
+
+# Copy the remaining source code and build the application
+COPY . .
+WORKDIR "/src/backend"
+RUN dotnet build "YFS.csproj" -c Release -o /app/build
+
+# Publish the application
+FROM build AS publish
+RUN dotnet publish "YFS.csproj" -c Release -o /app/publish
+
+# Build the final image for x86
+#FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final-x86
+#WORKDIR /app
+#COPY --from=publish /app/publish .
+#ENTRYPOINT ["dotnet", "YFS.dll"]
+
+# Build the final image for x64
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS final-x64
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "YFS.dll"]

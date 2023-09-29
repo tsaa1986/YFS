@@ -1,0 +1,8 @@
+docker build -t yfs-backend -f Dockerfile.net .
+
+docker build -t yfs-backend -f Dockerfile.net .
+docker run -d -p 8080:80 --name yfs-backend yfs-backend
+
+docker-compose up -d
+docker-compose down
+docker-compose restart

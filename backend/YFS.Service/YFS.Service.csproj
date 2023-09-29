@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.1.38" />
+    <PackageReference Include="System.Collections" Version="4.0.11" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\YFS.Repo\YFS.Repo.csproj" />
   </ItemGroup>
 
