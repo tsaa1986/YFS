@@ -15,7 +15,7 @@ services:
       context: .
       dockerfile: Dockerfile.net
     environment:
-      - DefaultConnection=Server=YFS-DB-MSSQLExpress;Database=YFS;User Id=SA;Password=1234qweR
+        - ConnectionStrings__DefaultConnection=Server=YFS-DB-MSSQLExpress;Database=YFS;User Id=SA;Password=1234qweR;Encrypt=False;  
     networks:
       yfs-network:
         ipv4_address: 10.10.10.20
