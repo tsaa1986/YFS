@@ -20,7 +20,7 @@ services:
       yfs-network:
         ipv4_address: 10.10.10.20
     ports:
-      - "8080:5001"
+      - "8080:80"
     depends_on:
       - database
 

@@ -1,7 +1,7 @@
 # Use the official ASP.NET Core runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:6.0-focal-amd64 AS base
 WORKDIR /app
-ENV ASPNETCORE_URLS=http://+:5001
+#ENV ASPNETCORE_URLS=http://+:5001
 
 # Use the official ASP.NET Core SDK image for building
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
