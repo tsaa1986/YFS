@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using YFS.Core.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace YFS.Repo.Data
 {
@@ -130,7 +131,7 @@ namespace YFS.Repo.Data
 
             return accounts;
         }
-        public static async void Initialize(IServiceProvider serviceProvider)
+        public static async Task Initialize(IServiceProvider serviceProvider)
         {
             const string demoEmail = "demo@demo.com";
             const string demoPassword = "123$qweR";
@@ -138,88 +139,88 @@ namespace YFS.Repo.Data
             const string demoFirst = "Demo";
             const string demoLast = "Account";
 
-            RepositoryContext context =
-            serviceProvider.GetRequiredService<RepositoryContext>();
-            context.Database.EnsureCreated();
-
-            var userManager = serviceProvider.GetRequiredService<UserManager<User>>();
-            var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-
-            // initially create user(s)
-            if (!context.Users.Any())
+            using (var scope = serviceProvider.CreateScope())
             {
-                User user = new User()
+                var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
+                await context.Database.EnsureCreatedAsync();
+
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+                if (!await context.Users.AnyAsync())
                 {
-                    Email = demoEmail,
-                    SecurityStamp = Guid.NewGuid().ToString(),
-                    UserName = demoUsername,
-                    FirstName = demoFirst,
-                    LastName = demoLast,
-                    CreatedOn = DateTime.UtcNow,
-                };
-                var result = userManager.CreateAsync(user, demoPassword).Result;
-            }
-
-            // make sure we have some roles
-            if (!context.Roles.Any())
-            {
-                if (roleManager.RoleExistsAsync(UserRoles.Admin) != null)
-                { 
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                    await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                }
-                //await context.SaveChangesAsync();
-                //if (roleManager.RoleExistsAsync(UserRoles.User) != null)
-                   
-                await context.SaveChangesAsync();
-            }
-
-            // get the demo user we just made
-            var demoUser = userManager.FindByEmailAsync(demoEmail).Result;
-
-            if (demoUser == null) { 
-                return; }
-              else { 
-                await userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
-                await context.SaveChangesAsync();
-            }
-
-            //create default group
-            if (demoUser != null)
-            {
-                var accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
-                var accounts = context.Accounts.Where(a => a.UserId == demoUser.Id).ToList();
-
-                if (accountGroupUser.Count == 0)
-                {
-                    foreach (AccountGroup agd in InitializeAccountGroupsDefault(demoUser.Id))
+                    var user = new User()
                     {
-                        await context.AccountGroups.AddAsync(agd);
+                        Email = demoEmail,
+                        SecurityStamp = Guid.NewGuid().ToString(),
+                        UserName = demoUsername,
+                        FirstName = demoFirst,
+                        LastName = demoLast,
+                        CreatedOn = DateTime.UtcNow,
+                    };
+                    var result = await userManager.CreateAsync(user, demoPassword);
+
+                    if (!result.Succeeded)
+                    {
+                        // Handle user creation failure
+                        // Log or throw an exception as needed
                     }
-                    await context.SaveChangesAsync();
-                    accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList(); 
                 }
 
-                //create default accounts
-                if (accounts.Count == 0)
+                // Make sure we have some roles
+                if (!await context.Roles.AnyAsync())
                 {
-                    List<Account> la = InitializeAccountsDefault(demoUser.Id, accountGroupUser);
-                    foreach (Account account in la)
+                    // Create roles if they don't exist
+                    if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
                     {
-                        await context.Accounts.AddAsync(account);
+                        await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                    }
+
+                    if (!await roleManager.RoleExistsAsync(UserRoles.User))
+                    {
+                        await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
                     }
                     await context.SaveChangesAsync();
                 }
 
+                // Get the demo user we just made
+                var demoUser = await userManager.FindByEmailAsync(demoEmail);
+
+                if (demoUser != null)
+                {
+                    if (!await userManager.IsInRoleAsync(demoUser, UserRoles.Admin))
+                    {
+                        await userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
+                    }
+
+                    // Create default group and accounts here as needed
+                    // Make sure to use asynchronous EF Core operations and await them
+                    var accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
+                    var accounts = context.Accounts.Where(a => a.UserId == demoUser.Id).ToList();
+
+                    if (accountGroupUser.Count == 0)
+                    {
+                        foreach (AccountGroup agd in InitializeAccountGroupsDefault(demoUser.Id))
+                        {
+                            await context.AccountGroups.AddAsync(agd);
+                        }
+                        await context.SaveChangesAsync();
+                        accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
+                    }
+
+                    //create default accounts
+                    if (accounts.Count == 0)
+                    {
+                        List<Account> la = InitializeAccountsDefault(demoUser.Id, accountGroupUser);
+                        foreach (Account account in la)
+                        {
+                            await context.Accounts.AddAsync(account);
+                        }
+                        await context.SaveChangesAsync();
+                    }
+                }
             }
-            //context.Database.Migrate();
-            //if (!context.Products.Any())
-            //{
-            //    context.Products.AddRange(
-            // ...statements omiited for brevity...
-            //    );
-            //    context.SaveChanges();
-            //}
+
         }
     }
 }
