@@ -43,7 +43,8 @@ namespace YFS
                           //.SetIsOriginAllowed("http://localhost:3000")npm 
                           //.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader().AllowCredentials();
                           .WithOrigins("http://localhost:3000", "https://localhost:3000", "http://localhost:3001", "https://localhost:3001", 
-                                "http://localhost:5001", "http://localhost:5000").AllowAnyMethod().AllowAnyHeader().AllowCredentials();                          
+                                "http://localhost:5001", "http://localhost:5000", "http://10.10.10.20", 
+                                "https://10.10.10.20").AllowAnyMethod().AllowAnyHeader().AllowCredentials();                          
                       }));
             ServiceExtension.ConfigureMapping(services);
             ServiceExtension.ConfigureJWT(services, Configuration);

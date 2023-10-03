@@ -9,6 +9,25 @@ networks:
         - subnet: 10.10.10.0/24
 
 services:
+  frontend:
+    container_name: YFS-Frontend
+    image: yfs-frontend
+    build:
+      context: c:\Users\Admin\Desktop\Projects\NET\YFS\frontend-ant
+      target: development
+      dockerfile: Dockerfile.front
+    volumes:
+      - c:\Users\Admin\Desktop\Projects\NET\YFS\frontend-ant\src:/yfs-app/src
+    networks:
+      yfs-network:
+        ipv4_address: 10.10.10.30
+    environment:
+      - BASE_URL=http://localhost:5001/api
+    ports:
+      - 3000:3000
+    depends_on:
+      - backend
+      
   backend:
     container_name: YFS-Api-Backend
     build:
@@ -19,8 +38,8 @@ services:
     networks:
       yfs-network:
         ipv4_address: 10.10.10.20
-    ports:
-      - "8080:80"
+    ports: 
+      - 5001:80
     depends_on:
       - database
 
@@ -39,6 +58,21 @@ services:
       - ACCEPT_EULA=Y
     volumes:
       - mssql-data:/var/opt/mssql
+      
+  ubuntu-container:
+    container_name: UbuntuContainer
+    image: ubuntu:latest  # Use the latest Ubuntu image
+    tty: true  # Allocate a pseudo-TTY for interactive use if needed
+    command: tail -f /dev/null  # Keep the container running to keep it alive
+    networks:
+      yfs-network:
+        ipv4_address: 10.10.10.40  # Assign an IP address within your subnet
+    ports:
+      - "22222:22"  # If you want to SSH into the container (adjust the port as needed)
+    build:
+      context: . 
+      dockerfile: Dockerfile.ubuntu
+
 
 volumes:
   mssql-data:
