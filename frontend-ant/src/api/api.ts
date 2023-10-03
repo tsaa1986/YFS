@@ -5,7 +5,7 @@ import { start } from "repl";
 import { IUser } from "../components/types/types";
 import CookieService from "../services/CookieService";
 
-const BASE_URL = 'https://localhost:5001/api';
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5001/api';
 let token: string | null;
 
 const options = {

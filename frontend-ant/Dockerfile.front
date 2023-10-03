@@ -1,7 +1,7 @@
 FROM node:18 AS development
 ENV NODE_ENV development
 WORKDIR /yfs-app
-COPY package*.json ./
+COPY package*.json .
 COPY yarn.lock .
 RUN yarn install
 # Copy the rest of the application code to the container

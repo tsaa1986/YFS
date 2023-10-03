@@ -1,3 +1,5 @@
 # https://www.robotstxt.org/robotstxt.html
 User-agent: *
 Disallow:
+
+Your Financial Space is a personal home financial manager designed to empower users with effective tools for managing their finances. This project serves as a practical solution to assist individuals in maintaining a clear overview of their financial activities.
