@@ -203,6 +203,8 @@ const columns: ColumnsType<accountType> = [
 
     return(
       <Layout>
+        <Layout className='LayoutAccountsList'>
+        <div className="account-list-container">
         <Table 
           onRow={(record, rowIndex) => {
               return {
@@ -216,7 +218,16 @@ const columns: ColumnsType<accountType> = [
           dataSource={accountListDataSource}
           size='small'
           pagination={{ position: ["bottomLeft"] }}   
-          />          
+          />    
+          </div>
+          <div className="amount-container">
+          <div className='amount-container-header'>amount in {props.accountGroupData?.accountGroupNameEn} group accounts</div>
+          {/* Add your total amount here */}
+            <div>30, 000.34 UAH</div>
+            <div>100, 000.43 USD</div>
+            <div>9, 000.88 EURO</div>
+          </div>
+          </Layout>
           <Divider />
           <Collapse defaultActiveKey={['1']} ghost>
            { selectedAccount !== undefined && <Panel header={<b>List of operations on account:  {selectedAccount.name}</b>} key="1">

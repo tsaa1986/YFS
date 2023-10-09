@@ -24,6 +24,7 @@ const TabDetails: React.FC<tabDetailsPropsType> = ({accountGroupData, activeTabK
                             openAccounts= {openAccounts} 
                             setOpenAccounts={setOpenAccounts} 
                             activeTabKey= {activeTabKey} />  
+            <div>summ</div>
         </Layout>
     );
 }
