@@ -20,9 +20,9 @@ namespace YFS.Repo.Data
                 accountGroups.Add(new AccountGroup
                 { UserId = _userid, AccountGroupNameEn = "Cash", AccountGroupNameRu = "Наличные", AccountGroupNameUa = "Готівка" });
                 accountGroups.Add(new AccountGroup
-                { UserId = _userid, AccountGroupNameEn = "Bank accounts", AccountGroupNameRu = "Банковские счета", AccountGroupNameUa = "Банківські рахунки" });
+                { UserId = _userid, AccountGroupNameEn = "Bank", AccountGroupNameRu = "Банковские", AccountGroupNameUa = "Банківські" });
                 accountGroups.Add(new AccountGroup
-                { UserId = _userid, AccountGroupNameEn = "Internet accounts", AccountGroupNameRu = "Интернет счета", AccountGroupNameUa = "Інтернет рахунки" });
+                { UserId = _userid, AccountGroupNameEn = "Internet", AccountGroupNameRu = "Интернет", AccountGroupNameUa = "Інтернет" });
             }
             return accountGroups;
         }
@@ -67,7 +67,7 @@ namespace YFS.Repo.Data
                             AccountBalance = new AccountBalance()
                         });
                     }
-                    if (accGroup.AccountGroupNameEn == "Bank accounts")
+                    if (accGroup.AccountGroupNameEn == "Bank")
                     {
                         accounts.Add(new Account
                         {

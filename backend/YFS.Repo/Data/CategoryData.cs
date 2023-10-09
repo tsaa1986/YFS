@@ -83,15 +83,6 @@ namespace YFS.Repo.Data
                 },
                 new Category
                 {
-                    Id = 7,
-                    RootId = 0,
-                    Name_UA = "Продукти харчування",
-                    Name_ENG = "Food",
-                    Name_RU = "Продукти питания",
-                    Note = ""
-                },
-                new Category
-                {
                     Id = 8,
                     RootId = 0,
                     Name_UA = "Освіта",

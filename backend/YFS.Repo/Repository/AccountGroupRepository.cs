@@ -27,16 +27,16 @@ namespace YFS.Service.Services
             AccountGroup acGroup_bank = new AccountGroup
             {
                 UserId = userid,
-                AccountGroupNameEn = "Bank accounts",
-                AccountGroupNameRu = "Банковские счета",
-                AccountGroupNameUa = "Банківські рахунки"
+                AccountGroupNameEn = "Bank",
+                AccountGroupNameRu = "Банковские",
+                AccountGroupNameUa = "Банківські"
             };
             AccountGroup acGroup_internetmoney = new AccountGroup
             {
                 UserId = userid,
-                AccountGroupNameEn = "Internet accounts",
-                AccountGroupNameRu = "Интернет счета",
-                AccountGroupNameUa = "Інтернет рахунки"
+                AccountGroupNameEn = "Internet",
+                AccountGroupNameRu = "Интернет",
+                AccountGroupNameUa = "Інтернет"
             };
 
             await CreateAsync(acGroup);// CreateAccountGroup(ac);
