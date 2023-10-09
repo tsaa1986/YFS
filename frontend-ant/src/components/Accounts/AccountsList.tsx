@@ -201,6 +201,29 @@ const columns: ColumnsType<accountType> = [
       console.log(selectedDateOption)
     },[selectedDateOption])
 
+    const groupedBalances: Record<string, number> = accountListDataSource.reduce(
+      (accumulator: Record<string, number>, account: accountType) => {
+        const currencyName = account.currencyName;
+        const balance = account.balance;
+  
+        if (!accumulator[currencyName]) {
+          accumulator[currencyName] = 0;
+        }
+  
+        accumulator[currencyName] += balance;
+  
+        return accumulator;
+      },
+      {}
+    );
+
+    const result = Object.entries(groupedBalances).map(
+      ([currencyName, totalBalance]) => ({
+        CurrencyName: currencyName,
+        TotalBalance: totalBalance,
+      })
+    );
+
     return(
       <Layout>
         <Layout className='LayoutAccountsList'>
@@ -221,11 +244,14 @@ const columns: ColumnsType<accountType> = [
           />    
           </div>
           <div className="amount-container">
-          <div className='amount-container-header'>amount in {props.accountGroupData?.accountGroupNameEn} group accounts</div>
+          <div className='amount-container-header'>amount in {props.accountGroupData?.accountGroupNameEn} group</div>
           {/* Add your total amount here */}
-            <div>30, 000.34 UAH</div>
-            <div>100, 000.43 USD</div>
-            <div>9, 000.88 EURO</div>
+          {result.map((currencyGroup) => (
+              <div key={currencyGroup.CurrencyName}>
+                {currencyGroup.CurrencyName}{': '}
+                {currencyGroup.TotalBalance}
+              </div>
+            ))}
           </div>
           </Layout>
           <Divider />
