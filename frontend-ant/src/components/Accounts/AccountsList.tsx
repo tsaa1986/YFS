@@ -7,6 +7,7 @@ import { Collapse } from 'antd';
 import AccountSelectedPeriod, { SelectedVariantPeriod } from './AccountSelectedPeriod';
 import OperationForm, { TypeOperation } from './AccountOperation';
 import { NumericFormat } from 'react-number-format';
+import AmountInGroup from './AmountInGroup';
 
 const { Panel } = Collapse;
 
@@ -243,16 +244,10 @@ const columns: ColumnsType<accountType> = [
           pagination={{ position: ["bottomLeft"] }}   
           />    
           </div>
-          <div className="amount-container">
-          <div className='amount-container-header'>amount in {props.accountGroupData?.accountGroupNameEn} group</div>
-          {/* Add your total amount here */}
-          {result.map((currencyGroup) => (
-              <div key={currencyGroup.CurrencyName}>
-                {currencyGroup.CurrencyName}{': '}
-                {currencyGroup.TotalBalance}
-              </div>
-            ))}
-          </div>
+            <AmountInGroup
+              accountList={accountListDataSource}
+              accountGroupData={props.accountGroupData}
+            />
           </Layout>
           <Divider />
           <Collapse defaultActiveKey={['1']} ghost>
