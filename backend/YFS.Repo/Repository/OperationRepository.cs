@@ -49,7 +49,6 @@ namespace YFS.Service.Services
             .Include(p => p.Account.AccountBalance)
             .Include(c => c.Category)
             .SingleOrDefaultAsync();    
-            
 
         public async Task<Operation?> GetTransferOperationById(int transferOperationId)
             => await FindByConditionAsync(op => op.TransferOperationId.Equals(transferOperationId), false)

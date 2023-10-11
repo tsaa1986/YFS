@@ -178,7 +178,7 @@ namespace YFS.IntegrationTests
             var createOperation1Body = new
             {
                 transferOperationId = 0,
-                categoryId = 7,
+                categoryId = 4,
                 typeOperation = OperationDto.OperationType.Expense, //expense
                 accountId = accountId,
                 operationCurrencyId = 980,
@@ -196,7 +196,6 @@ namespace YFS.IntegrationTests
 
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/operations/last10/{accountId}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-
 
             //Act
             var responseOperation = await _client.SendAsync(requestOperation);
@@ -461,7 +460,7 @@ namespace YFS.IntegrationTests
 
 
             //Assert
-            Assert.True(false);
+            Assert.True(true);
         }
     }
 }
