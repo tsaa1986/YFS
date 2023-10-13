@@ -214,13 +214,13 @@ export const operationAccount = {
     },
     getLast10OperationsAccount(accountId: number) {
         return instancePrivate.get<Array<IOperation>>(`${BASE_URL}/Operations/last10/${accountId}`)
-        .then( res=> {
-            
-            return res.data} )
-        .catch((err) => {
-            console.log(err)
-            return undefined
-        })
+                .then( res=> {
+                    
+                    return res.data} )
+                .catch((err) => {
+                    console.log(err)
+                    return undefined
+                })
     }
 } 
 

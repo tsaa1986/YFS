@@ -295,7 +295,7 @@ return(<Layout>
 
 export const AccountsLayout: React.FC = () => {
     return (<Layout>
-            <AccountsTab />
+              <AccountsTab />
             </Layout>
     );
 }

@@ -202,30 +202,7 @@ const columns: ColumnsType<accountType> = [
       console.log(selectedDateOption)
     },[selectedDateOption])
 
-    const groupedBalances: Record<string, number> = accountListDataSource.reduce(
-      (accumulator: Record<string, number>, account: accountType) => {
-        const currencyName = account.currencyName;
-        const balance = account.balance;
-  
-        if (!accumulator[currencyName]) {
-          accumulator[currencyName] = 0;
-        }
-  
-        accumulator[currencyName] += balance;
-  
-        return accumulator;
-      },
-      {}
-    );
-
-    const result = Object.entries(groupedBalances).map(
-      ([currencyName, totalBalance]) => ({
-        CurrencyName: currencyName,
-        TotalBalance: totalBalance,
-      })
-    );
-
-    return(
+     return(
       <Layout>
         <Layout className='LayoutAccountsList'>
         <div className="account-list-container">

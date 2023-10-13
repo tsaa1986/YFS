@@ -144,7 +144,6 @@ const AccountOperationsView: React.FC<IAccountOperationViewProps> = ({selectedAc
         }
     }
 
-
     const fetchOperationsForAccountForPeriod = () => {
         if (account != null)
             {

@@ -187,8 +187,7 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
       }*/
     }
 
-    return(
-      <Layout>
+    return(<Layout>
     <Modal
       open={open}
       title="Create a new transaction"
@@ -248,7 +247,8 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
             >
               {
                   (openAccounts !== undefined) ? (openAccounts.map( item => {
-                    return (item.id != 0) ? <Select.Option value={item.id}>{`GroupName: ${item.accountGroupId}  ${item.name}` + ` Balance = `+`${item.balance}`}</Select.Option> : ''}
+                    return (item.id != 0) ? <Select.Option value={item.id}>{`${item.accountGroupId}` + ` ${item.name}` + `, ${item.currencyName}` 
+                      + ` Balance: `+`${item.balance}`}</Select.Option> : ''}
                       )) : (<Select.Option value={0}>{'Sekect Account'}</Select.Option>)
               }
             </Select>
@@ -266,7 +266,8 @@ const OperationForm: React.FC<IOperationFormProps> = ({open, setOpenOperationFor
               >
                 {
                     (openAccounts !== undefined) ? (openAccounts.map( item => {
-                      return (item.id != 0) ? <Select.Option value={item.id}>{`GroupName: ${item.accountGroupId}  ${item.name}` + ` Balance = `+`${item.balance}`}</Select.Option> : ''}
+                      return (item.id != 0) ? <Select.Option value={item.id}>{`${item.accountGroupId}  ${item.name}` + `, ${item.currencyName}` 
+                            + ` Balance: `+`${item.balance}`}</Select.Option> : ''}
                         )) : (<Select.Option value={0}>{'Select Account'}</Select.Option>)
                 }
               </Select>
