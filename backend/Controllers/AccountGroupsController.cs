@@ -1,13 +1,7 @@
 ﻿using AutoMapper;
-using Azure;
 using Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Identity.Client;
-using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Models;

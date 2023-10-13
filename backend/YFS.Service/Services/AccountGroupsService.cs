@@ -1,6 +1,4 @@
 ﻿using AutoMapper;
-using Azure;
-using Azure.Core;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
