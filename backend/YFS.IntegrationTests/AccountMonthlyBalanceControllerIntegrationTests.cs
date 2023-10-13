@@ -1,9 +1,4 @@
-﻿using Azure.Core;
-using Microsoft.Identity.Client;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
