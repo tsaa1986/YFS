@@ -8,7 +8,7 @@ using YFS.Repo.Data;
 
 #nullable disable
 
-namespace YFS.Repo.Migrations
+namespace YFS.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
     partial class RepositoryContextModelSnapshot : ModelSnapshot
@@ -237,7 +237,7 @@ namespace YFS.Repo.Migrations
                     b.Property<DateTime>("LastUpdateTime")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("getdate()");
 
                     b.HasKey("Id");
 
@@ -341,7 +341,7 @@ namespace YFS.Repo.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("NameEn")
                         .IsRequired()
@@ -370,7 +370,7 @@ namespace YFS.Repo.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<int>("TypeOrderBy")
+                    b.Property<int>("TypeOrederBy")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasDefaultValueSql("0");
@@ -383,42 +383,42 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(798),
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
                             NoteRu = "Учет наличных средств",
-                            TypeOrderBy = 0
+                            TypeOrederBy = 0
                         },
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(808),
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
                             NoteRu = "Интернет счета",
-                            TypeOrderBy = 0
+                            TypeOrederBy = 0
                         },
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(809),
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
                             NoteRu = "Учет реальных депозитов",
-                            TypeOrderBy = 0
+                            TypeOrederBy = 0
                         },
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(810),
+                            CreatedOn = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
                             NoteRu = "Банковский счет",
-                            TypeOrderBy = 0
+                            TypeOrederBy = 0
                         });
                 });
 
@@ -785,7 +785,7 @@ namespace YFS.Repo.Migrations
                     b.Property<DateTime>("CreatedOn")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("timestamp with time zone")
-                        .HasDefaultValueSql("CURRENT_TIMESTAMP");
+                        .HasDefaultValueSql("getdate()");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)

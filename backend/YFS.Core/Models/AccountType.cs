@@ -41,12 +41,11 @@ namespace YFS.Core.Models
         public string? NoteEn { get; set; }
 
         [Required]
-        public int TypeOrederBy { get; set; }
+        public int TypeOrderBy { get; set; }
 
         [Required]
-        public DateTime CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
 
         public ICollection<Account> Accounts { get; set; } = new List<Account>();
-
     }
 }

@@ -25,10 +25,17 @@ namespace YFS
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var connectionString =
-                Configuration.GetConnectionString("DefaultConnection");
+            //var connectionString =
+            //Configuration.GetConnectionString("DefaultConnection");
+            //services.AddDbContext<RepositoryContext>(options => options.UseSqlServer(connectionString).EnableSensitiveDataLogging(true));//,ServiceLifetime.Transient);
 
-            services.AddDbContext<RepositoryContext>(options => options.UseSqlServer(connectionString).EnableSensitiveDataLogging(true));//,ServiceLifetime.Transient);
+            var connectionString = Configuration.GetConnectionString("DefaultConnection");
+
+            services.AddDbContext<RepositoryContext>(options =>
+                options.UseNpgsql(connectionString,
+                        x => x.MigrationsAssembly("YFS.Repo"))
+                        .EnableSensitiveDataLogging(true));
+
             ServiceExtension.ConfigureRepositoryManager(services);
             ServiceExtension.ConfigureIdentity(services);
             ServiceExtension.RegisterDependencies(services);

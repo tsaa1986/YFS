@@ -50,3 +50,15 @@ Add-Migration Initial - use defaultProject YFS>REpo
 
 
 Remove-Migration
+
+
+01052024
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+
+or 
+Run your EF commands from the PMC.
+
+plaintext
+Add-Migration InitialCreate
+Update-Database

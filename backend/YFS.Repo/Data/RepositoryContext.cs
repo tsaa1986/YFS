@@ -38,7 +38,7 @@ namespace YFS.Repo.Data
 
             //modelBuilder.Entity<Account>().HasOne(a => a.User).WithOne();//.HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Account>().Property(b => b.Favorites).HasDefaultValueSql("0");
-            modelBuilder.Entity<AccountBalance>().Property(ab => ab.LastUpdateTime).HasDefaultValueSql("getdate()");
+            modelBuilder.Entity<AccountBalance>().Property(ab => ab.LastUpdateTime).HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<AccountBalance>().Property(ab => ab.Balance).HasDefaultValueSql("0.0");
 
             modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
@@ -48,13 +48,13 @@ namespace YFS.Repo.Data
 
             modelBuilder.Entity<Bank>().HasMany(ac => ac.Accounts).WithOne(b => b.Bank).OnDelete(DeleteBehavior.NoAction);
 
-            modelBuilder.Entity<AccountType>().Property(at => at.CreatedOn).HasDefaultValueSql("getdate()");
-            modelBuilder.Entity<AccountType>().Property(at => at.TypeOrederBy).HasDefaultValueSql("0");
+            modelBuilder.Entity<AccountType>().Property(at => at.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
+            modelBuilder.Entity<AccountType>().Property(at => at.TypeOrderBy).HasDefaultValueSql("0");
             modelBuilder.Entity<AccountType>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Currency>().HasMany(a => a.Accounts).WithOne(c => c.Currency).OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Currency>().Property(c => c.CurrencyId).ValueGeneratedNever();
 
-            modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("getdate()");
+            modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             //modelBuilder.ApplyConfiguration(new UserData());
             modelBuilder.ApplyConfiguration(new CurrencyData());

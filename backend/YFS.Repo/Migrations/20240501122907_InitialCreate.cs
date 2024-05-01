@@ -1,11 +1,12 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
 namespace YFS.Repo.Migrations
 {
-    public partial class initial : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,16 +14,16 @@ namespace YFS.Repo.Migrations
                 name: "AccountTypes",
                 columns: table => new
                 {
-                    AccountTypeId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    NameUa = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
-                    NameRu = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
-                    NameEn = table.Column<string>(type: "VARCHAR(30)", maxLength: 30, nullable: false),
-                    NoteUa = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
-                    NoteRu = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
-                    NoteEn = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true),
-                    TypeOrederBy = table.Column<int>(type: "int", nullable: false, defaultValueSql: "0"),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                    AccountTypeId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    NameUa = table.Column<string>(type: "VARCHAR", maxLength: 30, nullable: false),
+                    NameRu = table.Column<string>(type: "VARCHAR", maxLength: 30, nullable: false),
+                    NameEn = table.Column<string>(type: "VARCHAR", maxLength: 30, nullable: false),
+                    NoteUa = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true),
+                    NoteRu = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true),
+                    NoteEn = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true),
+                    TypeOrderBy = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "0"),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -33,10 +34,10 @@ namespace YFS.Repo.Migrations
                 name: "AspNetRoles",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -47,24 +48,24 @@ namespace YFS.Repo.Migrations
                 name: "AspNetUsers",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedOn = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP"),
+                    FirstName = table.Column<string>(type: "text", nullable: true),
+                    LastName = table.Column<string>(type: "text", nullable: true),
+                    UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    PasswordHash = table.Column<string>(type: "text", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "text", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "text", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "boolean", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -75,9 +76,9 @@ namespace YFS.Repo.Migrations
                 name: "Banks",
                 columns: table => new
                 {
-                    BankId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: false)
+                    BankId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Name = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -88,14 +89,14 @@ namespace YFS.Repo.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    CategoryId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RootId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Name_UA = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    Name_ENG = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    Name_RU = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    Note = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true)
+                    CategoryId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RootId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: true),
+                    Name_UA = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    Name_ENG = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    Name_RU = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    Note = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -106,11 +107,11 @@ namespace YFS.Repo.Migrations
                 name: "Currencies",
                 columns: table => new
                 {
-                    CurrencyId = table.Column<int>(type: "int", nullable: false),
-                    ShortNameUs = table.Column<string>(type: "VARCHAR(10)", maxLength: 10, nullable: true),
-                    Name_ru = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    Name_ua = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true),
-                    Name_en = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: true)
+                    CurrencyId = table.Column<int>(type: "integer", nullable: false),
+                    ShortNameUs = table.Column<string>(type: "VARCHAR", maxLength: 10, nullable: true),
+                    Name_ru = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    Name_ua = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: true),
+                    Name_en = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -121,11 +122,11 @@ namespace YFS.Repo.Migrations
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RoleId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -142,13 +143,13 @@ namespace YFS.Repo.Migrations
                 name: "AccountGroups",
                 columns: table => new
                 {
-                    AccountGroupId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AccountGroupNameRu = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    AccountGroupNameEn = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    AccountGroupNameUa = table.Column<string>(type: "VARCHAR(100)", maxLength: 100, nullable: false),
-                    GroupOrderBy = table.Column<int>(type: "int", nullable: false)
+                    AccountGroupId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    AccountGroupNameRu = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    AccountGroupNameEn = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    AccountGroupNameUa = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    GroupOrderBy = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -165,11 +166,11 @@ namespace YFS.Repo.Migrations
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ClaimType = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ClaimValue = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    ClaimType = table.Column<string>(type: "text", nullable: true),
+                    ClaimValue = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -186,10 +187,10 @@ namespace YFS.Repo.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderKey = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProviderDisplayName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    ProviderKey = table.Column<string>(type: "text", nullable: false),
+                    ProviderDisplayName = table.Column<string>(type: "text", nullable: true),
+                    UserId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -206,8 +207,8 @@ namespace YFS.Repo.Migrations
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    RoleId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    RoleId = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,10 +231,10 @@ namespace YFS.Repo.Migrations
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LoginProvider = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Value = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    LoginProvider = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: false),
+                    Value = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -250,19 +251,19 @@ namespace YFS.Repo.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    AccountId = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AccountStatus = table.Column<int>(type: "int", nullable: false),
-                    IBAN = table.Column<string>(type: "VARCHAR(40)", maxLength: 40, nullable: true),
-                    Favorites = table.Column<int>(type: "int", nullable: false, defaultValueSql: "0"),
-                    AccountGroupId = table.Column<int>(type: "int", nullable: false),
-                    AccountTypeId = table.Column<int>(type: "int", nullable: false),
-                    CurrencyId = table.Column<int>(type: "int", nullable: false),
-                    BankId = table.Column<int>(type: "int", nullable: false),
-                    Name = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: false),
-                    OpeningDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Note = table.Column<string>(type: "VARCHAR(255)", maxLength: 255, nullable: true)
+                    AccountId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    AccountStatus = table.Column<int>(type: "integer", nullable: false),
+                    IBAN = table.Column<string>(type: "VARCHAR", maxLength: 40, nullable: true),
+                    Favorites = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "0"),
+                    AccountGroupId = table.Column<int>(type: "integer", nullable: false),
+                    AccountTypeId = table.Column<int>(type: "integer", nullable: false),
+                    CurrencyId = table.Column<int>(type: "integer", nullable: false),
+                    BankId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: false),
+                    OpeningDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Note = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -299,11 +300,11 @@ namespace YFS.Repo.Migrations
                 name: "AccountsBalance",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    Balance = table.Column<decimal>(type: "decimal(18,2)", nullable: false, defaultValueSql: "0.0"),
-                    LastUpdateTime = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "getdate()")
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AccountId = table.Column<int>(type: "integer", nullable: false),
+                    Balance = table.Column<decimal>(type: "numeric(18,2)", nullable: false, defaultValueSql: "0.0"),
+                    LastUpdateTime = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
                 constraints: table =>
                 {
@@ -320,16 +321,16 @@ namespace YFS.Repo.Migrations
                 name: "AccountsMonthlyBalance",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    StartDateOfMonth = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    MonthNumber = table.Column<int>(type: "int", nullable: false),
-                    YearNumber = table.Column<int>(type: "int", nullable: false),
-                    MonthDebit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    MonthCredit = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    OpeningMonthBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    ClosingMonthBalance = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AccountId = table.Column<int>(type: "integer", nullable: false),
+                    StartDateOfMonth = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    MonthNumber = table.Column<int>(type: "integer", nullable: false),
+                    YearNumber = table.Column<int>(type: "integer", nullable: false),
+                    MonthDebit = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    MonthCredit = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    OpeningMonthBalance = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    ClosingMonthBalance = table.Column<decimal>(type: "numeric(18,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -346,23 +347,23 @@ namespace YFS.Repo.Migrations
                 name: "Operations",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    TransferOperationId = table.Column<int>(type: "int", nullable: false),
-                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CategoryId = table.Column<int>(type: "int", nullable: false),
-                    TypeOperation = table.Column<int>(type: "int", nullable: false),
-                    AccountId = table.Column<int>(type: "int", nullable: false),
-                    OperationCurrencyId = table.Column<int>(type: "int", nullable: false),
-                    CurrencyId = table.Column<int>(type: "int", nullable: true),
-                    CurrencyAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    OperationAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    OperationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExchangeRate = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    CashbackAmount = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    MCC = table.Column<decimal>(type: "decimal(10,2)", nullable: false),
-                    Description = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: true),
-                    Tag = table.Column<string>(type: "VARCHAR(200)", maxLength: 200, nullable: true)
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    TransferOperationId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    TypeOperation = table.Column<int>(type: "integer", nullable: false),
+                    AccountId = table.Column<int>(type: "integer", nullable: false),
+                    OperationCurrencyId = table.Column<int>(type: "integer", nullable: false),
+                    CurrencyId = table.Column<int>(type: "integer", nullable: true),
+                    CurrencyAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    OperationAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    OperationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ExchangeRate = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    CashbackAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    MCC = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    Description = table.Column<string>(type: "VARCHAR", maxLength: 200, nullable: true),
+                    Tag = table.Column<string>(type: "VARCHAR", maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -388,13 +389,13 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.InsertData(
                 table: "AccountTypes",
-                columns: new[] { "AccountTypeId", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
+                columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(798), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(808), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(809), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(810), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
 
             migrationBuilder.InsertData(
@@ -407,6 +408,7 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "CategoryId", "Name_ENG", "Name_RU", "Name_UA", "Note", "RootId", "UserId" },
                 values: new object[,]
                 {
+                    { -2, "Account Balance adjustment", "Корректировка баланса счета", "Корегування балансу рахунка", "", 0, null },
                     { -1, "Money Transfer", "Перевод", "Переказ", "", 0, null },
                     { 1, "Wages", "Халтура", "Халтура", "", 0, null },
                     { 2, "Salary", "Зарплата", "Зарплата", "", 0, null },
@@ -414,7 +416,6 @@ namespace YFS.Repo.Migrations
                     { 4, "Loans", "Долги", "Борги", "", 0, null },
                     { 5, "Food", "Продукти питания", "Продукти харчування", "", 0, null },
                     { 6, "Healthcare", "Медицинские расходы", "Медичні витрати", "", 0, null },
-                    { 7, "Food", "Продукти питания", "Продукти харчування", "", 0, null },
                     { 8, "Education", "Образование", "Освіта", "", 0, null },
                     { 9, "Other Income", "Другие доходы", "Інші прибутки", "", 0, null },
                     { 10, "Communal payments", "Коммунальные платежи", "Комунальні платежі", "", 0, null },
@@ -500,8 +501,7 @@ namespace YFS.Repo.Migrations
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
-                unique: true,
-                filter: "[NormalizedName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
@@ -527,8 +527,7 @@ namespace YFS.Repo.Migrations
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
-                unique: true,
-                filter: "[NormalizedUserName] IS NOT NULL");
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Operations_AccountId",
