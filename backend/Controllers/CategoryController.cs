@@ -7,10 +7,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
-using YFS.Core.Dtos;
-using YFS.Core.Models;
 using YFS.Service.Interfaces;
-using YFS.Service.Services;
 
 namespace YFS.Data.Controllers
 {

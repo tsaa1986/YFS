@@ -383,7 +383,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 16, 43, 676, DateTimeKind.Utc).AddTicks(2514),
+                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1377),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -393,7 +393,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 16, 43, 676, DateTimeKind.Utc).AddTicks(2524),
+                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1386),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -403,7 +403,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 16, 43, 676, DateTimeKind.Utc).AddTicks(2526),
+                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1387),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -413,7 +413,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 16, 43, 676, DateTimeKind.Utc).AddTicks(2526),
+                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1388),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
@@ -795,6 +795,26 @@ namespace YFS.Repo.Migrations
                             TNP = "м.",
                             Type = 0
                         });
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.BankSyncHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("LastUpdated")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("BankSyncHistories");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Category", b =>

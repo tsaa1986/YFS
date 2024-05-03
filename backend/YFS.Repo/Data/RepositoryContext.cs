@@ -17,6 +17,7 @@ namespace YFS.Repo.Data
         public DbSet<Operation> Operations { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Bank> Banks { get; set; } = null!;
+        public DbSet<BankSyncHistory> BankSyncHistories { get; set; }
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
