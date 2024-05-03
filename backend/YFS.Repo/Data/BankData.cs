@@ -8,12 +8,12 @@ namespace YFS.Repo.Data
     {
         public void Configure(EntityTypeBuilder<Bank> builder)
         {
-            builder.HasData(
-                new Bank {
+            /*builder.HasData(
+                /*new Bank {
                     Id = 1,
                     Name = "Demo Bank",     
                 }
-            );
+            );*/
         }
     }
 }

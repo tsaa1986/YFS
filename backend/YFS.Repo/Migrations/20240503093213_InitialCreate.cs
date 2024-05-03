@@ -76,13 +76,41 @@ namespace YFS.Repo.Migrations
                 name: "Banks",
                 columns: table => new
                 {
-                    BankId = table.Column<int>(type: "integer", nullable: false)
+                    GLMFO = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: false)
+                    NAME_E = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    KOD_EDRPOU = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    SHORTNAME = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    FULLNAME = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    NKB = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    TYP = table.Column<int>(type: "integer", nullable: false),
+                    KU = table.Column<int>(type: "integer", nullable: false),
+                    N_OBL = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    OBL_UR = table.Column<int>(type: "integer", nullable: false),
+                    N_OBL_UR = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    P_IND = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    TNP = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    NP = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    ADRESS = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    TELEFON = table.Column<string>(type: "text", nullable: true),
+                    KSTAN = table.Column<int>(type: "integer", nullable: false),
+                    N_STAN = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    D_STAN = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    D_OPEN = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    D_CLOSE = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    IDNBU = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    NUM_LIC = table.Column<int>(type: "integer", nullable: false),
+                    DT_GRAND_LIC = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PR_LIC = table.Column<int>(type: "integer", nullable: false),
+                    N_PR_LIC = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    DT_LIC = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    SHORTNAME_EN = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    GR_SP = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    D_GR_SP = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Banks", x => x.BankId);
+                    table.PrimaryKey("PK_Banks", x => x.GLMFO);
                 });
 
             migrationBuilder.CreateTable(
@@ -288,7 +316,7 @@ namespace YFS.Repo.Migrations
                         name: "FK_Accounts_Banks_BankId",
                         column: x => x.BankId,
                         principalTable: "Banks",
-                        principalColumn: "BankId");
+                        principalColumn: "GLMFO");
                     table.ForeignKey(
                         name: "FK_Accounts_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
@@ -392,16 +420,11 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(798), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(808), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(809), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(810), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7298), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7306), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7307), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7308), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
-
-            migrationBuilder.InsertData(
-                table: "Banks",
-                columns: new[] { "BankId", "Name" },
-                values: new object[] { 1, "Demo Bank" });
 
             migrationBuilder.InsertData(
                 table: "Categories",

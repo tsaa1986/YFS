@@ -383,7 +383,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(798),
+                            CreatedOn = new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7298),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -393,7 +393,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(808),
+                            CreatedOn = new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7306),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -403,7 +403,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(809),
+                            CreatedOn = new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7307),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -413,7 +413,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 1, 12, 29, 7, 129, DateTimeKind.Utc).AddTicks(810),
+                            CreatedOn = new DateTime(2024, 5, 3, 9, 32, 13, 366, DateTimeKind.Utc).AddTicks(7308),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
@@ -424,28 +424,164 @@ namespace YFS.Repo.Migrations
 
             modelBuilder.Entity("YFS.Core.Models.Bank", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("GLMFO")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("BankId");
+                        .HasColumnName("GLMFO");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GLMFO"));
 
-                    b.Property<string>("Name")
+                    b.Property<string>("Address")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .HasColumnType("VARCHAR");
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("ADRESS");
 
-                    b.HasKey("Id");
+                    b.Property<DateTime?>("CloseDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("D_CLOSE");
+
+                    b.Property<string>("CodeEDRPOU")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("KOD_EDRPOU");
+
+                    b.Property<DateTime?>("DateStatus")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("D_STAN");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("FULLNAME");
+
+                    b.Property<DateTime>("GrantLicenseDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DT_GRAND_LIC");
+
+                    b.Property<string>("GroupSpecial")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("GR_SP");
+
+                    b.Property<DateTime?>("GroupSpecialDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("D_GR_SP");
+
+                    b.Property<string>("IDNBU")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("IDNBU");
+
+                    b.Property<int>("KU")
+                        .HasColumnType("integer")
+                        .HasColumnName("KU");
+
+                    b.Property<DateTime?>("LicenseDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("DT_LIC");
+
+                    b.Property<int>("LicenseNumber")
+                        .HasColumnType("integer")
+                        .HasColumnName("NUM_LIC");
+
+                    b.Property<int>("LicenseStatus")
+                        .HasColumnType("integer")
+                        .HasColumnName("PR_LIC");
+
+                    b.Property<string>("LicenseStatusDescription")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("N_PR_LIC");
+
+                    b.Property<string>("NKB")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("NKB");
+
+                    b.Property<string>("NOBL")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("N_OBL");
+
+                    b.Property<string>("NOBLUR")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("N_OBL_UR");
+
+                    b.Property<string>("NP")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("NP");
+
+                    b.Property<string>("NameEnglish")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("NAME_E");
+
+                    b.Property<int>("OBLUR")
+                        .HasColumnType("integer")
+                        .HasColumnName("OBL_UR");
+
+                    b.Property<DateTime>("OpenDate")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("D_OPEN");
+
+                    b.Property<string>("PostalIndex")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)")
+                        .HasColumnName("P_IND");
+
+                    b.Property<string>("ShortName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("SHORTNAME");
+
+                    b.Property<string>("ShortNameEnglish")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("SHORTNAME_EN");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer")
+                        .HasColumnName("KSTAN");
+
+                    b.Property<string>("StatusName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)")
+                        .HasColumnName("N_STAN");
+
+                    b.Property<string>("TNP")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)")
+                        .HasColumnName("TNP");
+
+                    b.Property<string>("Telephone")
+                        .HasColumnType("text")
+                        .HasColumnName("TELEFON");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer")
+                        .HasColumnName("TYP");
+
+                    b.HasKey("GLMFO");
 
                     b.ToTable("Banks");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Demo Bank"
-                        });
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Category", b =>
