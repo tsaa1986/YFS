@@ -12,6 +12,8 @@ using YFS.Service.Interfaces;
 using YFS.Service.Services;
 using YFS.Repo.Data;
 using YFS.Service.Filters.ActionFilters;
+using System;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace YFS.Extension
 {
@@ -42,11 +44,14 @@ namespace YFS.Extension
         {
             var builder = services.AddIdentity<User, IdentityRole>(o =>
             {
-                o.Password.RequireDigit = false;
-                o.Password.RequireLowercase = false;
-                o.Password.RequireUppercase = false;
-                o.Password.RequireNonAlphanumeric = false;
+                o.Password.RequiredLength = 12;
+                o.Password.RequireDigit = true;
+                o.Password.RequireLowercase = true;
+                o.Password.RequireUppercase = true;
+                o.Password.RequireNonAlphanumeric = true;
                 o.User.RequireUniqueEmail = true;
+                o.Lockout.MaxFailedAccessAttempts = 10;
+                o.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(10);
             })
             .AddEntityFrameworkStores<RepositoryContext>()
             .AddDefaultTokenProviders();
@@ -56,6 +61,12 @@ namespace YFS.Extension
         {
             var jwtConfig = configuration.GetSection("jwtConfig");
             var secretKey = jwtConfig["secret"];
+
+            if (string.IsNullOrEmpty(secretKey) || Encoding.UTF8.GetByteCount(secretKey) < 32)
+            {
+                throw new InvalidOperationException("JWT secret key must be at least 256 bits (32 bytes) long.");
+            }
+
             services.AddAuthentication(opt =>
             {
                 opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -72,6 +83,7 @@ namespace YFS.Extension
                     ValidIssuer = jwtConfig["validIssuer"],
                     ValidAudience = jwtConfig["validAudience"],
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey))
+                    //IssuerSigningKey = new SymmetricSecurityKey(Convert.FromBase64String(secretKey)),
                 };
             });
         }
