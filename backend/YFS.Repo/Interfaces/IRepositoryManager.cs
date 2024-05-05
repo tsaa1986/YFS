@@ -11,6 +11,7 @@
         ICategoryRepository Category { get; }
         IUserAuthenticationRepository UserAuthentication { get; }
         IOperationRepository Operation { get; }
+        IBankRepository Bank { get; }
         Task SaveAsync();
     }
 }

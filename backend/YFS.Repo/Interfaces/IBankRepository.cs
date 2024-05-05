@@ -4,6 +4,6 @@ namespace YFS.Service.Interfaces
 { 
     public interface IBankRepository
     {
-
+        Task UpdateBanksAsync(IEnumerable<Bank> updatedBanks);
     }
 }

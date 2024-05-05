@@ -78,34 +78,34 @@ namespace YFS.Repo.Migrations
                 {
                     GLMFO = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    NAME_E = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    KOD_EDRPOU = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    SHORTNAME = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    FULLNAME = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    NKB = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    NAME_E = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    KOD_EDRPOU = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    SHORTNAME = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    FULLNAME = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    NKB = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     TYP = table.Column<int>(type: "integer", nullable: false),
                     KU = table.Column<int>(type: "integer", nullable: false),
-                    N_OBL = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    N_OBL = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     OBL_UR = table.Column<int>(type: "integer", nullable: false),
-                    N_OBL_UR = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    P_IND = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    TNP = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    NP = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    ADRESS = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    N_OBL_UR = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    P_IND = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: true),
+                    TNP = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
+                    NP = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
+                    ADRESS = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     TELEFON = table.Column<string>(type: "text", nullable: true),
                     KSTAN = table.Column<int>(type: "integer", nullable: false),
-                    N_STAN = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    N_STAN = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: true),
                     D_STAN = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     D_OPEN = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     D_CLOSE = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    IDNBU = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    IDNBU = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     NUM_LIC = table.Column<int>(type: "integer", nullable: false),
                     DT_GRAND_LIC = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     PR_LIC = table.Column<int>(type: "integer", nullable: false),
-                    N_PR_LIC = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    N_PR_LIC = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     DT_LIC = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    SHORTNAME_EN = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    GR_SP = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    SHORTNAME_EN = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    GR_SP = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: true),
                     D_GR_SP = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
                 },
                 constraints: table =>
@@ -434,10 +434,10 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1377), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1386), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1387), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1388), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3792), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3805), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3807), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3808), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
 
             migrationBuilder.InsertData(

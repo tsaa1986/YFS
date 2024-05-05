@@ -10,6 +10,6 @@ namespace YFS.Service.Interfaces
 {
    public interface IBanksSyncService
    {
-     Task<string> SyncBanksAsync(string country);
+      Task<ServiceResult<string>> SyncBanksAsync(string country);
    }
 }

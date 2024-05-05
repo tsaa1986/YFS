@@ -383,7 +383,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1377),
+                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3792),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -393,7 +393,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1386),
+                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3805),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -403,7 +403,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1387),
+                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3807),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -413,7 +413,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 3, 10, 59, 24, 58, DateTimeKind.Utc).AddTicks(1388),
+                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3808),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
@@ -432,7 +432,6 @@ namespace YFS.Repo.Migrations
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GLMFO"));
 
                     b.Property<string>("Address")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("ADRESS");
@@ -442,7 +441,6 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("D_CLOSE");
 
                     b.Property<string>("CodeEDRPOU")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("KOD_EDRPOU");
@@ -452,7 +450,6 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("D_STAN");
 
                     b.Property<string>("FullName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("FULLNAME");
@@ -462,7 +459,6 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("DT_GRAND_LIC");
 
                     b.Property<string>("GroupSpecial")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("GR_SP");
@@ -472,7 +468,6 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("D_GR_SP");
 
                     b.Property<string>("IDNBU")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("IDNBU");
@@ -494,37 +489,31 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("PR_LIC");
 
                     b.Property<string>("LicenseStatusDescription")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("N_PR_LIC");
 
                     b.Property<string>("NKB")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("NKB");
 
                     b.Property<string>("NOBL")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("N_OBL");
 
                     b.Property<string>("NOBLUR")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("N_OBL_UR");
 
                     b.Property<string>("NP")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("NP");
 
                     b.Property<string>("NameEnglish")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("NAME_E");
@@ -538,19 +527,16 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("D_OPEN");
 
                     b.Property<string>("PostalIndex")
-                        .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("character varying(20)")
                         .HasColumnName("P_IND");
 
                     b.Property<string>("ShortName")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("SHORTNAME");
 
                     b.Property<string>("ShortNameEnglish")
-                        .IsRequired()
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("SHORTNAME_EN");
@@ -560,13 +546,11 @@ namespace YFS.Repo.Migrations
                         .HasColumnName("KSTAN");
 
                     b.Property<string>("StatusName")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("character varying(100)")
                         .HasColumnName("N_STAN");
 
                     b.Property<string>("TNP")
-                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("TNP");

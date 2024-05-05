@@ -20,6 +20,7 @@ namespace YFS.Service.Services
         private ICurrencyRepository _currencyRepository;
         private ICategoryRepository _categoryRepository;
         private IOperationRepository _operationRepository;
+        private IBankRepository _bankRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -95,7 +96,6 @@ namespace YFS.Service.Services
                 return _currencyRepository;
             }
         }
-
         public ICategoryRepository Category
         {
             get
@@ -105,7 +105,6 @@ namespace YFS.Service.Services
                 return _categoryRepository;
             }
         }
-
         public IOperationRepository Operation
         {
             get
@@ -115,7 +114,6 @@ namespace YFS.Service.Services
                 return _operationRepository;
             }
         }
-
         public IAccountMonthlyBalanceRepository AccountMonthlyBalance
         {
             get
@@ -125,7 +123,15 @@ namespace YFS.Service.Services
                 return _accountMonthlyBalanceRepository;
             }
         }
-
+        public IBankRepository Bank
+        {
+            get
+            {
+                if (_bankRepository is null)
+                    _bankRepository = new BankRepository(_repositoryContext);
+                return _bankRepository;
+            }
+        }
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
     }
 }

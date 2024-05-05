@@ -8,8 +8,8 @@ namespace YFS.Core.Mappings
     {
         public BanksSyncMappingProfile()
         {
-            //CreateMap<BanksSyncDto, Category>();
-            //CreateMap<Category, CategoryDto>();
+            //CreateMap<BanksSyncDto, Bank>();
+            //CreateMap<Bank, BanksSyncDto>();
         }
     }
 }

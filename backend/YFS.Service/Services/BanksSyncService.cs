@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using YFS.Core.Dtos;
+using YFS.Core.Models;
 using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
@@ -10,20 +12,40 @@ namespace YFS.Service.Services
         public BanksSyncService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
-        public async Task<string> SyncBanksAsync(string country)
+        public async Task<ServiceResult<string>> SyncBanksAsync(string country)
         {
-            // Example logic: fetch data from external API based on country
-            string apiUrl = GetApiUrl(country);
-            var client = new HttpClient();
-            var response = await client.GetAsync(apiUrl);
-            response.EnsureSuccessStatusCode();
-            var data = await response.Content.ReadAsStringAsync();
+            try
+            {
+                string apiUrl = GetApiUrl(country);
+                var client = new HttpClient();
+                var response = await client.GetAsync(apiUrl);
+                response.EnsureSuccessStatusCode();
+                var json = await response.Content.ReadAsStringAsync();
 
-            // Simulate data processing and database operations
-            //Logger.LogInformation("Processing bank data for country: {Country}", country);
-            //Repository.Banks.Update(data); // Assuming such a method exists
-
-            return "Data synchronized for country: " + country;
+                var banks = JsonConvert.DeserializeObject<List<Bank>>(json);
+                await _repository.Bank.UpdateBanksAsync(banks);
+                await _repository.SaveAsync();
+                //return "Data synchronized for country: " + country;
+                return ServiceResult<string>.Success($"Data synchronized for country: {country}");
+            }
+            catch (HttpRequestException ex)
+            {
+                // Handling specific network or protocol errors (e.g., connection failed)
+                _logger.LogError($"Network error in {nameof(SyncBanksAsync)}: {ex}");
+                return ServiceResult<string>.Error("Network error occurred while synchronizing bank data.");
+            }
+            catch (JsonException ex)
+            {
+                // Handling JSON parsing errors
+                _logger.LogError($"JSON parsing error in {nameof(SyncBanksAsync)}: {ex}");
+                return ServiceResult<string>.Error("Error parsing bank data from the external service.");
+            }
+            catch (Exception ex)
+            {
+                // General error handling
+                _logger.LogError($"An unexpected error occurred in {nameof(SyncBanksAsync)}: {ex}");
+                return ServiceResult<string>.Error("An unexpected error occurred while synchronizing bank data.");
+            }
         }
 
         private string GetApiUrl(string country)
