@@ -1,0 +1,85 @@
+Merging a branch in Git is a common task that helps integrate changes from one branch (e.g., a feature branch like syncBanks) into another (typically a main or development branch). Here’s how you can merge your syncBanks branch into the develop branch step-by-step. This guide assumes you are using the command line interface for Git.
+Step 1: Switch to the develop Branch
+
+Before you can merge changes from syncBanks into develop, make sure you are on the develop branch:
+
+bash
+
+git checkout develop
+
+Step 2: Update Your Local develop Branch
+
+It’s a good practice to make sure your local develop branch is up to date with the remote repository before merging changes. This reduces the chances of conflicts:
+
+bash
+
+git pull origin develop
+
+This command pulls the latest changes from the remote develop branch to your local machine.
+Step 3: Merge syncBanks into develop
+
+Now that your develop branch is up to date, you can merge the syncBanks branch into it:
+
+bash
+
+git merge syncBanks
+
+This command will integrate changes from syncBanks into develop. If there are no conflicts, Git will automatically create a merge commit.
+Step 4: Resolve Any Merge Conflicts
+
+If there are conflicts, Git will alert you, and you'll need to resolve them manually. Conflicts occur when changes in one branch overlap with changes in another, and Git cannot automatically decide which changes to keep.
+
+    Open the conflicting files and make the necessary changes. Conflicted areas are marked in the files like this:
+
+    plaintext
+
+<<<<<<< HEAD
+// Code version from your develop branch
+=======
+// Code version from your syncBanks branch
+>>>>>>> syncBanks
+
+Edit the code to resolve the conflict, then save and close the file.
+
+After editing, you need to add the resolved files to staging:
+
+bash
+
+git add <filename>
+
+Once all conflicts are resolved and the changes are added, you can complete the merge by creating a merge commit:
+
+bash
+
+    git commit -m "Merge branch 'syncBanks' into develop"
+
+    If you prefer, you can use git commit without -m to open an editor for a more detailed commit message.
+
+Step 5: Push the Changes
+
+After resolving any conflicts and completing the merge locally, push your changes to the remote develop branch:
+
+bash
+
+git push origin develop
+
+This command will update the remote develop branch with all the changes that were just merged.
+Step 6: Clean Up (Optional)
+
+If the syncBanks branch is no longer needed after the merge, you might want to delete it to keep your repository clean:
+
+    Delete the local branch:
+
+    bash
+
+git branch -d syncBanks
+
+If you want to remove the remote branch as well:
+
+bash
+
+    git push origin --delete syncBanks
+
+Conclusion
+
+Merging branches in Git helps maintain a clean, linear development history when done regularly. Make sure to communicate with your team when merging into shared branches like develop to avoid conflicts and disruptions. If you're new to handling merge conflicts, it might be useful to use graphical tools such as GitKraken, SourceTree, or the built-in features of IDEs like Visual Studio or JetBrains Rider.
