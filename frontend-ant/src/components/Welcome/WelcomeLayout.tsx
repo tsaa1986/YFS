@@ -30,7 +30,7 @@ export const WelcomeLayout: React.FC<WelcomeTypeProps> = ({setIsLoggedIn, langua
    const navigate = useNavigate();
 
    const logInDemoUser = () => {
-    authAPI.login("demo", "123$qweR").then(
+    authAPI.login("demo", "demo123$qweR").then(
         res => { 
             if (res != false) {
                 setIsLoggedIn(true);
