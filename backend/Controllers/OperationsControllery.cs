@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using YFS.Core.Dtos;
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Controllers
 {
@@ -14,7 +15,8 @@ namespace YFS.Controllers
     public class OperationsController : BaseApiController
     {
         private readonly IOperationsService _operationsService;
-        public OperationsController(IOperationsService operationsService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public OperationsController(IOperationsService operationsService, IRepositoryManager repository, 
+            IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
             _operationsService = operationsService;
         }

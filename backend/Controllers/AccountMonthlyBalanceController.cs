@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authorization;
 using YFS.Core.Models.Triggers;
 using System.Collections;
 using YFS.Service.Services;
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Controllers
 {
@@ -19,7 +20,8 @@ namespace YFS.Controllers
     public class AccountMonthlyBalanceController : BaseApiController
     {
         private readonly IAccountMonthlyBalanceService _accountMonthlyBalanceService;
-        public AccountMonthlyBalanceController(IAccountMonthlyBalanceService accountMonthlyBalanceService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountMonthlyBalanceController(IAccountMonthlyBalanceService accountMonthlyBalanceService, IRepositoryManager repository, 
+            IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
             _accountMonthlyBalanceService = accountMonthlyBalanceService;
         }

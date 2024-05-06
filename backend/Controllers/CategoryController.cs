@@ -2,6 +2,7 @@
 using Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,7 +17,8 @@ namespace YFS.Data.Controllers
     public class CategoryController : BaseApiController
     {
         private readonly ICategoryService _categoryService;
-        public CategoryController(ICategoryService categoryService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public CategoryController(ICategoryService categoryService, IRepositoryManager repository, 
+            IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
             _categoryService = categoryService;
         }

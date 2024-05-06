@@ -8,6 +8,7 @@ using YFS.Core.Dtos;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Controllers
 {
@@ -16,7 +17,8 @@ namespace YFS.Controllers
     public class AccountsController : BaseApiController
     {
         private readonly IAccountService _accountService;
-        public AccountsController(IAccountService accountService,IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountsController(IAccountService accountService,IRepositoryManager repository, 
+            IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
             _accountService = accountService;
         }

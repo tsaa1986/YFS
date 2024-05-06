@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.RegularExpressions;
 using YFS.Core.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Repo.Data
 {
@@ -134,7 +135,7 @@ namespace YFS.Repo.Data
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             const string demoEmail = "demo@demo.com";
-            const string demoPassword = "123$qweR";
+            const string demoPassword = "demo123$qweR";
             const string demoUsername = "Demo";
             const string demoFirst = "Demo";
             const string demoLast = "Account";
@@ -146,6 +147,7 @@ namespace YFS.Repo.Data
 
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                var logger = scope.ServiceProvider.GetRequiredService<ILogger<RepositoryContext>>();
 
                 if (!await context.Users.AnyAsync())
                 {
@@ -164,6 +166,8 @@ namespace YFS.Repo.Data
                     {
                         // Handle user creation failure
                         // Log or throw an exception as needed
+                        logger.LogError("User creation failed. Errors: {Errors}", result.Errors.Select(e => e.Description));
+                        throw new InvalidOperationException("Failed to create user with errors: " + string.Join(", ", result.Errors.Select(e => e.Description)));
                     }
                 }
 

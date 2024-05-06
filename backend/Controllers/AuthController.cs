@@ -10,6 +10,7 @@ using YFS.Service.Filters.ActionFilters;
 using YFS.Service.Interfaces;
 using YFS.Core.Models;
 using YFS.Service.Services;
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Data.Controllers
 {
@@ -19,8 +20,8 @@ namespace YFS.Data.Controllers
     {
         private readonly IAuthService _authService;
         public AuthController(IAuthService authService ,IRepositoryManager repository, 
-            IMapper mapper) 
-            : base(repository, mapper)
+            IMapper mapper, ILogger<BaseApiController> logger) 
+            : base(repository, mapper, logger)
         {
             _authService = authService;
         }
@@ -78,7 +79,7 @@ namespace YFS.Data.Controllers
             }
             else
             {
-                return Unauthorized();//BadRequest(result.ErrorMessage);
+                return BadRequest(new { message = "User login failed.", errors = result.ErrorMessage});//Unauthorized();//BadRequest(result.ErrorMessage);
             }
         }
     }

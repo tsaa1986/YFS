@@ -2,6 +2,7 @@
 using Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
@@ -15,7 +16,8 @@ namespace YFS.Data.Controllers
     public class AccountGroupsController : BaseApiController
     {
         private readonly IAccountGroupsService _accountGroupsService;
-        public AccountGroupsController(IAccountGroupsService accountGroupsService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountGroupsController(IAccountGroupsService accountGroupsService, 
+            IRepositoryManager repository, IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {            
             _accountGroupsService = accountGroupsService;
         }

@@ -9,6 +9,7 @@ using YFS.Core.Dtos;
 using System.Collections.Generic;
 using YFS.Core.Models;
 using YFS.Service.Services;
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Controllers
 {
@@ -17,7 +18,8 @@ namespace YFS.Controllers
     public class AccountTypesController : BaseApiController
     {
         private readonly IAccountTypesService _accountTypesService;
-        public AccountTypesController(IAccountTypesService accountTypesService,IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public AccountTypesController(IAccountTypesService accountTypesService,IRepositoryManager repository, 
+            IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
             _accountTypesService = accountTypesService;
         }

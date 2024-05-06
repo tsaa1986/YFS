@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System;
 using YFS.Core.Dtos;
 using YFS.Service.Interfaces;
-
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Controllers
 {
@@ -15,7 +15,8 @@ namespace YFS.Controllers
     public class CurrencyController : BaseApiController
     {
         private readonly ICurrencyService _currencyService;
-        public CurrencyController(ICurrencyService currencyService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public CurrencyController(ICurrencyService currencyService, IRepositoryManager repository, 
+            IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
             _currencyService = currencyService;
         }

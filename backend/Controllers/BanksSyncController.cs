@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using System;
 using YFS.Service.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace YFS.Controllers
 {
@@ -12,7 +13,8 @@ namespace YFS.Controllers
     public class BanksSyncController : BaseApiController
     {
         private readonly IBanksSyncService _banksSyncService;
-        public BanksSyncController(IBanksSyncService banksSyncService, IRepositoryManager repository, IMapper mapper) : base(repository, mapper)
+        public BanksSyncController(IBanksSyncService banksSyncService, IRepositoryManager repository, 
+            IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
             _banksSyncService = banksSyncService;
         }

@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
+using YFS.Service.Services;
 
 namespace Controllers
 {
@@ -11,11 +13,13 @@ namespace Controllers
     {        
         protected readonly IRepositoryManager _repository;
         protected readonly IMapper _mapper;
+        protected readonly ILogger<BaseApiController> _logger;
 
-        public BaseApiController(IRepositoryManager repository, IMapper mapper)
+        public BaseApiController(IRepositoryManager repository, IMapper mapper, ILogger<BaseApiController> logger)
         {
             _repository = repository;
             _mapper = mapper;
+            _logger = logger;
         }       
         protected string GetUserIdFromJwt(string _authHeader)
         {
