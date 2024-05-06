@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using YFS.Core.Models;
 using YFS.Repo.Data;
+using YFS.Repo.Interfaces;
+using YFS.Repo.Repository;
 using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
@@ -21,6 +23,7 @@ namespace YFS.Service.Services
         private ICategoryRepository _categoryRepository;
         private IOperationRepository _operationRepository;
         private IBankRepository _bankRepository;
+        private IBankSyncHistoryRepository _bankSyncHistoryRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -130,6 +133,15 @@ namespace YFS.Service.Services
                 if (_bankRepository is null)
                     _bankRepository = new BankRepository(_repositoryContext);
                 return _bankRepository;
+            }
+        }
+        public IBankSyncHistoryRepository BankSyncHistory
+        {
+            get
+            {
+                if (_bankSyncHistoryRepository is null)
+                    _bankSyncHistoryRepository = new BankSyncHistoryRepository(_repositoryContext);
+                return _bankSyncHistoryRepository;
             }
         }
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
