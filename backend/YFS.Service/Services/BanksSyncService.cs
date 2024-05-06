@@ -23,7 +23,16 @@ namespace YFS.Service.Services
                 var json = await response.Content.ReadAsStringAsync();
 
                 var banks = JsonConvert.DeserializeObject<List<Bank>>(json);
+
                 await _repository.Bank.UpdateBanksAsync(banks);
+                // Log the synchronization history
+                var history = new BankSyncHistory
+                {
+                    LastUpdated = DateTime.UtcNow,
+                    Country = country
+                };
+                await _repository.BankSyncHistory.AddOrUpdateHistoryAsync(history);
+
                 await _repository.SaveAsync();
                 //return "Data synchronized for country: " + country;
                 return ServiceResult<string>.Success($"Data synchronized for country: {country}");

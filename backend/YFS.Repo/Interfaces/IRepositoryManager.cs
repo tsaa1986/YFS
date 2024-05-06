@@ -1,4 +1,6 @@
-﻿namespace YFS.Service.Interfaces
+﻿using YFS.Repo.Interfaces;
+
+namespace YFS.Service.Interfaces
 {
     public interface IRepositoryManager
     {
@@ -12,6 +14,7 @@
         IUserAuthenticationRepository UserAuthentication { get; }
         IOperationRepository Operation { get; }
         IBankRepository Bank { get; }
+        IBankSyncHistoryRepository BankSyncHistory { get; }
         Task SaveAsync();
     }
 }
