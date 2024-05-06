@@ -302,7 +302,7 @@ namespace YFS.Repo.Migrations
                     AccountGroupId = table.Column<int>(type: "integer", nullable: false),
                     AccountTypeId = table.Column<int>(type: "integer", nullable: false),
                     CurrencyId = table.Column<int>(type: "integer", nullable: false),
-                    BankId = table.Column<int>(type: "integer", nullable: false),
+                    Bank_GLMFO = table.Column<int>(type: "integer", nullable: true),
                     Name = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: false),
                     OpeningDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Note = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true)
@@ -327,8 +327,8 @@ namespace YFS.Repo.Migrations
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Accounts_Banks_BankId",
-                        column: x => x.BankId,
+                        name: "FK_Accounts_Banks_Bank_GLMFO",
+                        column: x => x.Bank_GLMFO,
                         principalTable: "Banks",
                         principalColumn: "GLMFO");
                     table.ForeignKey(
@@ -434,10 +434,10 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3792), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3805), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3807), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3808), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3126), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3135), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3136), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3137), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
 
             migrationBuilder.InsertData(
@@ -518,9 +518,9 @@ namespace YFS.Repo.Migrations
                 column: "AccountTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Accounts_BankId",
+                name: "IX_Accounts_Bank_GLMFO",
                 table: "Accounts",
-                column: "BankId");
+                column: "Bank_GLMFO");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Accounts_CurrencyId",

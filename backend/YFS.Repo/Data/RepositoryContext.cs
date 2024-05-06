@@ -48,7 +48,10 @@ namespace YFS.Repo.Data
             modelBuilder.Entity<AccountGroup>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Bank>().HasMany(ac => ac.Accounts).WithOne(b => b.Bank).OnDelete(DeleteBehavior.NoAction);
-
+            modelBuilder.Entity<Account>()
+                .HasOne(a => a.Bank) 
+                .WithMany(b => b.Accounts) 
+                .HasForeignKey(a => a.Bank_GLMFO);
             modelBuilder.Entity<AccountType>().Property(at => at.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<AccountType>().Property(at => at.TypeOrderBy).HasDefaultValueSql("0");
             modelBuilder.Entity<AccountType>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);

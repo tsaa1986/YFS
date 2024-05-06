@@ -27,7 +27,7 @@ namespace YFS.Core.Models
         [Required]
         public int CurrencyId { get; set; }
         public Currency? Currency { get; set; }
-        public int BankId { get; set; }
+        public int? Bank_GLMFO { get; set; }
         public Bank? Bank { get; set; }
 
         [Column(TypeName = "VARCHAR")]

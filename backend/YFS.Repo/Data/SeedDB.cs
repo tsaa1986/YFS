@@ -36,7 +36,7 @@ namespace YFS.Repo.Data
                 {
                     if (accGroup.AccountGroupNameEn == "Cash") {
                          accounts.Add(new Account { UserId = _userid, AccountStatus=1, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
-                            CurrencyId = 980, BankId = 1, Name = "Wallet", OpeningDate = new DateTime(),
+                            CurrencyId = 980, Bank_GLMFO = null, Name = "Wallet", OpeningDate = new DateTime(),
                             Note = "wallet uah", AccountBalance = new AccountBalance { Balance = 0 }
                          });
                         accounts.Add(new Account
@@ -47,7 +47,7 @@ namespace YFS.Repo.Data
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 1,
                             CurrencyId = 840,
-                            BankId = 1,
+                            Bank_GLMFO = 322001,
                             Name = "Wallet",
                             OpeningDate = new DateTime(),
                             Note = "wallet usd",
@@ -61,7 +61,7 @@ namespace YFS.Repo.Data
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 1,
                             CurrencyId = 978,
-                            BankId = 1,
+                            Bank_GLMFO = 322001,
                             Name = "Wallet",
                             OpeningDate = new DateTime(),
                             Note = "wallet euro",
@@ -78,7 +78,7 @@ namespace YFS.Repo.Data
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,
                             CurrencyId = 840,
-                            BankId = 1,
+                            Bank_GLMFO = 322001,
                             Name = "Mono",
                             OpeningDate = new DateTime(),
                             Note = "monobank usd",
@@ -92,7 +92,7 @@ namespace YFS.Repo.Data
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,
                             CurrencyId = 980,
-                            BankId = 1,
+                            Bank_GLMFO = 322001,
                             Name = "BlackMono",
                             OpeningDate = new DateTime(),
                             Note = "monobank uah",
@@ -106,7 +106,7 @@ namespace YFS.Repo.Data
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,
                             CurrencyId = 980,
-                            BankId = 1,
+                            Bank_GLMFO = 322001,
                             Name = "WhiteMono",
                             OpeningDate = new DateTime(),
                             Note = "monobank uah",
@@ -120,7 +120,7 @@ namespace YFS.Repo.Data
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,
                             CurrencyId = 978,
-                            BankId = 1,
+                            Bank_GLMFO = 322001,
                             Name = "Mono",
                             OpeningDate = new DateTime(),
                             Note = "monobank euro",
@@ -142,89 +142,98 @@ namespace YFS.Repo.Data
 
             using (var scope = serviceProvider.CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
-                await context.Database.EnsureCreatedAsync();
-
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<RepositoryContext>>();
+                var context = scope.ServiceProvider.GetRequiredService<RepositoryContext>();
 
-                if (!await context.Users.AnyAsync())
-                {
-                    var user = new User()
+                try {
+                    await context.Database.EnsureCreatedAsync();
+                    logger.LogInformation("Database checked and created if not existing.");
+
+                    if (!await context.Users.AnyAsync())
                     {
-                        Email = demoEmail,
-                        SecurityStamp = Guid.NewGuid().ToString(),
-                        UserName = demoUsername,
-                        FirstName = demoFirst,
-                        LastName = demoLast,
-                        CreatedOn = DateTime.UtcNow,
-                    };
-                    var result = await userManager.CreateAsync(user, demoPassword);
-
-                    if (!result.Succeeded)
-                    {
-                        // Handle user creation failure
-                        // Log or throw an exception as needed
-                        logger.LogError("User creation failed. Errors: {Errors}", result.Errors.Select(e => e.Description));
-                        throw new InvalidOperationException("Failed to create user with errors: " + string.Join(", ", result.Errors.Select(e => e.Description)));
-                    }
-                }
-
-                // Make sure we have some roles
-                if (!await context.Roles.AnyAsync())
-                {
-                    // Create roles if they don't exist
-                    if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
-                    }
-
-                    if (!await roleManager.RoleExistsAsync(UserRoles.User))
-                    {
-                        await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
-                    }
-                    await context.SaveChangesAsync();
-                }
-
-                // Get the demo user we just made
-                var demoUser = await userManager.FindByEmailAsync(demoEmail);
-
-                if (demoUser != null)
-                {
-                    if (!await userManager.IsInRoleAsync(demoUser, UserRoles.Admin))
-                    {
-                        await userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
-                    }
-
-                    // Create default group and accounts here as needed
-                    // Make sure to use asynchronous EF Core operations and await them
-                    var accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
-                    var accounts = context.Accounts.Where(a => a.UserId == demoUser.Id).ToList();
-
-                    if (accountGroupUser.Count == 0)
-                    {
-                        foreach (AccountGroup agd in InitializeAccountGroupsDefault(demoUser.Id))
+                        var user = new User()
                         {
-                            await context.AccountGroups.AddAsync(agd);
+                            Email = demoEmail,
+                            SecurityStamp = Guid.NewGuid().ToString(),
+                            UserName = demoUsername,
+                            FirstName = demoFirst,
+                            LastName = demoLast,
+                            CreatedOn = DateTime.UtcNow,
+                        };
+                        var result = await userManager.CreateAsync(user, demoPassword);
+
+                        if (!result.Succeeded)
+                        {
+                            logger.LogError("User creation failed. Errors: {Errors}", result.Errors.Select(e => e.Description));
+                            throw new InvalidOperationException("Failed to create user with errors: " + string.Join(", ", result.Errors.Select(e => e.Description)));
                         }
-                        await context.SaveChangesAsync();
-                        accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
+                        logger.LogInformation("Demo user created successfully.");
+
                     }
 
-                    //create default accounts
-                    if (accounts.Count == 0)
+                    // Make sure we have some roles
+                    if (!await context.Roles.AnyAsync())
                     {
-                        List<Account> la = InitializeAccountsDefault(demoUser.Id, accountGroupUser);
-                        foreach (Account account in la)
+                        // Create roles if they don't exist
+                        if (!await roleManager.RoleExistsAsync(UserRoles.Admin))
                         {
-                            await context.Accounts.AddAsync(account);
+                            await roleManager.CreateAsync(new IdentityRole(UserRoles.Admin));
+                        }
+
+                        if (!await roleManager.RoleExistsAsync(UserRoles.User))
+                        {
+                            await roleManager.CreateAsync(new IdentityRole(UserRoles.User));
                         }
                         await context.SaveChangesAsync();
                     }
+
+                    // Get the demo user we just made
+                    var demoUser = await userManager.FindByEmailAsync(demoEmail);
+
+                    if (demoUser != null)
+                    {
+                        if (!await userManager.IsInRoleAsync(demoUser, UserRoles.Admin))
+                        {
+                            await userManager.AddToRoleAsync(demoUser, UserRoles.Admin);
+                        }
+
+                        // Create default group and accounts here as needed
+                        // Make sure to use asynchronous EF Core operations and await them
+                        var accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
+                        var accounts = context.Accounts.Where(a => a.UserId == demoUser.Id).ToList();
+
+                        if (accountGroupUser.Count == 0)
+                        {
+                            foreach (AccountGroup agd in InitializeAccountGroupsDefault(demoUser.Id))
+                            {
+                                await context.AccountGroups.AddAsync(agd);
+                            }
+                            await context.SaveChangesAsync();
+                            logger.LogInformation("Add groupAccount for demoUser");
+                            accountGroupUser = context.AccountGroups.Where(a => a.UserId == demoUser.Id).ToList();
+                        }
+
+                        //create default accounts
+                        if (accounts.Count == 0)
+                        {
+                            List<Account> la = InitializeAccountsDefault(demoUser.Id, accountGroupUser);
+                            foreach (Account account in la)
+                            {
+                                await context.Accounts.AddAsync(account);
+                            }
+                            await context.SaveChangesAsync();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred while initializing the database or seeding data.");
+                    throw; 
                 }
             }
 
-        }
+        } 
     }
 }

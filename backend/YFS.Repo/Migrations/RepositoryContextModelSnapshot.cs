@@ -172,7 +172,7 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountTypeId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("BankId")
+                    b.Property<int?>("Bank_GLMFO")
                         .HasColumnType("integer");
 
                     b.Property<int>("CurrencyId")
@@ -209,7 +209,7 @@ namespace YFS.Repo.Migrations
 
                     b.HasIndex("AccountTypeId");
 
-                    b.HasIndex("BankId");
+                    b.HasIndex("Bank_GLMFO");
 
                     b.HasIndex("CurrencyId");
 
@@ -383,7 +383,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3792),
+                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3126),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -393,7 +393,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3805),
+                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3135),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -403,7 +403,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3807),
+                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3136),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -413,7 +413,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 5, 10, 2, 45, 13, DateTimeKind.Utc).AddTicks(3808),
+                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3137),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
@@ -1265,9 +1265,8 @@ namespace YFS.Repo.Migrations
 
                     b.HasOne("YFS.Core.Models.Bank", "Bank")
                         .WithMany("Accounts")
-                        .HasForeignKey("BankId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .HasForeignKey("Bank_GLMFO")
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.HasOne("YFS.Core.Models.Currency", "Currency")
                         .WithMany("Accounts")
