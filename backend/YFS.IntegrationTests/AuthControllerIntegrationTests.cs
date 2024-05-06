@@ -31,7 +31,7 @@ namespace YFS.IntegrationTests
             var requestBody = new
             {
                 userName = "demo",
-                password = "123$qweR"
+                password = "demo123$qweR"
             };
             var jsonRequestBody = JsonConvert.SerializeObject(requestBody);
             var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");
@@ -77,7 +77,7 @@ namespace YFS.IntegrationTests
                 firstName = "Anton",
                 lastName = "Test",
                 userName = "AntTest",
-                password = "123$qweR",
+                password = "demo123$qweR",
                 email = "anton.test@gmail.com",
                 phoneNumber = "12345678"
             };

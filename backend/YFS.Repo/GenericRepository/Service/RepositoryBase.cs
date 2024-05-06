@@ -1,7 +1,5 @@
 ﻿using YFS.Repo.GenericRepository.Interfaces;
 using YFS.Repo.Data;
-using System.Linq;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 

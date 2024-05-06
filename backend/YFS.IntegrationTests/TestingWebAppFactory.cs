@@ -29,7 +29,7 @@ namespace YFS.IntegrationTests
 
             // Prepare the request payload (if required)
             var requestContent = new StringContent(
-                "{ \"username\": \"Demo\", \"password\": \"123$qweR\" }",
+                "{ \"username\": \"Demo\", \"password\": \"demo123$qweR\" }",
                 Encoding.UTF8,
                 "application/json"
             );
