@@ -55,13 +55,13 @@ namespace YFS.Repo.Data
             modelBuilder.Entity<AccountType>().Property(at => at.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<AccountType>().Property(at => at.TypeOrderBy).HasDefaultValueSql("0");
             modelBuilder.Entity<AccountType>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<Currency>().Property(c => c.CurrencyId).ValueGeneratedOnAdd();
             modelBuilder.Entity<Currency>().HasMany(a => a.Accounts).WithOne(c => c.Currency).OnDelete(DeleteBehavior.NoAction);
-            modelBuilder.Entity<Currency>().Property(c => c.CurrencyId).ValueGeneratedNever();
 
             modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
 
             //modelBuilder.ApplyConfiguration(new UserData());
-            modelBuilder.ApplyConfiguration(new CurrencyData());
+            //modelBuilder.ApplyConfiguration(new CurrencyData());
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CategoryData());
             modelBuilder.ApplyConfiguration(new BankData());

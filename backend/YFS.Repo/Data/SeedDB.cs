@@ -33,7 +33,7 @@ namespace YFS.Repo.Data
 
             if(!string.IsNullOrEmpty(_userid) & (_accountGroups != null)) {
                 foreach (AccountGroup accGroup in _accountGroups)
-                {
+                {/*
                     if (accGroup.AccountGroupNameEn == "Cash") {
                          accounts.Add(new Account { UserId = _userid, AccountStatus=1, Favorites = 1, AccountGroupId = accGroup.AccountGroupId, AccountTypeId = 1,
                             CurrencyId = 980, Bank_GLMFO = null, Name = "Wallet", OpeningDate = new DateTime(),
@@ -67,17 +67,17 @@ namespace YFS.Repo.Data
                             Note = "wallet euro",
                             AccountBalance = new AccountBalance()
                         });
-                    }
+                    }*/
                     if (accGroup.AccountGroupNameEn == "Bank")
                     {
-                        accounts.Add(new Account
+                       /*accounts.Add(new Account
                         {
                             UserId = _userid,
                             Favorites = 0,
                             AccountStatus = 1,
                             AccountGroupId = accGroup.AccountGroupId,
                             AccountTypeId = 4,
-                            CurrencyId = 840,
+                            //CurrencyId = 840,
                             Bank_GLMFO = 322001,
                             Name = "Mono",
                             OpeningDate = new DateTime(),
@@ -125,7 +125,7 @@ namespace YFS.Repo.Data
                             OpeningDate = new DateTime(),
                             Note = "monobank euro",
                             AccountBalance = new AccountBalance()
-                        });
+                        });*/
                     }
                 }
             }

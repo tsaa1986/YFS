@@ -11,7 +11,7 @@ namespace YFS.Core.Mappings
             CreateMap<AccountDto, Account>();
             CreateMap<Account, AccountDto>()
                 .ForMember(dest => dest.Balance, conf => conf.MapFrom(opt => opt.AccountBalance.Balance))
-                .ForMember(dest => dest.CurrencyName, conf => conf.MapFrom(opt => opt.Currency.ShortNameUs));
+                .ForMember(dest => dest.CurrencyName, conf => conf.MapFrom(opt => opt.Currency.Name_en));
         }
     }
 }

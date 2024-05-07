@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240506130410_Initial")]
+    [Migration("20240507090310_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -385,7 +385,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3126),
+                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4539),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -395,7 +395,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3135),
+                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4550),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -405,7 +405,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3136),
+                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4552),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -415,7 +415,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3137),
+                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4552),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
@@ -1000,14 +1000,27 @@ namespace YFS.Repo.Migrations
             modelBuilder.Entity("YFS.Core.Models.Currency", b =>
                 {
                     b.Property<int>("CurrencyId")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("integer");
 
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("CurrencyId"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(3)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Country")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
                     b.Property<string>("Name_en")
+                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR");
 
                     b.Property<string>("Name_ru")
-                        .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR");
 
@@ -1015,47 +1028,16 @@ namespace YFS.Repo.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("VARCHAR");
 
-                    b.Property<string>("ShortNameUs")
-                        .HasMaxLength(10)
-                        .HasColumnType("VARCHAR");
+                    b.Property<int>("Number")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Symbol")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("CurrencyId");
 
                     b.ToTable("Currencies");
-
-                    b.HasData(
-                        new
-                        {
-                            CurrencyId = 36,
-                            Name_en = "Australian dollar",
-                            Name_ru = "Австралийский доллар",
-                            Name_ua = "Австралійський Долар",
-                            ShortNameUs = "AUD"
-                        },
-                        new
-                        {
-                            CurrencyId = 980,
-                            Name_en = "Hryvnia",
-                            Name_ru = "Гривня",
-                            Name_ua = "Гривня",
-                            ShortNameUs = "UAH"
-                        },
-                        new
-                        {
-                            CurrencyId = 840,
-                            Name_en = "US Dollar",
-                            Name_ru = "Доллар США",
-                            Name_ua = "Долар США",
-                            ShortNameUs = "USD"
-                        },
-                        new
-                        {
-                            CurrencyId = 978,
-                            Name_en = "Euro",
-                            Name_ru = "Евро",
-                            Name_ua = "Євро",
-                            ShortNameUs = "EUR"
-                        });
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Operation", b =>

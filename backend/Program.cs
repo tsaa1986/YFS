@@ -26,7 +26,7 @@ namespace YFS
                 try
                 {
                     var context = services.GetRequiredService<RepositoryContext>();
-                    DbInitializer.Initialize(context);
+                    DatabaseInitializer.Initialize(context);
                 }
                 catch (Exception ex)
                 {

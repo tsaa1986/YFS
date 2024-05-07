@@ -149,11 +149,15 @@ namespace YFS.Repo.Migrations
                 name: "Currencies",
                 columns: table => new
                 {
-                    CurrencyId = table.Column<int>(type: "integer", nullable: false),
-                    ShortNameUs = table.Column<string>(type: "VARCHAR", maxLength: 10, nullable: true),
-                    Name_ru = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    CurrencyId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Number = table.Column<int>(type: "integer", nullable: false),
+                    Code = table.Column<string>(type: "VARCHAR", maxLength: 3, nullable: false),
+                    Country = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    Name_en = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    Name_ru = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: true),
                     Name_ua = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: true),
-                    Name_en = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: true)
+                    Symbol = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -434,10 +438,10 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3126), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3135), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3136), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 6, 13, 4, 9, 972, DateTimeKind.Utc).AddTicks(3137), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4539), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4550), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4552), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4552), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
 
             migrationBuilder.InsertData(
@@ -476,17 +480,6 @@ namespace YFS.Repo.Migrations
                     { 14, "Improvements", "Улучшения", "Покращення", "", 13, null },
                     { 15, "Furnishings", "Мебель", "Меблі", "", 13, null },
                     { 16, "Electronics", "Електроника", "Електроніка", "", 13, null }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Currencies",
-                columns: new[] { "CurrencyId", "Name_en", "Name_ru", "Name_ua", "ShortNameUs" },
-                values: new object[,]
-                {
-                    { 36, "Australian dollar", "Австралийский доллар", "Австралійський Долар", "AUD" },
-                    { 840, "US Dollar", "Доллар США", "Долар США", "USD" },
-                    { 978, "Euro", "Евро", "Євро", "EUR" },
-                    { 980, "Hryvnia", "Гривня", "Гривня", "UAH" }
                 });
 
             migrationBuilder.CreateIndex(
