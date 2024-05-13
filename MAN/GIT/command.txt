@@ -48,3 +48,22 @@ Identity added: C:/Users/WhoAmI/Documents/key/tsaa (tsymbal.anton@gmail.com)
 
 
 git clone git@github.com:tsaa1986/MyMoney.git
+
+
+#create develop and switch to it
+git checkout -b develop
+
+#push it to repository
+git push
+
+#create new branch
+git checkout -b feature/implementing-auth
+
+git add .
+git commit -m "Added authentication"
+git push
+
+#back to develop
+git checkout develop
+#merge our feature with develop
+git merge feature/implementing-auth

@@ -18,6 +18,7 @@ namespace YFS.Repo.Data
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Bank> Banks { get; set; } = null!;
         public DbSet<BankSyncHistory> BankSyncHistories { get; set; } = null!;
+        public DbSet<ApiToken> ApiTokens { get; set; } = null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
