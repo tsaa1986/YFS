@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240513102011_Initial")]
+    [Migration("20240513105011_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -385,7 +385,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6806),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9317),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -395,7 +395,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6818),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9330),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -405,7 +405,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6824),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9332),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -415,7 +415,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6825),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9334),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
@@ -454,7 +454,13 @@ namespace YFS.Repo.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("ApiTokens");
                 });
@@ -1181,6 +1187,17 @@ namespace YFS.Repo.Migrations
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.ApiToken", b =>
+                {
+                    b.HasOne("YFS.Core.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Operation", b =>

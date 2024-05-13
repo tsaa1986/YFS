@@ -3,7 +3,7 @@
     public class AccountGroupDto
     {
         public int AccountGroupId { get; set; }
-        public string? UserId { get; set; }
+        public string UserId { get; set; } = null!;
         public string? AccountGroupNameRu { get; set; }
 
         public string? AccountGroupNameEn { get; set; }

@@ -31,23 +31,6 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ApiTokens",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
-                    TokenType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    TokenValue = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
-                    Url = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ApiTokens", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -219,6 +202,30 @@ namespace YFS.Repo.Migrations
                     table.PrimaryKey("PK_AccountGroups", x => x.AccountGroupId);
                     table.ForeignKey(
                         name: "FK_AccountGroups_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ApiTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    TokenType = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    TokenValue = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Url = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
+                    Note = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ApiTokens", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ApiTokens_AspNetUsers_UserId",
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
@@ -455,10 +462,10 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6806), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6818), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6824), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6825), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9317), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9330), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9332), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9334), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
 
             migrationBuilder.InsertData(
@@ -547,6 +554,11 @@ namespace YFS.Repo.Migrations
                 name: "IX_AccountsMonthlyBalance_AccountId",
                 table: "AccountsMonthlyBalance",
                 column: "AccountId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ApiTokens_UserId",
+                table: "ApiTokens",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",

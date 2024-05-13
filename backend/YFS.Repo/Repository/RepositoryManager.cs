@@ -24,6 +24,7 @@ namespace YFS.Service.Services
         private IOperationRepository _operationRepository;
         private IBankRepository _bankRepository;
         private IBankSyncHistoryRepository _bankSyncHistoryRepository;
+        private IApiTokenRepository _apiTokenRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -142,6 +143,15 @@ namespace YFS.Service.Services
                 if (_bankSyncHistoryRepository is null)
                     _bankSyncHistoryRepository = new BankSyncHistoryRepository(_repositoryContext);
                 return _bankSyncHistoryRepository;
+            }
+        }
+        public IApiTokenRepository ApiTokenRepository
+        {
+            get
+            {
+                if (_apiTokenRepository is null)
+                    _apiTokenRepository = new ApiTokenRepository(_repositoryContext);
+                return _apiTokenRepository;
             }
         }
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();

@@ -36,6 +36,7 @@ namespace YFS.Extension
                 map.AddProfile<CurrencyMappingProfile>();
                 map.AddProfile<CategoryMappingProfile>();
                 map.AddProfile<OperationMappingProfile>();
+                map.AddProfile<ApiTokenMappingProfile>();
             });
             services.AddSingleton(mapperConfig.CreateMapper());
         }
