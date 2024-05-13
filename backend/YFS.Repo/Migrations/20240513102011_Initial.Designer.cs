@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240507090310_Initial")]
+    [Migration("20240513102011_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -385,7 +385,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4539),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6806),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -395,7 +395,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4550),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6818),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -405,7 +405,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4552),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6824),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -415,13 +415,48 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 7, 9, 3, 9, 420, DateTimeKind.Utc).AddTicks(4552),
+                            CreatedOn = new DateTime(2024, 5, 13, 10, 20, 11, 276, DateTimeKind.Utc).AddTicks(6825),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
                             NoteRu = "Банковский счет",
                             TypeOrderBy = 0
                         });
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.ApiToken", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("Note")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("TokenType")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("TokenValue")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<string>("Url")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiTokens");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Bank", b =>
@@ -624,158 +659,6 @@ namespace YFS.Repo.Migrations
                             PostalIndex = "01054",
                             ShortName = "АТ \"СКАЙ БАНК\"",
                             ShortNameEnglish = "JSC \"SKY BANK\"",
-                            Status = 1,
-                            StatusName = "Нормальний",
-                            TNP = "м.",
-                            Type = 0
-                        },
-                        new
-                        {
-                            GLMFO = 305299,
-                            Address = "вул. Грушевського, 1Д",
-                            CodeEDRPOU = "14360570",
-                            DateStatus = new DateTime(2016, 12, 22, 0, 0, 0, 0, DateTimeKind.Utc),
-                            FullName = "акціонерне товариство комерційний банк \"ПриватБанк\"",
-                            GrantLicenseDate = new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GroupSpecial = "SV",
-                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IDNBU = "305299",
-                            KU = 26,
-                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LicenseNumber = 22,
-                            LicenseStatus = 1,
-                            LicenseStatusDescription = "чинна банківська ліцензія",
-                            NKB = "046",
-                            NOBL = "м.Київ",
-                            NOBLUR = "м.Київ",
-                            NP = "Київ",
-                            NameEnglish = "Joint-Stock Company Commercial Bank \"PrivatBank\"",
-                            OBLUR = 26,
-                            OpenDate = new DateTime(1992, 3, 19, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PostalIndex = "01001",
-                            ShortName = "АТ КБ \"ПриватБанк\"",
-                            ShortNameEnglish = "JSC CB \"PrivatBank\"",
-                            Status = 1,
-                            StatusName = "Нормальний",
-                            TNP = "м.",
-                            Type = 0
-                        },
-                        new
-                        {
-                            GLMFO = 300614,
-                            Address = "Район: Шевченківський, Місто: Київ, Вулиця: вул. Євгена Чикаленка, Будинок: 42/4",
-                            CodeEDRPOU = "14361575",
-                            FullName = "АКЦІОНЕРНЕ ТОВАРИСТВО \"КРЕДІ АГРІКОЛЬ БАНК\"",
-                            GrantLicenseDate = new DateTime(2011, 10, 12, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GroupSpecial = "SV",
-                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IDNBU = "300614",
-                            KU = 26,
-                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LicenseNumber = 99,
-                            LicenseStatus = 1,
-                            LicenseStatusDescription = "чинна банківська ліцензія",
-                            NKB = "171",
-                            NOBL = "м.Київ",
-                            NOBLUR = "м.Київ",
-                            NP = "Київ",
-                            NameEnglish = "JOINT-STOCK COMPANY \"CREDIT AGRICOLE BANK\"",
-                            OBLUR = 26,
-                            OpenDate = new DateTime(1993, 2, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PostalIndex = "01004",
-                            ShortName = "АТ \"КРЕДІ АГРІКОЛЬ БАНК\"",
-                            ShortNameEnglish = "JSC \"CREDIT AGRICOLE BANK\"",
-                            Status = 1,
-                            StatusName = "Нормальний",
-                            TNP = "м.",
-                            Telephone = "0445810700",
-                            Type = 0
-                        },
-                        new
-                        {
-                            GLMFO = 300335,
-                            Address = "вулиця Генерала Алмазова, буд. 4а",
-                            CodeEDRPOU = "14305909",
-                            FullName = "Акціонерне товариство \"Райффайзен Банк\"",
-                            GrantLicenseDate = new DateTime(2021, 7, 2, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GroupSpecial = "SV",
-                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IDNBU = "300335",
-                            KU = 26,
-                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LicenseNumber = 10,
-                            LicenseStatus = 1,
-                            LicenseStatusDescription = "чинна банківська ліцензія",
-                            NKB = "036",
-                            NOBL = "м.Київ",
-                            NOBLUR = "м.Київ",
-                            NP = "Київ",
-                            NameEnglish = "Raiffeisen Bank Joint Stock Company",
-                            OBLUR = 26,
-                            OpenDate = new DateTime(1992, 3, 27, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PostalIndex = "01011",
-                            ShortName = "АТ \"Райффайзен Банк\"",
-                            ShortNameEnglish = "Raiffeisen Bank JSC",
-                            Status = 1,
-                            StatusName = "Нормальний",
-                            TNP = "м.",
-                            Type = 0
-                        },
-                        new
-                        {
-                            GLMFO = 300528,
-                            Address = "вул. Жилянська, 43",
-                            CodeEDRPOU = "21685166",
-                            FullName = "АКЦІОНЕРНЕ ТОВАРИСТВО \"ОТП БАНК\"",
-                            GrantLicenseDate = new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GroupSpecial = "SV",
-                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IDNBU = "300528",
-                            KU = 26,
-                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LicenseNumber = 191,
-                            LicenseStatus = 1,
-                            LicenseStatusDescription = "чинна банківська ліцензія",
-                            NKB = "296",
-                            NOBL = "м.Київ",
-                            NOBLUR = "м.Київ",
-                            NP = "Київ",
-                            NameEnglish = "JOINT-STOCK COMPANY OTP BANK",
-                            OBLUR = 26,
-                            OpenDate = new DateTime(1998, 3, 2, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PostalIndex = "01033",
-                            ShortName = "АТ \"ОТП БАНК\"",
-                            ShortNameEnglish = "OTP BANK JSC",
-                            Status = 1,
-                            StatusName = "Нормальний",
-                            TNP = "м.",
-                            Type = 0
-                        },
-                        new
-                        {
-                            GLMFO = 322001,
-                            Address = "вул. Автозаводська,54/19",
-                            CodeEDRPOU = "21133352",
-                            FullName = "АКЦІОНЕРНЕ ТОВАРИСТВО \"УНІВЕРСАЛ БАНК\"",
-                            GrantLicenseDate = new DateTime(2011, 10, 10, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GroupSpecial = "SV",
-                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            IDNBU = "322001",
-                            KU = 26,
-                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LicenseNumber = 92,
-                            LicenseStatus = 1,
-                            LicenseStatusDescription = "чинна банківська ліцензія",
-                            NKB = "242",
-                            NOBL = "м.Київ",
-                            NOBLUR = "м.Київ",
-                            NP = "Київ",
-                            NameEnglish = "JOINT STOCK COMPANY \"UNIVERSAL BANK\"",
-                            OBLUR = 26,
-                            OpenDate = new DateTime(1994, 1, 20, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PostalIndex = "04082",
-                            ShortName = "АТ \"УНІВЕРСАЛ БАНК\"",
-                            ShortNameEnglish = "JSC \"UNIVERSAL BANK\"",
                             Status = 1,
                             StatusName = "Нормальний",
                             TNP = "м.",
