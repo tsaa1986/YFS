@@ -6,6 +6,6 @@ namespace YFS.Service.Interfaces
     {
         Task AddToken(ApiToken newToken);
         Task UpdateToken(ApiToken newToken);
-        Task<ApiToken?> GetApiToken(string tokenName);
+        Task<ApiToken?> GetApiToken(string tokenName, string userId);
     }
 }

@@ -13,7 +13,7 @@ namespace YFS.Service.Interfaces
     {
         Task<ServiceResult<IEnumerable<ApiTokenDto>>> GetTokensForUser(string userId);
         Task<ServiceResult<ApiTokenDto>> GetTokenByNameForUser(string tokenName, string userId);
-        Task<ServiceResult<ApiTokenDto>> CreateToken(ApiTokenDto accountGroup, string userId);
-        Task<ServiceResult<ApiTokenDto>> UpdateToken(ApiTokenDto accountGroup, string userId);
+        Task<ServiceResult<ApiTokenDto>> CreateToken(ApiTokenDto token);
+        Task<ServiceResult<ApiTokenDto>> UpdateToken(ApiTokenDto token);
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
@@ -17,24 +18,65 @@ namespace YFS.Service.Services
         {
         }
 
-        public Task<ServiceResult<ApiTokenDto>> CreateToken(ApiTokenDto accountGroup, string userId)
+        public async Task<ServiceResult<ApiTokenDto>> CreateToken(ApiTokenDto token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var tokenData = _mapper.Map<ApiToken>(token);
+                await _repository.ApiToken.AddToken(tokenData);
+                await _repository.SaveAsync();
+
+                return ServiceResult<ApiTokenDto>.Success(token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while  CreateToken: userid: {UserId}, token: {token}", token.UserId, token);
+                return ServiceResult<ApiTokenDto>.Error(ex.Message);
+            }
         }
 
-        public Task<ServiceResult<ApiTokenDto>> GetTokenByNameForUser(string tokenName, string userId)
+        public async Task<ServiceResult<ApiTokenDto>> GetTokenByNameForUser(string tokenName, string userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var apiToken = await _repository.ApiToken.GetApiToken(tokenName, userId);
+
+                if (apiToken != null)
+                {
+                    var apiTokenDto = _mapper.Map<ApiTokenDto>(apiToken);
+                    return ServiceResult<ApiTokenDto>.Success(apiTokenDto);
+                }
+                else
+                {
+                    return ServiceResult<ApiTokenDto>.Error("ApiToken not found");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong in the {nameof(GetTokenByNameForUser)} action {ex}");
+                return ServiceResult<ApiTokenDto>.Error(ex.Message);
+            }
         }
 
         public Task<ServiceResult<IEnumerable<ApiTokenDto>>> GetTokensForUser(string userId)
         {
             throw new NotImplementedException();
         }
-
-        public Task<ServiceResult<ApiTokenDto>> UpdateToken(ApiTokenDto accountGroup, string userId)
+        public async Task<ServiceResult<ApiTokenDto>> UpdateToken(ApiTokenDto token)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var tokenData = _mapper.Map<ApiToken>(token);
+                await _repository.ApiToken.UpdateToken(tokenData);
+                await _repository.SaveAsync();
+
+                return ServiceResult<ApiTokenDto>.Success(token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while  UpdateToken: userid: {UserId}, token: {token}", token.UserId, token);
+                return ServiceResult<ApiTokenDto>.Error(ex.Message);
+            }
         }
 
         /*

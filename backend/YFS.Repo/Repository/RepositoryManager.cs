@@ -145,7 +145,7 @@ namespace YFS.Service.Services
                 return _bankSyncHistoryRepository;
             }
         }
-        public IApiTokenRepository ApiTokenRepository
+        public IApiTokenRepository ApiToken
         {
             get
             {

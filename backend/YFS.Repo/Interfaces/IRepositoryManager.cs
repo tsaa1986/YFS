@@ -15,6 +15,7 @@ namespace YFS.Service.Interfaces
         IOperationRepository Operation { get; }
         IBankRepository Bank { get; }
         IBankSyncHistoryRepository BankSyncHistory { get; }
+        IApiTokenRepository ApiToken { get; }
         Task SaveAsync();
     }
 }
