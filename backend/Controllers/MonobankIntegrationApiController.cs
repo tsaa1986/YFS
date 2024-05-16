@@ -127,5 +127,33 @@ namespace YFS.Data.Controllers
 
             return NoContent();
         }
+
+        [HttpGet("statements/{account}/{fromDate}/{toDate}")]
+        [Authorize]
+        public async Task<IActionResult> GetStatementsBetweenDates(string account, DateTime fromDate, DateTime toDate)
+        {
+            string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+
+            var tokenResult = await _tokenService.GetTokenByNameForUser("apiMonoBank", userId);
+            if (!tokenResult.IsSuccess)
+            {
+                return BadRequest("Failed to get API token for the user");
+            }
+
+            var result = await _monobankIntegrationApiService.GetStatementsBetweenDates(tokenResult.Data.TokenValue, account, fromDate, toDate);
+
+            if (result.IsSuccess)
+            {
+                return Ok(result.Data);
+            }
+            else if (result.IsNotFound)
+            {
+                return NotFound(result.ErrorMessage);
+            }
+            else
+            {
+                return BadRequest(result.ErrorMessage);
+            }
+        }
     }
 }

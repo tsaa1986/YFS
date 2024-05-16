@@ -4,17 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Net.Http;
-using System;
-using System.Net.Http;
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 using YFS.Service.Interfaces;
 using YFS.Core.Models.MonoIntegration;
 using YFS.Core.Dtos;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Http;
+using Newtonsoft.Json.Linq;
 
 namespace YFS.Service.Services
 {
@@ -33,7 +28,6 @@ namespace YFS.Service.Services
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
-
         public async Task<ServiceResult<MonoClientInfoResponse>> GetClientInfo(string xToken)
         {
             try
@@ -69,6 +63,48 @@ namespace YFS.Service.Services
                 _logger.LogError($"Something went wrong in the {nameof(GetClientInfo)} action {ex}");
 
                 return ServiceResult<MonoClientInfoResponse>.Error(ex.Message);
+            }
+        }
+        public async Task<ServiceResult<IEnumerable<MonoStatement>>> GetStatementsBetweenDates(string xToken, string account, DateTime fromDate, DateTime toDate)
+        {
+            try
+            {
+                _httpClient.DefaultRequestHeaders.Add("X-Token", xToken);
+                long fromUnixTime = (long)(fromDate.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+                long toUnixTime = (long)(toDate.ToUniversalTime() - new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).TotalSeconds;
+                /*
+                var dateTimeOffsetFrom = new DateTimeOffset(fromDate);
+                var dateTimeOffsetTo = new DateTimeOffset(toDate);
+                var unixDateTimeFrom = dateTimeOffsetFrom.ToUnixTimeSeconds();
+                var unixDateTimeTo = dateTimeOffsetTo.ToUnixTimeSeconds();*/
+
+                string requestUrl = $"{_httpClient.BaseAddress}statement/{account}/{fromUnixTime}/{toUnixTime}";
+
+                HttpResponseMessage response = await _httpClient.GetAsync(requestUrl);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    IEnumerable<MonoStatement>? statements = JsonConvert.DeserializeObject<IEnumerable<MonoStatement>>(responseBody);
+                    if (statements != null)
+                    {
+                        return ServiceResult<IEnumerable<MonoStatement>>.Success(statements);
+                    }
+                    else
+                    {
+                        return ServiceResult<IEnumerable<MonoStatement>>.Error("Failed to deserialize statements");
+                    }
+                }
+                else
+                {
+                    _logger.LogError($"Failed to retrieve statements from Monobank API: {response.StatusCode}");
+                    return ServiceResult<IEnumerable<MonoStatement>>.Error($"Failed to retrieve statements: {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetStatementsBetweenDates method: {ex.Message}");
+                return ServiceResult<IEnumerable<MonoStatement>>.Error($"Error: {ex.Message}");
             }
         }
     }
