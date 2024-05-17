@@ -8,12 +8,13 @@ namespace YFS.Core.Models
     {
         [Column("AccountId")]
         public int Id { get; set; }
+        //external service. for integrate account from monobank and etc
+        public string? ExternalId { get; set; }
         [Required]
         public virtual AccountBalance? AccountBalance { get; set; }
-
         [Required]
-        public string UserId { get; set; }
-        public User User { get; set; }
+        public string UserId { get; set; } = null!;
+        public User User { get; set; } = null!;
         [Required]
         public int AccountStatus { get; set; } //0-disabled,1-enabled
 
@@ -26,14 +27,14 @@ namespace YFS.Core.Models
 
         [Required]
         public int CurrencyId { get; set; }
-        public Currency? Currency { get; set; }
+        public Currency Currency { get; set; } = null!;
         public int? Bank_GLMFO { get; set; }
         public Bank? Bank { get; set; }
 
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "Acount's name is a required field")]
         [MaxLength(255, ErrorMessage = "Maximum length for the Name is 255 characters.")]
-        public string Name { get; set; }
+        public string Name { get; set; } = null!;
         public DateTime OpeningDate { get; set; }
 
         [Column(TypeName = "VARCHAR")]

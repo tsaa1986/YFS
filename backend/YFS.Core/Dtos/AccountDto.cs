@@ -5,12 +5,13 @@ namespace YFS.Core.Dtos
     public class AccountDto
     {
         public int Id { get; set; }
+        public string ExternalId { get; set; } = null!;
         public int AccountStatus { get; set; }
         public int Favorites { get; set; }
         public int AccountGroupId { get; set; }
         public int AccountTypeId { get; set; }
         public int CurrencyId { get; set; }
-        public string? CurrencyName { get; set; }
+        public string CurrencyName { get; set; } = null!;
         public int BankId { get; set; }
         public string? Name { get; set; }
         public DateTime OpeningDate { get; set; }

@@ -17,17 +17,17 @@ namespace YFS.Core.Models
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "AccountType's name is a required field")]
         [MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
-        public string? NameUa { get; set; }
+        public string NameUa { get; set; } = null!;
 
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "AccountType's name is a required field")]
         [MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
-        public string? NameRu { get; set; }
+        public string NameRu { get; set; } = null!;
 
         [Column(TypeName = "VARCHAR")]
         [Required(ErrorMessage = "AccountType's name is a required field")]
         [MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
-        public string? NameEn { get; set; }
+        public string NameEn { get; set; } = null!;
 
         [Column(TypeName = "VARCHAR")]
         [MaxLength(255, ErrorMessage = "Maximum length for the Name is 255 characters.")]
@@ -45,7 +45,6 @@ namespace YFS.Core.Models
 
         [Required]
         public DateTime CreatedOn { get; set; } = DateTime.UtcNow;
-
         public ICollection<Account> Accounts { get; set; } = new List<Account>();
     }
 }

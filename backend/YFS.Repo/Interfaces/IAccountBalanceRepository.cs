@@ -6,6 +6,6 @@ namespace YFS.Service.Interfaces
     {
         Task CreateAccountBalance(AccountBalance accountBalance);
         Task UpdateAccountBalance(AccountBalance accountBalance);
-        Task<AccountBalance> GetAccountBalance(int _accountId);
+        Task<AccountBalance?> GetAccountBalance(int _accountId);
     }
 }

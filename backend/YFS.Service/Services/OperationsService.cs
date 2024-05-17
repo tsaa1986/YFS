@@ -24,10 +24,10 @@ namespace YFS.Service.Services
             var operationData = _mapper.Map<Operation>(operation);
             try
             {
-                Account account = null;
-                Account accountTarget = null;
-                var accountMonthlyBalance = (AccountMonthlyBalance)null;
-                Operation transferOperaitonData = null;
+                Account account = null!;
+                Account accountTarget = null!;
+                var accountMonthlyBalance = (AccountMonthlyBalance)null!;
+                Operation transferOperaitonData = null!;
                 operationData.UserId = userId;
                 string transferWithdrawDescription = "";
 

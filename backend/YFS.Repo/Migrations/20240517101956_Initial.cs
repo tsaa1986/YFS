@@ -323,6 +323,7 @@ namespace YFS.Repo.Migrations
                 {
                     AccountId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ExternalId = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: false),
                     AccountStatus = table.Column<int>(type: "integer", nullable: false),
                     IBAN = table.Column<string>(type: "VARCHAR", maxLength: 40, nullable: true),
@@ -462,10 +463,10 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9317), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9330), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9332), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 13, 10, 50, 10, 667, DateTimeKind.Utc).AddTicks(9334), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(70), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(77), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(79), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(80), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
 
             migrationBuilder.InsertData(

@@ -16,8 +16,8 @@ namespace YFS.Service.Services
         public async Task CreateCategoryForUser(Category category) =>
             await CreateAsync(category);
         public async Task CreateCategoryDefaultForUser(string userid) 
-        {
-            /*AccountGroup acGroup = new AccountGroup
+        {/*
+            AccountGroup acGroup = new AccountGroup
             {
                 UserId = userid,
                 AccountGroupNameEn = "Cash",
@@ -39,9 +39,9 @@ namespace YFS.Service.Services
                 AccountGroupNameUa = "Інтернет рахунки"
             };
 
-            await CreateAsync(acGroup);// CreateAccountGroup(ac);
-            await CreateAsync(acGroup_internetmoney);
-            await CreateAsync(acGroup_bank);*/
+            await this.CreateAsync(acGroup); 
+            await this.CreateAsync(acGroup_internetmoney);
+            await this.CreateAsync(acGroup_bank);*/
         }
         public Task<Category> GetCategory(int accountGroupId, bool trackChanges)
         {

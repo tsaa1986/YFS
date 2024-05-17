@@ -45,5 +45,14 @@ namespace YFS.Service.Services
                 .Include(c => c.Currency).AsNoTracking()
                 .Include(p => p.AccountBalance)
                 .SingleOrDefaultAsync();
+
+        public async Task<IEnumerable<Account>> GetAccountsByUserId(string userId, bool trackChanges) =>
+            await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges)
+            .Result
+            .OrderByDescending(c => c.Favorites)
+            .Include(c => c.Currency).AsNoTracking()
+            .Include(p => p.AccountBalance)
+            .Include(amb => amb.AccountsMonthlyBalance)
+            .ToListAsync();
     }
 }

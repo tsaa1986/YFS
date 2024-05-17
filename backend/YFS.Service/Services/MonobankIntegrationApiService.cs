@@ -107,5 +107,64 @@ namespace YFS.Service.Services
                 return ServiceResult<IEnumerable<MonoStatement>>.Error($"Error: {ex.Message}");
             }
         }
+
+        public async Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId)
+        {
+            try
+            {
+                var clientInfoResult = await GetClientInfo(xToken);
+                if (clientInfoResult.Data.accounts.Count == 0)
+                    ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
+
+                if ((clientInfoResult.IsSuccess))
+                {
+                    // get accounts from mono
+                    var monoAccounts = clientInfoResult.Data.accounts;
+                    var accountDtos = new List<AccountDto>();
+
+                    //get accountgroupid
+                    var accountGroupId = await _repository.AccountGroup.GetAccountGroupsForUser(userId, false);
+
+                    //if (accountGroupId.Count != null) { }
+
+                    //GetAccountGroupsForUser.
+                    //int AccountGroupId = 
+
+                    //get currencyid
+
+                    //get bank id for mono 
+
+                        foreach (var monoAccount in monoAccounts)
+                        {
+                        var accountDto = new AccountDto
+                        {
+                            ExternalId = monoAccount.id,
+                            AccountStatus = 1,
+                            Favorites = 0,
+                            //AccountGroupId = 2, //banks account
+                            AccountTypeId = 2, //banks account
+                            //CurrencyId =
+                            //BankId =
+                            Name = "mono" + monoAccount.type,
+                            OpeningDate = DateTime.UtcNow,
+                            Note = monoAccount.type,
+                            Balance = 0
+                        };
+
+                            // Add the created AccountDto to the list
+                            accountDtos.Add(accountDto);
+                        }
+                    return ServiceResult<IEnumerable<AccountDto>>.Success(accountDtos);
+                }   
+                else
+                {
+                    return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts from monobank");
+                }
+            }
+            catch(Exception ex)
+            {
+                return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts" + ex.Message);
+            }
+        }
     }
 }

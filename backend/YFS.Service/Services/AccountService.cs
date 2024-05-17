@@ -79,6 +79,21 @@ namespace YFS.Service.Services
             }
         }
 
+        public async Task<ServiceResult<IEnumerable<AccountDto>>> GetAccountsByUserId(string userId, bool trackChanges)
+        {
+            try
+            {
+                var accounts = await _repository.Account.GetAccountsByUserId(userId, trackChanges);
+                var accountsDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
+                return ServiceResult<IEnumerable<AccountDto>>.Success(accountsDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while GetOpenAccountsByUserId: {UserId}", userId);
+                return ServiceResult<IEnumerable<AccountDto>>.Error(ex.Message);
+            }
+        }
+
         public async Task<ServiceResult<IEnumerable<AccountDto>>> GetOpenAccountsByUserId(string userId, bool trackChanges)
         {
             try
