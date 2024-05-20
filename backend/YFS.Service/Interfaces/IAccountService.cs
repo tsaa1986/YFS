@@ -11,6 +11,7 @@ namespace YFS.Service.Interfaces
         Task<ServiceResult<IEnumerable<AccountDto>>> GetAccountsByGroup(int accountGroupId, string userId, bool trackChanges);
         Task<ServiceResult<IEnumerable<AccountDto>>> GetOpenAccountsByUserId(string userId, bool trackChanges);
         Task<ServiceResult<IEnumerable<AccountDto>>> GetAccountsByUserId(string userId, bool trackChanges);
+        Task<ServiceResult<AccountDto>> GetExternalAccountById(string externalAccountId, string userId, bool trackChanges);
         Task<ServiceResult<AccountDto>> CreateAccountForUser(AccountDto account, string userId);
         Task<ServiceResult<AccountDto>> UpdateAccount(AccountDto account);
     }

@@ -69,8 +69,8 @@ namespace YFS.Service.Services
             try
             {
                 var accounts = await _repository.Account.GetAccountsByGroup(accountGroupId, userId, false);
-                var accountsDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
-                return ServiceResult<IEnumerable<AccountDto>>.Success(accountsDto);
+                var accountsData = _mapper.Map<IEnumerable<AccountDto>>(accounts);
+                return ServiceResult<IEnumerable<AccountDto>>.Success(accountsData);
             }
             catch (Exception ex)
             {
@@ -84,13 +84,28 @@ namespace YFS.Service.Services
             try
             {
                 var accounts = await _repository.Account.GetAccountsByUserId(userId, trackChanges);
-                var accountsDto = _mapper.Map<IEnumerable<AccountDto>>(accounts);
-                return ServiceResult<IEnumerable<AccountDto>>.Success(accountsDto);
+                var accountsData = _mapper.Map<IEnumerable<AccountDto>>(accounts);
+                return ServiceResult<IEnumerable<AccountDto>>.Success(accountsData);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error while GetOpenAccountsByUserId: {UserId}", userId);
                 return ServiceResult<IEnumerable<AccountDto>>.Error(ex.Message);
+            }
+        }
+
+        public async Task<ServiceResult<AccountDto>> GetExternalAccountById(string externalAccountId, string userId, bool trackChanges)
+        {
+            try
+            {
+                var account = await _repository.Account.GetExternalAccountById(externalAccountId, userId, trackChanges);
+                var accountData = _mapper.Map<AccountDto>(account);
+                return ServiceResult<AccountDto>.Success(accountData);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while GetExternalAccountById: {Id}, user:{userId}", externalAccountId, userId);
+                return ServiceResult<AccountDto>.Error(ex.Message);
             }
         }
 

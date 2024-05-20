@@ -77,8 +77,7 @@ namespace YFS.Data.Controllers
                 {
                     return BadRequest(result.ErrorMessage);
                 }
-        }
-        
+        }        
         [HttpPost("token")]
         [Authorize]
         public async Task<IActionResult> CreateApiTokenForUser([FromBody] ApiTokenDto apiToken)
@@ -126,6 +125,38 @@ namespace YFS.Data.Controllers
             }
 
             return NoContent();
+        }
+        
+        [HttpPost("importAccounts")]
+        [Authorize]
+        public async Task<IActionResult> ImportMonoBankAccounts()
+        {
+            try
+            {
+                string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+
+                var tokenResult = await _tokenService.GetTokenByNameForUser("apiMonoBank", userId);
+                if (!tokenResult.IsSuccess)
+                {
+                    return BadRequest("Failed to get API token for the user");
+                }
+
+                var importAccountResult = await _monobankIntegrationApiService.SynchronizeAccounts(tokenResult.Data.TokenValue, userId);
+                if (importAccountResult.IsSuccess)
+                {
+                    return Ok(importAccountResult.Data);
+                }
+                else
+                {
+                    return BadRequest("Failed to synchronize Accounts");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in GetClientInfo action: {ex}");
+
+                return StatusCode(500, "An error occurred while processing your request");
+            }
         }
 
         [HttpGet("statements/{account}/{fromDate}/{toDate}")]

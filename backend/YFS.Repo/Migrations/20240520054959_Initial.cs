@@ -463,10 +463,10 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
                 values: new object[,]
                 {
-                    { 1, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(70), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(77), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(79), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(80), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
+                    { 1, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3158), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
+                    { 2, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3168), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
+                    { 3, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3170), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
+                    { 4, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3171), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
                 });
 
             migrationBuilder.InsertData(

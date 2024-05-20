@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
@@ -11,6 +12,11 @@ namespace YFS.Service.Services
         public BankRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
+
+        public async Task<Bank?> GetBankByGLMFO(int kodGLMFO) =>
+            await FindByConditionAsync(b => b.GLMFO == kodGLMFO, false)
+                    .Result.SingleOrDefaultAsync();
+
         public async Task UpdateBanksAsync(IEnumerable<Bank> updatedBanks)
         {
             foreach (var updatedBank in updatedBanks)

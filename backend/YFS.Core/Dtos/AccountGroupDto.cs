@@ -6,7 +6,7 @@
         public string UserId { get; set; } = null!;
         public string? AccountGroupNameRu { get; set; }
 
-        public string? AccountGroupNameEn { get; set; }
+        public string AccountGroupNameEn { get; set; } = null!;
 
         public string? AccountGroupNameUa { get; set; }
 

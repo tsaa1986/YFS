@@ -14,5 +14,9 @@ namespace YFS.Service.Services
         }
         public async Task<IEnumerable<Currency>> GetCurrencies(bool trackChanges)
             => await FindAllAsync(trackChanges).Result.OrderBy(c => c.Name_en).ToListAsync();
+
+        public async Task<Currency?> GetCurrencyByCountry(int number, string country) => 
+            await FindByConditionAsync(c => c.Number == number && c.Country.Equals(country)
+            , false).Result.SingleOrDefaultAsync();
     }
 }

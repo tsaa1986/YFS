@@ -25,5 +25,20 @@ namespace YFS.Service.Services
                 return ServiceResult<IEnumerable<CurrencyDto>>.Error(ex.Message);
             }
         }
+
+        public async Task<ServiceResult<CurrencyDto>> GetCurrencyByCountry(int number, string country)
+        {
+            try
+            {
+                var currency = await _repository.Currency.GetCurrencyByCountry(number, country);
+                var currencyDto = _mapper.Map<CurrencyDto>(currency);
+                return ServiceResult<CurrencyDto>.Success(currencyDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Something went wrong in the {nameof(GetCurrencyByCountry)} action {ex}");
+                return ServiceResult<CurrencyDto>.Error(ex.Message);
+            }
+        }
     }
 }

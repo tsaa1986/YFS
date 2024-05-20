@@ -10,6 +10,7 @@ using YFS.Core.Dtos;
 using Newtonsoft.Json;
 using Microsoft.Extensions.Http;
 using Newtonsoft.Json.Linq;
+using YFS.Core.Models;
 
 namespace YFS.Service.Services
 {
@@ -17,16 +18,29 @@ namespace YFS.Service.Services
     {
         private readonly HttpClient _httpClient;
         private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IAccountService _accountService;
+        private readonly IAccountGroupsService _accountGroupService;
+        private readonly IBankService _bankService; 
+        private readonly ICurrencyService _currencyService;
         public MonobankIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
             IMapper mapper, 
             ILogger<BaseService> logger, 
-            HttpClient httpClient) : base(repository, mapper, logger)
+            HttpClient httpClient,
+            IAccountService accountService,
+            IAccountGroupsService accountGroupService,
+            IBankService bankService,
+            ICurrencyService currencyService
+            ) : base(repository, mapper, logger)
         {
             _httpClientFactory = httpClientFactory;
             _httpClient = _httpClientFactory.CreateClient();
             _httpClient.BaseAddress = new Uri("https://api.monobank.ua/personal/");
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+            _accountService = accountService;
+            _accountGroupService = accountGroupService;
+            _bankService = bankService;
+            _currencyService = currencyService;
         }
         public async Task<ServiceResult<MonoClientInfoResponse>> GetClientInfo(string xToken)
         {
@@ -76,7 +90,8 @@ namespace YFS.Service.Services
                 var dateTimeOffsetFrom = new DateTimeOffset(fromDate);
                 var dateTimeOffsetTo = new DateTimeOffset(toDate);
                 var unixDateTimeFrom = dateTimeOffsetFrom.ToUnixTimeSeconds();
-                var unixDateTimeTo = dateTimeOffsetTo.ToUnixTimeSeconds();*/
+                var unixDateTimeTo = dateTimeOffsetTo.ToUnixTimeSeconds();
+                */
 
                 string requestUrl = $"{_httpClient.BaseAddress}statement/{account}/{fromUnixTime}/{toUnixTime}";
 
@@ -116,45 +131,108 @@ namespace YFS.Service.Services
                 if (clientInfoResult.Data.accounts.Count == 0)
                     ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
 
+
                 if ((clientInfoResult.IsSuccess))
                 {
                     // get accounts from mono
                     var monoAccounts = clientInfoResult.Data.accounts;
-                    var accountDtos = new List<AccountDto>();
+                    var accountData = new List<AccountDto>();
 
-                    //get accountgroupid
-                    var accountGroupId = await _repository.AccountGroup.GetAccountGroupsForUser(userId, false);
-
-                    //if (accountGroupId.Count != null) { }
-
-                    //GetAccountGroupsForUser.
-                    //int AccountGroupId = 
-
-                    //get currencyid
-
-                    //get bank id for mono 
-
-                        foreach (var monoAccount in monoAccounts)
+                    //get accountgroup by name (Bank)
+                    var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId);
+                    int accountGroupId = 0;
+                    if (accountsGroup != null && accountsGroup.Data != null)
+                    {
+                        foreach (var accountGroup in accountsGroup.Data)
                         {
-                        var accountDto = new AccountDto
+                            if (accountGroup?.AccountGroupNameEn != null && accountGroup.AccountGroupNameEn.Equals("Bank"))
+                            {
+                                accountGroupId = accountGroup.AccountGroupId;
+                                break;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        AccountGroupDto ag = new AccountGroupDto
+                        {
+                            AccountGroupNameEn = "Bank",
+                            AccountGroupNameRu = "",
+                            AccountGroupNameUa = "",
+                            GroupOrderBy = 0
+                        };
+                        var newAccountGroup = await _accountGroupService.CreateAccountGroupForUser(ag, userId);
+                        if (newAccountGroup.IsSuccess == true)
+                        {
+                            accountGroupId = newAccountGroup.Data.AccountGroupId;
+                        }
+                        else
+                        {
+                            ServiceResult<AccountGroupDto>.Error("Failed to create accountGroup");
+                        }
+                    }
+
+                    //get monobank id glmfo=322001
+                    var monobank = await _bankService.GetBankByGLMFO(322001);
+                    int monoBankId = 0;
+                    if (accountsGroup != null && accountsGroup.Data != null)
+                        monoBankId = monobank.Data.GLMFO;
+                    else
+                        ServiceResult<Bank>.NotFound("Monobank from UnivarsalBank not found");
+
+
+                    foreach (var monoAccount in monoAccounts)
+                        {
+                            var accountFromDB = await _accountService.GetExternalAccountById(monoAccount.id, userId, false);
+
+                            if (accountFromDB.Data != null)
+                                break;
+
+                        //get currencyid
+                        string currencyCountry = "";
+
+                        switch (monoAccount.currencyCode)
+                        {
+                            case 840: currencyCountry = "United States of America (the)"; 
+                                break;
+                            case 980: currencyCountry = "Ukraine";
+                                break;
+                            case 978: currencyCountry = "European Union";
+                                break;
+                            default:
+                                ServiceResult<Bank>.NotFound($"Currency {monoAccount.currencyCode} not found");
+                                break;
+                        }
+
+                        var currency = _currencyService.GetCurrencyByCountry(monoAccount.currencyCode, currencyCountry);
+                        int currencyId = 0;
+
+                        if (currency.Result.IsSuccess)
+                            currencyId = currency.Result.Data.CurrencyId;
+                        else
+                            ServiceResult<Bank>.NotFound($"Currency {monoAccount.currencyCode} not found");
+
+                        var account = new AccountDto
                         {
                             ExternalId = monoAccount.id,
                             AccountStatus = 1,
                             Favorites = 0,
-                            //AccountGroupId = 2, //banks account
+                            AccountGroupId = accountGroupId,
                             AccountTypeId = 2, //banks account
-                            //CurrencyId =
-                            //BankId =
+                                               //CurrencyId =
+                                               //BankId =
                             Name = "mono" + monoAccount.type,
+                            Bank_GLMFO = monoBankId,
+                            CurrencyId = currencyId,
                             OpeningDate = DateTime.UtcNow,
-                            Note = monoAccount.type,
-                            Balance = 0
-                        };
+                            Note = monoAccount.type
+                            };
 
                             // Add the created AccountDto to the list
-                            accountDtos.Add(accountDto);
+                            accountData.Add(account);
                         }
-                    return ServiceResult<IEnumerable<AccountDto>>.Success(accountDtos);
+
+                    return ServiceResult<IEnumerable<AccountDto>>.Success(accountData);
                 }   
                 else
                 {

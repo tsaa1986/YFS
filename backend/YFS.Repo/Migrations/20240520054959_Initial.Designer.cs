@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240517101956_Initial")]
+    [Migration("20240520054959_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -388,7 +388,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(70),
+                            CreatedOn = new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3158),
                             NameEn = "Cash",
                             NameRu = "Наличные деньги",
                             NameUa = "Готівкові гроші",
@@ -398,7 +398,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(77),
+                            CreatedOn = new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3168),
                             NameEn = "Internet-money",
                             NameRu = "Интернет-деньги",
                             NameUa = "Інтернет-гроші",
@@ -408,7 +408,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(79),
+                            CreatedOn = new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3170),
                             NameEn = "Deposit",
                             NameRu = "Депозит",
                             NameUa = "Депозит",
@@ -418,7 +418,7 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 17, 10, 19, 55, 594, DateTimeKind.Utc).AddTicks(80),
+                            CreatedOn = new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3171),
                             NameEn = "Bank account",
                             NameRu = "Банковский счет",
                             NameUa = "Банківський рахунок",
