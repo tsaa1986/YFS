@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Http;
 using Newtonsoft.Json.Linq;
 using YFS.Core.Models;
+using System.Data;
 
 namespace YFS.Service.Services
 {
@@ -129,7 +130,7 @@ namespace YFS.Service.Services
             {
                 var clientInfoResult = await GetClientInfo(xToken);
                 if (clientInfoResult.Data.accounts.Count == 0)
-                    ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
+                    return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
 
 
                 if ((clientInfoResult.IsSuccess))
@@ -168,7 +169,8 @@ namespace YFS.Service.Services
                         }
                         else
                         {
-                            ServiceResult<AccountGroupDto>.Error("Failed to create accountGroup");
+                            //ServiceResult<AccountGroupDto>.Error("Failed to create accountGroup");
+                            return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to create accountGroup");
                         }
                     }
 
@@ -178,15 +180,15 @@ namespace YFS.Service.Services
                     if (accountsGroup != null && accountsGroup.Data != null)
                         monoBankId = monobank.Data.GLMFO;
                     else
-                        ServiceResult<Bank>.NotFound("Monobank from UnivarsalBank not found");
+                        return ServiceResult<IEnumerable<AccountDto>>.NotFound("Monobank from UnivarsalBank not found");
 
 
                     foreach (var monoAccount in monoAccounts)
-                        {
+                    {
                             var accountFromDB = await _accountService.GetExternalAccountById(monoAccount.id, userId, false);
 
                             if (accountFromDB.Data != null)
-                                break;
+                                continue;
 
                         //get currencyid
                         string currencyCountry = "";
@@ -200,19 +202,24 @@ namespace YFS.Service.Services
                             case 978: currencyCountry = "European Union";
                                 break;
                             default:
-                                ServiceResult<Bank>.NotFound($"Currency {monoAccount.currencyCode} not found");
-                                break;
+                                return ServiceResult<IEnumerable<AccountDto>>.NotFound($"Currency {monoAccount.currencyCode} not found");
+                                //break;
                         }
 
                         var currency = _currencyService.GetCurrencyByCountry(monoAccount.currencyCode, currencyCountry);
                         int currencyId = 0;
+                        string currencyCode = "";
 
                         if (currency.Result.IsSuccess)
+                        {
                             currencyId = currency.Result.Data.CurrencyId;
+                            currencyCode = currency.Result.Data.Code;
+                        }
                         else
                             ServiceResult<Bank>.NotFound($"Currency {monoAccount.currencyCode} not found");
 
-                        var account = new AccountDto
+                        //create account for adding
+                        var accountDto = new AccountDto
                         {
                             ExternalId = monoAccount.id,
                             AccountStatus = 1,
@@ -221,7 +228,7 @@ namespace YFS.Service.Services
                             AccountTypeId = 2, //banks account
                                                //CurrencyId =
                                                //BankId =
-                            Name = "mono" + monoAccount.type,
+                            Name = "Mono | " + monoAccount.type + " card |  " + $"[{currencyCode}]",
                             Bank_GLMFO = monoBankId,
                             CurrencyId = currencyId,
                             OpeningDate = DateTime.UtcNow,
@@ -229,8 +236,21 @@ namespace YFS.Service.Services
                             };
 
                             // Add the created AccountDto to the list
-                            accountData.Add(account);
-                        }
+                            //accountData.Add(accountDto);
+
+                        var createdAccount = await _accountService.CreateAccountForUser(accountDto , userId);
+                        if (createdAccount.IsSuccess == false )
+                            return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to add accounts from monobank");
+
+                        accountData.Add(createdAccount.Data);
+                     }
+
+                    if (accountData.Count == 0)
+                    {
+                        return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts for synchronization not found");
+                    }
+
+
 
                     return ServiceResult<IEnumerable<AccountDto>>.Success(accountData);
                 }   

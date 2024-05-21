@@ -2,6 +2,7 @@
 using Controllers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
@@ -146,6 +147,8 @@ namespace YFS.Data.Controllers
                 {
                     return Ok(importAccountResult.Data);
                 }
+                if (importAccountResult.IsNotFound)
+                    return Ok(new { Message = "Warning: " + importAccountResult.ErrorMessage });
                 else
                 {
                     return BadRequest("Failed to synchronize Accounts");
