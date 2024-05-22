@@ -123,146 +123,275 @@ namespace YFS.Service.Services
                 return ServiceResult<IEnumerable<MonoStatement>>.Error($"Error: {ex.Message}");
             }
         }
-
         public async Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId)
         {
             try
             {
                 var clientInfoResult = await GetClientInfo(xToken);
-                if (clientInfoResult.Data.accounts.Count == 0)
+                if (!clientInfoResult.IsSuccess || clientInfoResult.Data.accounts.Count == 0)
+                {
                     return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
-
-
-                if ((clientInfoResult.IsSuccess))
-                {
-                    // get accounts from mono
-                    var monoAccounts = clientInfoResult.Data.accounts;
-                    var accountData = new List<AccountDto>();
-
-                    //get accountgroup by name (Bank)
-                    var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId);
-                    int accountGroupId = 0;
-                    if (accountsGroup != null && accountsGroup.Data != null)
-                    {
-                        foreach (var accountGroup in accountsGroup.Data)
-                        {
-                            if (accountGroup?.AccountGroupNameEn != null && accountGroup.AccountGroupNameEn.Equals("Bank"))
-                            {
-                                accountGroupId = accountGroup.AccountGroupId;
-                                break;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        AccountGroupDto ag = new AccountGroupDto
-                        {
-                            AccountGroupNameEn = "Bank",
-                            AccountGroupNameRu = "",
-                            AccountGroupNameUa = "",
-                            GroupOrderBy = 0
-                        };
-                        var newAccountGroup = await _accountGroupService.CreateAccountGroupForUser(ag, userId);
-                        if (newAccountGroup.IsSuccess == true)
-                        {
-                            accountGroupId = newAccountGroup.Data.AccountGroupId;
-                        }
-                        else
-                        {
-                            //ServiceResult<AccountGroupDto>.Error("Failed to create accountGroup");
-                            return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to create accountGroup");
-                        }
-                    }
-
-                    //get monobank id glmfo=322001
-                    var monobank = await _bankService.GetBankByGLMFO(322001);
-                    int monoBankId = 0;
-                    if (accountsGroup != null && accountsGroup.Data != null)
-                        monoBankId = monobank.Data.GLMFO;
-                    else
-                        return ServiceResult<IEnumerable<AccountDto>>.NotFound("Monobank from UnivarsalBank not found");
-
-
-                    foreach (var monoAccount in monoAccounts)
-                    {
-                            var accountFromDB = await _accountService.GetExternalAccountById(monoAccount.id, userId, false);
-
-                            if (accountFromDB.Data != null)
-                                continue;
-
-                        //get currencyid
-                        string currencyCountry = "";
-
-                        switch (monoAccount.currencyCode)
-                        {
-                            case 840: currencyCountry = "United States of America (the)"; 
-                                break;
-                            case 980: currencyCountry = "Ukraine";
-                                break;
-                            case 978: currencyCountry = "European Union";
-                                break;
-                            default:
-                                return ServiceResult<IEnumerable<AccountDto>>.NotFound($"Currency {monoAccount.currencyCode} not found");
-                                //break;
-                        }
-
-                        var currency = _currencyService.GetCurrencyByCountry(monoAccount.currencyCode, currencyCountry);
-                        int currencyId = 0;
-                        string currencyCode = "";
-
-                        if (currency.Result.IsSuccess)
-                        {
-                            currencyId = currency.Result.Data.CurrencyId;
-                            currencyCode = currency.Result.Data.Code;
-                        }
-                        else
-                            ServiceResult<Bank>.NotFound($"Currency {monoAccount.currencyCode} not found");
-
-                        //create account for adding
-                        var accountDto = new AccountDto
-                        {
-                            ExternalId = monoAccount.id,
-                            AccountStatus = 1,
-                            Favorites = 0,
-                            AccountGroupId = accountGroupId,
-                            AccountTypeId = 2, //banks account
-                                               //CurrencyId =
-                                               //BankId =
-                            Name = "Mono | " + monoAccount.type + " card |  " + $"[{currencyCode}]",
-                            Bank_GLMFO = monoBankId,
-                            CurrencyId = currencyId,
-                            OpeningDate = DateTime.UtcNow,
-                            Note = monoAccount.type
-                            };
-
-                            // Add the created AccountDto to the list
-                            //accountData.Add(accountDto);
-
-                        var createdAccount = await _accountService.CreateAccountForUser(accountDto , userId);
-                        if (createdAccount.IsSuccess == false )
-                            return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to add accounts from monobank");
-
-                        accountData.Add(createdAccount.Data);
-                     }
-
-                    if (accountData.Count == 0)
-                    {
-                        return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts for synchronization not found");
-                    }
-
-
-
-                    return ServiceResult<IEnumerable<AccountDto>>.Success(accountData);
-                }   
-                else
-                {
-                    return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts from monobank");
                 }
+
+                var monoAccounts = clientInfoResult.Data.accounts;
+                var accountData = new List<AccountDto>();
+
+                int accountGroupId = await GetOrCreateAccountGroupId(userId);
+                if (accountGroupId == 0)
+                {
+                    return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to get or create account group");
+                }
+
+                var monobank = await _bankService.GetBankByGLMFO(322001);
+                if (monobank == null || !monobank.IsSuccess)
+                {
+                    return ServiceResult<IEnumerable<AccountDto>>.NotFound("Monobank from UniversalBank not found");
+                }
+                int monoBankId = monobank.Data.GLMFO;
+
+                foreach (var monoAccount in monoAccounts)
+                {
+                    if (await AccountExists(monoAccount.id, userId))
+                    {
+                        continue;
+                    }
+
+                    var currency = await GetCurrency(monoAccount.currencyCode);
+                    if (currency.IsSuccess != true)
+                    {
+                        return ServiceResult<IEnumerable<AccountDto>>.NotFound($"Currency {monoAccount.currencyCode} not found");
+                    }
+
+                    var accountDto = CreateAccountDto(monoAccount, accountGroupId, monoBankId, currency.Data);
+
+                    var createdAccount = await _accountService.CreateAccountForUser(accountDto, userId);
+                    if (!createdAccount.IsSuccess)
+                    {
+                        return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to add accounts from monobank");
+                    }
+
+                    accountData.Add(createdAccount.Data);
+                }
+
+                if (accountData.Count == 0)
+                {
+                    return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts for synchronization not found");
+                }
+
+                return ServiceResult<IEnumerable<AccountDto>>.Success(accountData);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts" + ex.Message);
+                return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts: " + ex.Message);
             }
         }
+
+        private async Task<int> GetOrCreateAccountGroupId(string userId)
+        {
+            var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId);
+            if (accountsGroup?.Data != null)
+            {
+                var accountGroup = accountsGroup.Data.FirstOrDefault(ag => ag.AccountGroupNameEn == "Bank");
+                if (accountGroup != null)
+                {
+                    return accountGroup.AccountGroupId;
+                }
+            }
+
+            var newAccountGroup = await _accountGroupService.CreateAccountGroupForUser(new AccountGroupDto
+            {
+                AccountGroupNameEn = "Bank",
+                AccountGroupNameRu = "",
+                AccountGroupNameUa = "",
+                GroupOrderBy = 0
+            }, userId);
+
+            return newAccountGroup.IsSuccess ? newAccountGroup.Data.AccountGroupId : 0;
+        }
+
+        private async Task<bool> AccountExists(string externalId, string userId)
+        {
+            var accountFromDB = await _accountService.GetExternalAccountById(externalId, userId, false);
+            return accountFromDB.Data != null;
+        }
+
+        private async Task<ServiceResult<CurrencyDto>> GetCurrency(int currencyCode)
+        {
+            string? currencyCountry = currencyCode switch
+            {
+                840 => "United States of America (the)",
+                980 => "Ukraine",
+                978 => "European Union",
+                _ => null
+            };
+
+            if (currencyCountry == null)
+            {
+                return ServiceResult<CurrencyDto>.NotFound($"Currency + {currencyCode} not found");
+            }
+
+            var currency = await _currencyService.GetCurrencyByCountry(currencyCode, currencyCountry);
+            return currency.IsSuccess ? ServiceResult<CurrencyDto>.Success(currency.Data) : ServiceResult<CurrencyDto>.NotFound("Monobank from UniversalBank not found"); ;
+        }
+
+        private AccountDto CreateAccountDto(MonoAccount monoAccount, int accountGroupId, int monoBankId, CurrencyDto currency)
+        {
+            return new AccountDto
+            {
+                ExternalId = monoAccount.id,
+                AccountStatus = 1,
+                Favorites = 0,
+                AccountGroupId = accountGroupId,
+                AccountTypeId = 2, // banks account
+                Name = $"Mono | {monoAccount.type} card | [{currency.Code}]",
+                Bank_GLMFO = monoBankId,
+                CurrencyId = currency.CurrencyId,
+                OpeningDate = DateTime.UtcNow,
+                Note = monoAccount.type
+            };
+        }
+
+        /*    
+            public async Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId)
+            {
+                try
+                {
+                    var clientInfoResult = await GetClientInfo(xToken);
+                    if (clientInfoResult.Data.accounts.Count == 0)
+                        return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
+
+
+                    if ((clientInfoResult.IsSuccess))
+                    {
+                        // get accounts from mono
+                        var monoAccounts = clientInfoResult.Data.accounts;
+                        var accountData = new List<AccountDto>();
+
+                        //get accountgroup by name (Bank)
+                        var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId);
+                        int accountGroupId = 0;
+                        if (accountsGroup != null && accountsGroup.Data != null)
+                        {
+                            foreach (var accountGroup in accountsGroup.Data)
+                            {
+                                if (accountGroup?.AccountGroupNameEn != null && accountGroup.AccountGroupNameEn.Equals("Bank"))
+                                {
+                                    accountGroupId = accountGroup.AccountGroupId;
+                                    break;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            AccountGroupDto ag = new AccountGroupDto
+                            {
+                                AccountGroupNameEn = "Bank",
+                                AccountGroupNameRu = "",
+                                AccountGroupNameUa = "",
+                                GroupOrderBy = 0
+                            };
+                            var newAccountGroup = await _accountGroupService.CreateAccountGroupForUser(ag, userId);
+                            if (newAccountGroup.IsSuccess == true)
+                            {
+                                accountGroupId = newAccountGroup.Data.AccountGroupId;
+                            }
+                            else
+                            {
+                                //ServiceResult<AccountGroupDto>.Error("Failed to create accountGroup");
+                                return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to create accountGroup");
+                            }
+                        }
+
+                        //get monobank id glmfo=322001
+                        var monobank = await _bankService.GetBankByGLMFO(322001);
+                        int monoBankId = 0;
+                        if (accountsGroup != null && accountsGroup.Data != null)
+                            monoBankId = monobank.Data.GLMFO;
+                        else
+                            return ServiceResult<IEnumerable<AccountDto>>.NotFound("Monobank from UnivarsalBank not found");
+
+
+                        foreach (var monoAccount in monoAccounts)
+                        {
+                                var accountFromDB = await _accountService.GetExternalAccountById(monoAccount.id, userId, false);
+
+                                if (accountFromDB.Data != null)
+                                    continue;
+
+                            //get currencyid
+                            string currencyCountry = "";
+
+                            switch (monoAccount.currencyCode)
+                            {
+                                case 840: currencyCountry = "United States of America (the)"; 
+                                    break;
+                                case 980: currencyCountry = "Ukraine";
+                                    break;
+                                case 978: currencyCountry = "European Union";
+                                    break;
+                                default:
+                                    return ServiceResult<IEnumerable<AccountDto>>.NotFound($"Currency {monoAccount.currencyCode} not found");
+                                    //break;
+                            }
+
+                            var currency = _currencyService.GetCurrencyByCountry(monoAccount.currencyCode, currencyCountry);
+                            int currencyId = 0;
+                            string currencyCode = "";
+
+                            if (currency.Result.IsSuccess)
+                            {
+                                currencyId = currency.Result.Data.CurrencyId;
+                                currencyCode = currency.Result.Data.Code;
+                            }
+                            else
+                                ServiceResult<Bank>.NotFound($"Currency {monoAccount.currencyCode} not found");
+
+                            //create account for adding
+                            var accountDto = new AccountDto
+                            {
+                                ExternalId = monoAccount.id,
+                                AccountStatus = 1,
+                                Favorites = 0,
+                                AccountGroupId = accountGroupId,
+                                AccountTypeId = 2, //banks account
+                                                   //CurrencyId =
+                                                   //BankId =
+                                Name = "Mono | " + monoAccount.type + " card |  " + $"[{currencyCode}]",
+                                Bank_GLMFO = monoBankId,
+                                CurrencyId = currencyId,
+                                OpeningDate = DateTime.UtcNow,
+                                Note = monoAccount.type
+                                };
+
+                                // Add the created AccountDto to the list
+                                //accountData.Add(accountDto);
+
+                            var createdAccount = await _accountService.CreateAccountForUser(accountDto , userId);
+                            if (createdAccount.IsSuccess == false )
+                                return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to add accounts from monobank");
+
+                            accountData.Add(createdAccount.Data);
+                         }
+
+                        if (accountData.Count == 0)
+                        {
+                            return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts for synchronization not found");
+                        }
+
+
+
+                        return ServiceResult<IEnumerable<AccountDto>>.Success(accountData);
+                    }   
+                    else
+                    {
+                        return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts from monobank");
+                    }
+                }
+                catch(Exception ex)
+                {
+                    return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts" + ex.Message);
+                }
+            }
+        */
     }
 }
