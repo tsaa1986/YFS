@@ -251,6 +251,13 @@ namespace YFS.Service.Services
             };
         }
 
+        public Task<ServiceResult<IEnumerable<MonoStatement>>> GetStatements(string xToken, string accountId, DateTime fromDate, DateTime toDate)
+        {
+            throw new NotImplementedException();
+        }
+
+
+
         /*    
             public async Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId)
             {
