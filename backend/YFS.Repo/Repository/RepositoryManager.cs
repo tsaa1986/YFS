@@ -25,6 +25,7 @@ namespace YFS.Service.Services
         private IBankRepository _bankRepository;
         private IBankSyncHistoryRepository _bankSyncHistoryRepository;
         private IApiTokenRepository _apiTokenRepository;
+        private IMccRepository _mccRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -152,6 +153,15 @@ namespace YFS.Service.Services
                 if (_apiTokenRepository is null)
                     _apiTokenRepository = new ApiTokenRepository(_repositoryContext);
                 return _apiTokenRepository;
+            }
+        }
+        public IMccRepository Mcc
+        {
+            get
+            {
+                if (_mccRepository is null)
+                    _mccRepository = new MccRepository(_repositoryContext);
+                return _mccRepository;
             }
         }
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();

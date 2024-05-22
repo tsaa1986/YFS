@@ -9,6 +9,7 @@ namespace YFS.Repo.Data
             context.Database.EnsureCreated();
 
             InitializeCurrencies(context);
+            InitializeMccs(context);
         }
     }
 }
