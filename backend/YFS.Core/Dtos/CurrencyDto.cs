@@ -9,7 +9,7 @@
         public string? ShortNameUs { get; set; }
         public string? Name_ru { get; set; }
         public string? Name_ua { get; set; }
-        public string? Name_en { get; set; }
+        public string Name_en { get; set; } = null!;
         public string Symbol { get; set; } = null!;
     }
 }

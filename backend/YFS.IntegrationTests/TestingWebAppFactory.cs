@@ -46,6 +46,44 @@ namespace YFS.IntegrationTests
 
             return token;
         }
+        //for postgressql
+        protected override void ConfigureWebHost(IWebHostBuilder builder)
+        {
+            builder.ConfigureServices(services =>
+            {
+                var descriptor = services.SingleOrDefault(
+                    d => d.ServiceType ==
+                        typeof(DbContextOptions<RepositoryContext>));
+                if (descriptor != null)
+                    services.Remove(descriptor);
+
+                services.AddDbContext<RepositoryContext>(options =>
+                {
+                    options.UseNpgsql("Host=localhost;Database=YFSTest;Username=yfs-root;Password=r00tPg1234;");
+                });
+
+                var sp = services.BuildServiceProvider();
+                using (var scope = sp.CreateScope())
+                using (var appContext = scope.ServiceProvider.GetRequiredService<RepositoryContext>())
+                {
+                    try
+                    {
+                        appContext.Database.EnsureCreated();
+                        // Optional: Call your seed method here if needed
+                        DatabaseInitializer.Initialize(appContext);
+                    }
+                    catch (Exception ex)
+                    {
+                        // Log errors or handle exceptions as needed
+                        throw;
+                    }
+                }
+            });
+        }
+
+
+        //ms sql config
+        /*
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             //builder.UseContentRoot(".");
@@ -78,7 +116,9 @@ namespace YFS.IntegrationTests
                     }
                 }
             });
-        }
+        }*/
+
+
     }
 
 

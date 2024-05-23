@@ -27,9 +27,21 @@ namespace YFS.IntegrationTests
             var content = await response.Content.ReadAsStringAsync();
             var currencies = JsonConvert.DeserializeObject<CurrencyDto[]>(content);
 
-            var currencyUSDDto = currencies.Where(a => a.CurrencyId.Equals(840));
-            var currencyUAHDto = currencies.Where(a => a.CurrencyId.Equals(980));
-            var currencyEuroDto = currencies.Where(a => a.CurrencyId.Equals(978));
+            var currencyUSDDto = currencies.Where(a => a.Number.Equals(840) && 
+                a.Code.Equals("USD") && 
+                a.Name_en.Equals("US Dollar") &&
+                a.Country.Equals("United States of America (the)")
+            );
+            var currencyUAHDto = currencies.Where(a => a.Number.Equals(980) &&
+                    a.Code.Equals("UAH") &&
+                    a.Name_en.Equals("Hryvnia") &&
+                    a.Country.Equals("Ukraine")
+            );
+            var currencyEuroDto = currencies.Where(a => a.Number.Equals(978) &&
+                    a.Code.Equals("EUR") && 
+                    a.Name_en.Equals("Euro") &&
+                    a.Country.Equals("European Union")
+            );
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
