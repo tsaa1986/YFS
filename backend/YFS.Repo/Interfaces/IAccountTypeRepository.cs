@@ -4,6 +4,6 @@ namespace YFS.Service.Interfaces
 {
     public interface IAccountTypeRepository
     {
-        Task<IEnumerable<AccountType>> GetAllAccountTypes(bool trackChanges);
+        Task<IEnumerable<AccountType>> GetAllAccountTypes(bool trackChanges, string language);
     }
 }

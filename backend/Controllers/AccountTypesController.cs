@@ -24,9 +24,9 @@ namespace YFS.Controllers
             _accountTypesService = accountTypesService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAccountTypes()
+        public async Task<IActionResult> GetAccountTypes(string language)
         {
-            var result = await _accountTypesService.GetAccountTypes();
+            var result = await _accountTypesService.GetAccountTypes(language);
 
             if (result.IsSuccess)
             {

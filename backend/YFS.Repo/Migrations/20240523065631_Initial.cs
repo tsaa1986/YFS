@@ -16,12 +16,7 @@ namespace YFS.Repo.Migrations
                 {
                     AccountTypeId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    NameUa = table.Column<string>(type: "VARCHAR", maxLength: 30, nullable: false),
-                    NameRu = table.Column<string>(type: "VARCHAR", maxLength: 30, nullable: false),
-                    NameEn = table.Column<string>(type: "VARCHAR", maxLength: 30, nullable: false),
-                    NoteUa = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true),
-                    NoteRu = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true),
-                    NoteEn = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true),
+                    IsEnabled = table.Column<bool>(type: "boolean", nullable: false),
                     TypeOrderBy = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "0"),
                     CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "CURRENT_TIMESTAMP")
                 },
@@ -162,6 +157,43 @@ namespace YFS.Repo.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Currencies", x => x.CurrencyId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Mccs",
+                columns: table => new
+                {
+                    Code = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Note = table.Column<string>(type: "text", nullable: true),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Mccs", x => x.Code);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccountTypeTranslations",
+                columns: table => new
+                {
+                    AccountTypeTranslationId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AccountTypeId = table.Column<int>(type: "integer", nullable: false),
+                    Language = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR", maxLength: 30, nullable: false),
+                    Description = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountTypeTranslations", x => x.AccountTypeTranslationId);
+                    table.ForeignKey(
+                        name: "FK_AccountTypeTranslations_AccountTypes_AccountTypeId",
+                        column: x => x.AccountTypeId,
+                        principalTable: "AccountTypes",
+                        principalColumn: "AccountTypeId",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -325,7 +357,7 @@ namespace YFS.Repo.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     ExternalId = table.Column<string>(type: "text", nullable: true),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    AccountStatus = table.Column<int>(type: "integer", nullable: false),
+                    AccountIsEnabled = table.Column<int>(type: "integer", nullable: false),
                     IBAN = table.Column<string>(type: "VARCHAR", maxLength: 40, nullable: true),
                     Favorites = table.Column<int>(type: "integer", nullable: false, defaultValueSql: "0"),
                     AccountGroupId = table.Column<int>(type: "integer", nullable: false),
@@ -334,7 +366,8 @@ namespace YFS.Repo.Migrations
                     Bank_GLMFO = table.Column<int>(type: "integer", nullable: true),
                     Name = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: false),
                     OpeningDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    Note = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true)
+                    Note = table.Column<string>(type: "VARCHAR", maxLength: 255, nullable: true),
+                    CreditLimit = table.Column<decimal>(type: "numeric(10,2)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -348,7 +381,8 @@ namespace YFS.Repo.Migrations
                         name: "FK_Accounts_AccountTypes_AccountTypeId",
                         column: x => x.AccountTypeId,
                         principalTable: "AccountTypes",
-                        principalColumn: "AccountTypeId");
+                        principalColumn: "AccountTypeId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Accounts_AspNetUsers_UserId",
                         column: x => x.UserId,
@@ -459,17 +493,6 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.InsertData(
-                table: "AccountTypes",
-                columns: new[] { "AccountTypeId", "CreatedOn", "NameEn", "NameRu", "NameUa", "NoteEn", "NoteRu", "NoteUa" },
-                values: new object[,]
-                {
-                    { 1, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3158), "Cash", "Наличные деньги", "Готівкові гроші", null, "Учет наличных средств", null },
-                    { 2, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3168), "Internet-money", "Интернет-деньги", "Інтернет-гроші", null, "Интернет счета", null },
-                    { 3, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3170), "Deposit", "Депозит", "Депозит", null, "Учет реальных депозитов", null },
-                    { 4, new DateTime(2024, 5, 20, 5, 49, 59, 581, DateTimeKind.Utc).AddTicks(3171), "Bank account", "Банковский счет", "Банківський рахунок", null, "Банковский счет", null }
-                });
-
-            migrationBuilder.InsertData(
                 table: "Banks",
                 columns: new[] { "GLMFO", "ADRESS", "D_CLOSE", "KOD_EDRPOU", "D_STAN", "FULLNAME", "DT_GRAND_LIC", "GR_SP", "D_GR_SP", "IDNBU", "KU", "DT_LIC", "NUM_LIC", "PR_LIC", "N_PR_LIC", "NKB", "N_OBL", "N_OBL_UR", "NP", "NAME_E", "OBL_UR", "D_OPEN", "P_IND", "SHORTNAME", "SHORTNAME_EN", "KSTAN", "N_STAN", "TNP", "TELEFON", "TYP" },
                 values: new object[,]
@@ -557,6 +580,11 @@ namespace YFS.Repo.Migrations
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AccountTypeTranslations_AccountTypeId",
+                table: "AccountTypeTranslations",
+                column: "AccountTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ApiTokens_UserId",
                 table: "ApiTokens",
                 column: "UserId");
@@ -623,6 +651,9 @@ namespace YFS.Repo.Migrations
                 name: "AccountsMonthlyBalance");
 
             migrationBuilder.DropTable(
+                name: "AccountTypeTranslations");
+
+            migrationBuilder.DropTable(
                 name: "ApiTokens");
 
             migrationBuilder.DropTable(
@@ -642,6 +673,9 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.DropTable(
                 name: "BankSyncHistories");
+
+            migrationBuilder.DropTable(
+                name: "Mccs");
 
             migrationBuilder.DropTable(
                 name: "Operations");

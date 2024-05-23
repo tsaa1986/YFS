@@ -166,7 +166,7 @@ namespace YFS.Repo.Migrations
                     b.Property<int>("AccountGroupId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("AccountStatus")
+                    b.Property<int>("AccountIsEnabled")
                         .HasColumnType("integer");
 
                     b.Property<int>("AccountTypeId")
@@ -174,6 +174,9 @@ namespace YFS.Repo.Migrations
 
                     b.Property<int?>("Bank_GLMFO")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("CreditLimit")
+                        .HasColumnType("numeric(10,2)");
 
                     b.Property<int>("CurrencyId")
                         .HasColumnType("integer");
@@ -346,32 +349,8 @@ namespace YFS.Repo.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasDefaultValueSql("CURRENT_TIMESTAMP");
 
-                    b.Property<string>("NameEn")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameRu")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NameUa")
-                        .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NoteEn")
-                        .HasMaxLength(255)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NoteRu")
-                        .HasMaxLength(255)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("NoteUa")
-                        .HasMaxLength(255)
-                        .HasColumnType("VARCHAR");
+                    b.Property<bool>("IsEnabled")
+                        .HasColumnType("boolean");
 
                     b.Property<int>("TypeOrderBy")
                         .ValueGeneratedOnAdd()
@@ -381,48 +360,37 @@ namespace YFS.Repo.Migrations
                     b.HasKey("AccountTypeId");
 
                     b.ToTable("AccountTypes");
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            AccountTypeId = 1,
-                            CreatedOn = new DateTime(2024, 5, 22, 10, 8, 59, 348, DateTimeKind.Utc).AddTicks(626),
-                            NameEn = "Cash",
-                            NameRu = "Наличные деньги",
-                            NameUa = "Готівкові гроші",
-                            NoteRu = "Учет наличных средств",
-                            TypeOrderBy = 0
-                        },
-                        new
-                        {
-                            AccountTypeId = 2,
-                            CreatedOn = new DateTime(2024, 5, 22, 10, 8, 59, 348, DateTimeKind.Utc).AddTicks(637),
-                            NameEn = "Internet-money",
-                            NameRu = "Интернет-деньги",
-                            NameUa = "Інтернет-гроші",
-                            NoteRu = "Интернет счета",
-                            TypeOrderBy = 0
-                        },
-                        new
-                        {
-                            AccountTypeId = 3,
-                            CreatedOn = new DateTime(2024, 5, 22, 10, 8, 59, 348, DateTimeKind.Utc).AddTicks(639),
-                            NameEn = "Deposit",
-                            NameRu = "Депозит",
-                            NameUa = "Депозит",
-                            NoteRu = "Учет реальных депозитов",
-                            TypeOrderBy = 0
-                        },
-                        new
-                        {
-                            AccountTypeId = 4,
-                            CreatedOn = new DateTime(2024, 5, 22, 10, 8, 59, 348, DateTimeKind.Utc).AddTicks(640),
-                            NameEn = "Bank account",
-                            NameRu = "Банковский счет",
-                            NameUa = "Банківський рахунок",
-                            NoteRu = "Банковский счет",
-                            TypeOrderBy = 0
-                        });
+            modelBuilder.Entity("YFS.Core.Models.AccountTypeTranslation", b =>
+                {
+                    b.Property<int>("AccountTypeTranslationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccountTypeTranslationId"));
+
+                    b.Property<int>("AccountTypeId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(255)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("Language")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("VARCHAR");
+
+                    b.HasKey("AccountTypeTranslationId");
+
+                    b.HasIndex("AccountTypeId");
+
+                    b.ToTable("AccountTypeTranslations");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.ApiToken", b =>
@@ -1155,10 +1123,10 @@ namespace YFS.Repo.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.AccountType", null)
+                    b.HasOne("YFS.Core.Models.AccountType", "AccountType")
                         .WithMany("Accounts")
                         .HasForeignKey("AccountTypeId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("YFS.Core.Models.Bank", "Bank")
@@ -1177,6 +1145,8 @@ namespace YFS.Repo.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("AccountType");
 
                     b.Navigation("Bank");
 
@@ -1212,6 +1182,17 @@ namespace YFS.Repo.Migrations
                         .HasForeignKey("AccountId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.AccountTypeTranslation", b =>
+                {
+                    b.HasOne("YFS.Core.Models.AccountType", "AccountType")
+                        .WithMany("Translations")
+                        .HasForeignKey("AccountTypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountType");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.ApiToken", b =>
@@ -1268,6 +1249,8 @@ namespace YFS.Repo.Migrations
             modelBuilder.Entity("YFS.Core.Models.AccountType", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Bank", b =>

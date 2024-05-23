@@ -13,6 +13,7 @@ namespace YFS.Repo.Data
         public DbSet<AccountBalance> AccountsBalance { get; set; } = null!;
         public DbSet<AccountMonthlyBalance> AccountsMonthlyBalance { get; set; } = null!;
         public DbSet<AccountType> AccountTypes { get; set; } = null!;
+        public DbSet<AccountTypeTranslation> AccountTypeTranslations { get; set; }
         public DbSet<Currency> Currencies { get; set; } = null!;
         public DbSet<Operation> Operations { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
@@ -56,7 +57,7 @@ namespace YFS.Repo.Data
                 .HasForeignKey(a => a.Bank_GLMFO);
             modelBuilder.Entity<AccountType>().Property(at => at.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<AccountType>().Property(at => at.TypeOrderBy).HasDefaultValueSql("0");
-            modelBuilder.Entity<AccountType>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
+            //modelBuilder.Entity<AccountType>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
             modelBuilder.Entity<Currency>().Property(c => c.CurrencyId).ValueGeneratedOnAdd();
             modelBuilder.Entity<Currency>().HasMany(a => a.Accounts).WithOne(c => c.Currency).OnDelete(DeleteBehavior.NoAction);
 

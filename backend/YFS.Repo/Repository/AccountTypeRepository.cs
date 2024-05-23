@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System;
 using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
 using YFS.Service.Interfaces;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace YFS.Service.Services
 {
@@ -11,7 +13,10 @@ namespace YFS.Service.Services
         public AccountTypeRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
-        public async Task<IEnumerable<AccountType>> GetAllAccountTypes(bool trackChanges)
-            => await FindAllAsync(trackChanges).Result.OrderBy(c => c.NameUa).ToListAsync();
+        public async Task<IEnumerable<AccountType>> GetAllAccountTypes(bool trackChanges, string language) =>
+            await FindAllAsync(trackChanges).Result
+                    .Include(at => at.Translations)
+                    .OrderBy(at => at.Translations.FirstOrDefault(t => t.Language == language).Name)
+                    .ToListAsync();
     }
 }

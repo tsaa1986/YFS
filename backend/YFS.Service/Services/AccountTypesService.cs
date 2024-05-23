@@ -16,11 +16,11 @@ namespace YFS.Service.Services
         {
         }
 
-        public async Task<ServiceResult<IEnumerable<AccountTypeDto>>> GetAccountTypes()
+        public async Task<ServiceResult<IEnumerable<AccountTypeDto>>> GetAccountTypes(string language)
         {
             try
             {
-                var accountTypes = await _repository.AccountType.GetAllAccountTypes(trackChanges: false);
+                var accountTypes = await _repository.AccountType.GetAllAccountTypes(trackChanges: false, language: language);
                 var accountTypesDto = _mapper.Map<IEnumerable<AccountTypeDto>>(accountTypes);
                 return ServiceResult<IEnumerable<AccountTypeDto>>.Success(accountTypesDto);
             }

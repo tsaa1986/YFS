@@ -10,6 +10,6 @@ namespace YFS.Service.Interfaces
 {
     public interface IAccountTypesService
     {
-        Task<ServiceResult<IEnumerable<AccountTypeDto>>> GetAccountTypes();
+        Task<ServiceResult<IEnumerable<AccountTypeDto>>> GetAccountTypes(string language);
     }
 }

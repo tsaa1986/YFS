@@ -10,36 +10,12 @@ using System.Threading.Tasks;
 namespace YFS.Core.Models
 {
     public class AccountType
-    {        
+    {
         [Key]
         public int AccountTypeId { get; set; }
-
-        [Column(TypeName = "VARCHAR")]
-        [Required(ErrorMessage = "AccountType's name is a required field")]
-        [MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
-        public string NameUa { get; set; } = null!;
-
-        [Column(TypeName = "VARCHAR")]
-        [Required(ErrorMessage = "AccountType's name is a required field")]
-        [MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
-        public string NameRu { get; set; } = null!;
-
-        [Column(TypeName = "VARCHAR")]
-        [Required(ErrorMessage = "AccountType's name is a required field")]
-        [MaxLength(30, ErrorMessage = "Maximum length for the Name is 30 characters.")]
-        public string NameEn { get; set; } = null!;
-
-        [Column(TypeName = "VARCHAR")]
-        [MaxLength(255, ErrorMessage = "Maximum length for the Name is 255 characters.")]
-        public string? NoteUa { get; set; }
-        [Column(TypeName = "VARCHAR")]
-        [MaxLength(255, ErrorMessage = "Maximum length for the Name is 255 characters.")]
-
-        public string? NoteRu { get; set; }
-        [Column(TypeName = "VARCHAR")]
-        [MaxLength(255, ErrorMessage = "Maximum length for the Name is 255 characters.")]
-        public string? NoteEn { get; set; }
-
+        public virtual ICollection<AccountTypeTranslation> Translations { get; set; } = new List<AccountTypeTranslation>();
+        [Required]
+        public bool IsEnabled { get; set; } = false; //default false
         [Required]
         public int TypeOrderBy { get; set; }
 
