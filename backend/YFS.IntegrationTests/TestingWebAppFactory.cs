@@ -68,7 +68,11 @@ namespace YFS.IntegrationTests
                 {
                     try
                     {
+                        appContext.Database.EnsureDeleted();
+
                         appContext.Database.EnsureCreated();
+                        SeedDb.Initialize(scope.ServiceProvider).GetAwaiter().GetResult();
+
                         // Optional: Call your seed method here if needed
                         DatabaseInitializer.Initialize(appContext);
                     }

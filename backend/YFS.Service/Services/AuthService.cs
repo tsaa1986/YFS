@@ -23,7 +23,7 @@ namespace YFS.Service.Services
                 var isAuth = await _repository.UserAuthentication.ValidateUserAsync(user);
                 if (isAuth == false)
                 {
-                    return ServiceResult<string>.Error(null);
+                    return ServiceResult<string>.NotFound("User not found");
                 }
                 else 
                 {
