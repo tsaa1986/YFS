@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using YFS.Repo.Data;
+using YFS.Service.Services;
 
 namespace YFS.IntegrationTests
 {
@@ -68,7 +69,7 @@ namespace YFS.IntegrationTests
                 {
                     try
                     {
-                        appContext.Database.EnsureDeleted();
+                        //appContext.Database.EnsureDeleted();
 
                         appContext.Database.EnsureCreated();
                         SeedDb.Initialize(scope.ServiceProvider).GetAwaiter().GetResult();

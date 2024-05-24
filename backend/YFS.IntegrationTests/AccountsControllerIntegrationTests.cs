@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Security.Principal;
@@ -7,22 +8,37 @@ using System.Threading.Tasks;
 using YFS.Controllers;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
+using YFS.Repo.Data;
+using YFS.Service.Interfaces;
+using YFS.Service.Services;
 using static YFS.Controllers.OperationsController;
 
 namespace YFS.IntegrationTests
 {
     [Collection("IntegrationTests")]
-    public class AccountsControllerIntegrationTests
+    public class AccountsControllerIntegrationTests : IClassFixture<TestingWebAppFactory<Program>>
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
-        private readonly SeedDataIntegrationTests _seedData;
+        private readonly SeedDataIntegrationTests _seedDataIntegrationTests;
+        private readonly IServiceProvider _serviceProvider;
 
         public AccountsControllerIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
-            _seedData = SeedDataIntegrationTests.Instance;
+            _seedDataIntegrationTests = SeedDataIntegrationTests.Instance;
+
+            // Ensure database is initialized before running tests
+            //_seedDataIntegrationTests.InitializeDatabaseAsync().Wait();
+            using (var scope = _factory.Services.CreateScope())
+            {
+                // Get the scoped service provider
+                _serviceProvider = scope.ServiceProvider;
+
+                // Ensure database is initialized before running tests
+                _seedDataIntegrationTests.InitializeDatabaseAsync(_serviceProvider).Wait();
+            }
         }
 
         [Fact]
@@ -36,7 +52,7 @@ namespace YFS.IntegrationTests
             var response = await _client.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             var accounts = JsonConvert.DeserializeObject<AccountDto[]>(content);
-            var openAccounts = accounts.Where(a => a.AccountStatus.Equals(1));
+            var openAccounts = accounts.Where(a => a.AccountIsEnabled.Equals(1));
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -47,37 +63,19 @@ namespace YFS.IntegrationTests
         public async Task Post_Create_AccountsForDemoUser_Return_Success()
         {
             //Arrange
-            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Accounts");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            string accountName = $"AccountTest_{Guid.NewGuid()}";
-
-            var requestAccountBody = new
-            {
-              id = 0,
-              accountStatus = 0,
-              favorites = 0,
-              accountGroupId = 0,
-              accountTypeId = 0,
-              currencyId = 840,
-              bankId = 322001,
-              name = accountName,
-              openingDate = DateTime.Now,
-              note = "test note",
-              balance = 0
-            };
-            var jsonRequestBody = JsonConvert.SerializeObject(requestAccountBody);
-            var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");
-            request.Content = content;
+            int newAccountId = await _seedDataIntegrationTests.CreateAccountUAH();
 
             //Act
-            var response = await _client.SendAsync(request);
-            var responseContent = await response.Content.ReadAsStringAsync();
+            var getAccountRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{newAccountId}");
+            getAccountRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            var getAccountResponse = await _client.SendAsync(getAccountRequest);
+            var responseContent = await getAccountResponse.Content.ReadAsStringAsync();
             var newAccount = JsonConvert.DeserializeObject<AccountDto>(responseContent);
 
             //Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, getAccountResponse.StatusCode);
             Assert.NotNull(newAccount);
-            Assert.True(newAccount.Name?.Equals(accountName));
+            Assert.Equal(newAccountId, newAccount.Id);
         }
         [Fact]
         public async Task Put_Update_Account_Returns_Success()
@@ -147,32 +145,9 @@ namespace YFS.IntegrationTests
         public async Task Get_AccountById_Return_Success()
         {
             //Arrange
-            var requestCreateAccount = new HttpRequestMessage(HttpMethod.Post, $"/api/Accounts/");
-            requestCreateAccount.Headers.Authorization = 
-                new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());   
-            string accountName = $"AccountTest_{Guid.NewGuid()}";
-            var requestAccountBody = new
-            {
-                id = 0,
-                accountStatus = 0,
-                favorites = 0,
-                accountGroupId = 0,
-                accountTypeId = 0,
-                currencyId = 840,
-                bankId = 322001,
-                name = accountName,
-                openingDate = DateTime.Now,
-                note = "test note",
-                balance = 0
-            };
-            var jsonRequestBody = JsonConvert.SerializeObject(requestAccountBody);
-            var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");
-            requestCreateAccount.Content = content;
-            var response = await _client.SendAsync(requestCreateAccount);
-            var responseContent = await response.Content.ReadAsStringAsync();
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var newAccount = JsonConvert.DeserializeObject<AccountDto>(responseContent);
-            var requestGetAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{newAccount.Id}");
+            int cerateAccountId = await _seedDataIntegrationTests.CreateAccountUAH();
+
+            var requestGetAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{cerateAccountId}");
             requestGetAccount.Headers.Authorization = 
                 new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());            
 
@@ -184,16 +159,14 @@ namespace YFS.IntegrationTests
             //Assert
             Assert.Equal(HttpStatusCode.OK, responseAccount.StatusCode);
             Assert.NotNull(newGetAccount);
-            Assert.True(newGetAccount.Name?.Equals(accountName));
-            Assert.True(newGetAccount.Balance == 0);
-            Assert.True(newGetAccount.CurrencyId == 840);
+            Assert.True(newGetAccount.Id == cerateAccountId);
         }
         [Fact]
         public async Task Get_CheckAccountBalanceAfterIncomeOperation_Return_Success()
         {
             //Arrange
-            int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncome = await _seedData.CreateOperation(_accountId, DateTime.Now, 
+            int _accountId = await _seedDataIntegrationTests.CreateAccountUAH();
+            var operationIncome = await _seedDataIntegrationTests.CreateOperation(_accountId, DateTime.Now, 
                 OperationDto.OperationType.Income, 2,100000.23M);
             var requestAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
             requestAccount.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());

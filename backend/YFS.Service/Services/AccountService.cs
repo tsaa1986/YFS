@@ -29,7 +29,7 @@ namespace YFS.Service.Services
                         AccountId = account.Id,
                         UserId= userId,
                         OperationAmount = account.Balance,
-                        OperationCurrencyId = account.CurrencyId,
+                        OperationCurrencyId = account.CurrencyId,                        
                         CurrencyAmount = account.Balance,
                         Description = "openning account",
                         TypeOperation = account.Balance > 0 ? 2 : 1,

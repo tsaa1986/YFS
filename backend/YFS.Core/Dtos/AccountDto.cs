@@ -8,6 +8,7 @@ namespace YFS.Core.Dtos
         public string ExternalId { get; set; } = null!;
         public int AccountStatus { get; set; }
         public int Favorites { get; set; }
+        public int AccountIsEnabled { get; set; }
         public int AccountGroupId { get; set; }
         public int AccountTypeId { get; set; }
         public int CurrencyId { get; set; }

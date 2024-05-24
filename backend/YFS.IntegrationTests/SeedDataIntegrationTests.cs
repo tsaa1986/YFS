@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 using YFS.Controllers;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
-
+using YFS.Repo.Data;
+using YFS.Service.Interfaces;
 
 namespace YFS.IntegrationTests
 {
@@ -18,49 +20,110 @@ namespace YFS.IntegrationTests
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
-        private static readonly SeedDataIntegrationTests _instance = new SeedDataIntegrationTests();
+        private static readonly SeedDataIntegrationTests _instance = new SeedDataIntegrationTests(new TestingWebAppFactory<Program>());
+        private readonly IServiceProvider _serviceProvider;
+        private static bool _isDatabaseInitialized = false;
 
         /*public SeedDataIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
         }*/
-        private SeedDataIntegrationTests()
+        private SeedDataIntegrationTests(TestingWebAppFactory<Program> factory)
         {
-            _factory = new TestingWebAppFactory<Program>();
+            _factory = factory;
             _client = _factory.CreateClient();
+            _serviceProvider = _factory.Services;
         }
         public static SeedDataIntegrationTests Instance => _instance;
+        public async Task InitializeDatabaseAsync(IServiceProvider serviceProvider)
+        {
+            if (_isDatabaseInitialized)
+                return;  // Skip initialization if already done
+
+            // Perform database initialization logic here
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var scopedServiceProvider = scope.ServiceProvider;
+                var context = scopedServiceProvider.GetRequiredService<RepositoryContext>();
+                await context.Database.EnsureCreatedAsync();
+            }
+
+            _isDatabaseInitialized = true;
+        }
         public async Task<int> CreateAccountUAH()
         {
             var createAccountRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Accounts");
             createAccountRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
             string accountName = $"AccountTest_{Guid.NewGuid()}";
 
-            // Create account
-            var createAccountBody = new
+            var requestAccountGroup = new HttpRequestMessage(HttpMethod.Get, "/api/AccountGroups");
+            requestAccountGroup.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            var responseAccountGroup = await _client.SendAsync(requestAccountGroup);
+            var contentAccountGroup = await responseAccountGroup.Content.ReadAsStringAsync();
+            var accountGroupsForDemoUser = JsonConvert.DeserializeObject<AccountGroupDto[]>(contentAccountGroup);
+
+            int accountGroupId = 0;
+            if (accountGroupsForDemoUser != null)
             {
-                id = 0,
-                accountStatus = 0,
-                favorites = 0,
-                accountGroupId = 0,
-                accountTypeId = 0,
-                currencyId = 840,
-                bankId = 1,
-                name = accountName,
-                openingDate = DateTime.Now,
-                note = "test note",
-                balance = 0
-            };
+                if (accountGroupsForDemoUser != null)
+                {
+                    // Assuming you want to find the first account group with a specific condition
+                    var desiredAccountGroup = accountGroupsForDemoUser.FirstOrDefault(ag => ag.AccountGroupNameEn.Equals("Bank"));
 
-            var createAccountRequestBody = JsonConvert.SerializeObject(createAccountBody);
-            createAccountRequest.Content = new StringContent(createAccountRequestBody, Encoding.UTF8, "application/json");
-            var createAccountResponse = await _client.SendAsync(createAccountRequest);
-            createAccountResponse.EnsureSuccessStatusCode();
-            var responseAccountContent = await createAccountResponse.Content.ReadAsStringAsync();
-            var newAccount = JsonConvert.DeserializeObject<AccountDto>(responseAccountContent);
+                    if (desiredAccountGroup != null)
+                    {
+                        accountGroupId = desiredAccountGroup.AccountGroupId;
+                    }
+                }
+            }
 
-            return newAccount.Id;
+            // Get CurrencyId
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var scopedServiceProvider = scope.ServiceProvider;
+
+                var serviceCurrency = scopedServiceProvider.GetRequiredService<ICurrencyService>();
+                var currency = await serviceCurrency.GetCurrencyByCodeAndCountry(980, "Ukraine");
+                if (currency.Data == null)
+                {
+                    throw new InvalidOperationException("Currency not found");
+                }
+
+                // Create account
+                var createAccountBody = new
+                {
+                    Id = 0,
+                    ExternalId = "",  // This value should be appropriately set
+                    AccountStatus = 0,
+                    Favorites = 0,
+                    AccountGroupId = accountGroupId,
+                    AccountTypeId = 1,
+                    AccountIsEnabled = 1,
+                    CurrencyId = currency.Data.CurrencyId,
+                    Bank_GLMFO = 322001,
+                    Name = accountName,    // Assuming accountName is defined elsewhere in your code
+                    OpeningDate = DateTime.UtcNow,
+                    Note = "test note for " + accountName,
+                    Balance = 0m          // Ensure the decimal is correctly formatted with 'm'
+                };
+
+                var createAccountRequestBody = JsonConvert.SerializeObject(createAccountBody);
+                createAccountRequest.Content = new StringContent(createAccountRequestBody, Encoding.UTF8, "application/json");
+
+                var createAccountResponse = await _client.SendAsync(createAccountRequest);
+                createAccountResponse.EnsureSuccessStatusCode();
+
+                var responseAccountContent = await createAccountResponse.Content.ReadAsStringAsync();
+                var newAccounts = JsonConvert.DeserializeObject<AccountDto>(responseAccountContent);
+
+                if (newAccounts == null)
+                {
+                    throw new InvalidOperationException("Account creation failed, no account returned.");
+                }
+
+                return newAccounts.Id;
+            }
         }
         public async Task<IEnumerable<OperationDto>> CreateOperation(int accountId, DateTime operationDate, 
             OperationDto.OperationType operationType,int categoryId, decimal operationAmount)

@@ -230,7 +230,7 @@ namespace YFS.Service.Services
                 return ServiceResult<CurrencyDto>.NotFound($"Currency + {currencyCode} not found");
             }
 
-            var currency = await _currencyService.GetCurrencyByCountry(currencyCode, currencyCountry);
+            var currency = await _currencyService.GetCurrencyByCodeAndCountry(currencyCode, currencyCountry);
             return currency.IsSuccess ? ServiceResult<CurrencyDto>.Success(currency.Data) : ServiceResult<CurrencyDto>.NotFound("Monobank from UniversalBank not found"); ;
         }
 

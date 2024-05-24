@@ -11,6 +11,6 @@ namespace YFS.Service.Interfaces
     public interface ICurrencyService
     {
         Task<ServiceResult<IEnumerable<CurrencyDto>>> GetCurrencies();
-        Task<ServiceResult<CurrencyDto>> GetCurrencyByCountry(int number, string country);//840, United States of America (the)
+        Task<ServiceResult<CurrencyDto>> GetCurrencyByCodeAndCountry(int number, string country);//840, United States of America (the)
     }
 }
