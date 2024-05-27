@@ -104,7 +104,7 @@ namespace YFS.Service.Services
             issuer: jwtSettings["validIssuer"],
             audience: jwtSettings["validAudience"],
             claims: claims,
-            expires: DateTime.Now.AddMinutes(Convert.ToDouble(jwtSettings["expiresIn"])),
+            expires: DateTime.UtcNow.AddMinutes(Convert.ToDouble(jwtSettings["expiresIn"])),
             signingCredentials: signingCredentials
             );
             return tokenOptions;

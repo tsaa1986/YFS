@@ -25,7 +25,8 @@ namespace YFS.Service.Services
         public async Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(int accountId, DateTime startDate, DateTime endDate, bool trackChanges)
             => await FindByConditionAsync(op => ((op.AccountId == accountId) && (op.OperationDate >= startDate && op.OperationDate <= endDate) ), trackChanges)
             .Result.Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate)
-            .Include(c => c.Category)
+            .Include(op => op.OperationItems)
+                .ThenInclude(oi => oi.Category)
             .ToListAsync();
 
         public Task<IEnumerable<Operation>> GetOperationsForAccountGroupForPeriod(int accountGroupId, bool trackChanges)
@@ -37,7 +38,8 @@ namespace YFS.Service.Services
         public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(int accountId, bool trackChanges)
             => await FindByConditionAsync(op => ((op.AccountId == accountId)), trackChanges)
             .Result.Include(p => p.Account.AccountBalance).AsNoTracking()
-            .Include(c => c.Category)
+            .Include(op => op.OperationItems)
+                .ThenInclude(oi => oi.Category)
             .OrderByDescending(op => op.OperationDate).Take(10).ToListAsync();
         //=> await Task.Run(() => RepositoryContext.Operations.Where(op => (op.AccountId == accountId))
         //.Include(p => p.Account.AccountBalance)            
@@ -47,7 +49,8 @@ namespace YFS.Service.Services
            => await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges)
             .Result.AsNoTracking()
             .Include(p => p.Account.AccountBalance)
-            .Include(c => c.Category)
+            .Include(op => op.OperationItems)
+                .ThenInclude(oi => oi.Category)
             .SingleOrDefaultAsync();    
 
         public async Task<Operation?> GetTransferOperationById(int transferOperationId)

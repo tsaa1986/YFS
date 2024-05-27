@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240523065631_Initial")]
+    [Migration("20240527110000_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -614,28 +614,179 @@ namespace YFS.Repo.Migrations
                         },
                         new
                         {
-                            GLMFO = 351254,
-                            Address = "вул. Гончара Олеся, буд. 76/2",
-                            CodeEDRPOU = "09620081",
-                            FullName = "АКЦІОНЕРНЕ ТОВАРИСТВО \"СКАЙ БАНК\"",
-                            GrantLicenseDate = new DateTime(2018, 6, 19, 0, 0, 0, 0, DateTimeKind.Utc),
-                            GroupSpecial = "B",
-                            IDNBU = "351254",
+                            GLMFO = 300465,
+                            Address = "вул. Госпітальна, 12г",
+                            CodeEDRPOU = "00032129",
+                            FullName = "акціонерне товариство \"Державний ощадний банк України\"",
+                            GrantLicenseDate = new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            GroupSpecial = "SV",
+                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IDNBU = "300465",
                             KU = 26,
                             LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
-                            LicenseNumber = 32,
+                            LicenseNumber = 148,
                             LicenseStatus = 1,
                             LicenseStatusDescription = "чинна банківська ліцензія",
-                            NKB = "128",
+                            NKB = "006",
                             NOBL = "м.Київ",
                             NOBLUR = "м.Київ",
                             NP = "Київ",
-                            NameEnglish = "JOINT STOCK COMPANY \"SKY BANK\"",
+                            NameEnglish = "Joint Stock Company \"State Savings Bank of Ukraine\"",
                             OBLUR = 26,
-                            OpenDate = new DateTime(1991, 10, 28, 0, 0, 0, 0, DateTimeKind.Utc),
-                            PostalIndex = "01054",
-                            ShortName = "АТ \"СКАЙ БАНК\"",
-                            ShortNameEnglish = "JSC \"SKY BANK\"",
+                            OpenDate = new DateTime(1991, 12, 31, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostalIndex = "01023",
+                            ShortName = "АТ \"Ощадбанк\"",
+                            ShortNameEnglish = "JSC \"Oschadbank\"",
+                            Status = 1,
+                            StatusName = "Нормальний",
+                            TNP = "м.",
+                            Type = 0
+                        },
+                        new
+                        {
+                            GLMFO = 300528,
+                            Address = "вул. Жилянська, 43",
+                            CodeEDRPOU = "21685166",
+                            FullName = "АКЦІОНЕРНЕ ТОВАРИСТВО \"ОТП БАНК\"",
+                            GrantLicenseDate = new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            GroupSpecial = "SV",
+                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IDNBU = "300528",
+                            KU = 26,
+                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LicenseNumber = 191,
+                            LicenseStatus = 1,
+                            LicenseStatusDescription = "чинна банківська ліцензія",
+                            NKB = "296",
+                            NOBL = "м.Київ",
+                            NOBLUR = "м.Київ",
+                            NP = "Київ",
+                            NameEnglish = "JOINT-STOCK COMPANY OTP BANK",
+                            OBLUR = 26,
+                            OpenDate = new DateTime(1998, 3, 2, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostalIndex = "01033",
+                            ShortName = "АТ \"ОТП БАНК\"",
+                            ShortNameEnglish = "OTP BANK JSC",
+                            Status = 1,
+                            StatusName = "Нормальний",
+                            TNP = "м.",
+                            Type = 0
+                        },
+                        new
+                        {
+                            GLMFO = 300614,
+                            Address = "Район: Шевченківський, Місто: Київ, Вулиця: вул. Євгена Чикаленка, Будинок: 42/4",
+                            CodeEDRPOU = "14361575",
+                            FullName = "АКЦІОНЕРНЕ ТОВАРИСТВО \"КРЕДІ АГРІКОЛЬ БАНК\"",
+                            GrantLicenseDate = new DateTime(2011, 10, 12, 0, 0, 0, 0, DateTimeKind.Utc),
+                            GroupSpecial = "SV",
+                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IDNBU = "300614",
+                            KU = 26,
+                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LicenseNumber = 99,
+                            LicenseStatus = 1,
+                            LicenseStatusDescription = "чинна банківська ліцензія",
+                            NKB = "171",
+                            NOBL = "м.Київ",
+                            NOBLUR = "м.Київ",
+                            NameEnglish = "JOINT-STOCK COMPANY \"CREDIT AGRICOLE BANK\"",
+                            OBLUR = 26,
+                            OpenDate = new DateTime(1993, 2, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostalIndex = "01004",
+                            ShortName = "АТ \"КРЕДІ АГРІКОЛЬ БАНК\"",
+                            ShortNameEnglish = "JSC \"CREDIT AGRICOLE BANK\"",
+                            Status = 1,
+                            StatusName = "Нормальний",
+                            Telephone = "0445810700",
+                            Type = 0
+                        },
+                        new
+                        {
+                            GLMFO = 305299,
+                            Address = "вул. Грушевського, 1Д",
+                            CodeEDRPOU = "14360570",
+                            DateStatus = new DateTime(2016, 12, 22, 0, 0, 0, 0, DateTimeKind.Utc),
+                            FullName = "акціонерне товариство комерційний банк \"ПриватБанк\"",
+                            GrantLicenseDate = new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            GroupSpecial = "SV",
+                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IDNBU = "305299",
+                            KU = 26,
+                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LicenseNumber = 22,
+                            LicenseStatus = 1,
+                            LicenseStatusDescription = "чинна банківська ліцензія",
+                            NKB = "046",
+                            NOBL = "м.Київ",
+                            NOBLUR = "м.Київ",
+                            NP = "Київ",
+                            NameEnglish = "Joint-Stock Company Commercial Bank \"PrivatBank\"",
+                            OBLUR = 26,
+                            OpenDate = new DateTime(1992, 3, 19, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostalIndex = "01001",
+                            ShortName = "АТ КБ \"ПриватБанк\"",
+                            ShortNameEnglish = "JSC CB \"PrivatBank\"",
+                            Status = 1,
+                            StatusName = "Нормальний",
+                            TNP = "м.",
+                            Type = 0
+                        },
+                        new
+                        {
+                            GLMFO = 322001,
+                            Address = "вул. Автозаводська,54/19",
+                            CodeEDRPOU = "21133352",
+                            FullName = "АКЦІОНЕРНЕ ТОВАРИСТВО \"УНІВЕРСАЛ БАНК\"",
+                            GrantLicenseDate = new DateTime(2011, 10, 10, 0, 0, 0, 0, DateTimeKind.Utc),
+                            GroupSpecial = "SV",
+                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IDNBU = "322001",
+                            KU = 26,
+                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LicenseNumber = 92,
+                            LicenseStatus = 1,
+                            LicenseStatusDescription = "чинна банківська ліцензія",
+                            NKB = "242",
+                            NOBL = "м.Київ",
+                            NOBLUR = "м.Київ",
+                            NP = "Київ",
+                            NameEnglish = "JOINT STOCK COMPANY \"UNIVERSAL BANK\"",
+                            OBLUR = 26,
+                            OpenDate = new DateTime(1994, 1, 20, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostalIndex = "04082",
+                            ShortName = "АТ \"УНІВЕРСАЛ БАНК\"",
+                            ShortNameEnglish = "JSC \"UNIVERSAL BANK\"",
+                            Status = 1,
+                            StatusName = "Нормальний",
+                            TNP = "м.",
+                            Type = 0
+                        },
+                        new
+                        {
+                            GLMFO = 300335,
+                            Address = "вулиця Генерала Алмазова, буд. 4а",
+                            CodeEDRPOU = "14305909",
+                            FullName = "Акціонерне товариство \"Райффайзен Банк\"",
+                            GrantLicenseDate = new DateTime(2021, 7, 2, 0, 0, 0, 0, DateTimeKind.Utc),
+                            GroupSpecial = "SV",
+                            GroupSpecialDate = new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IDNBU = "300335",
+                            KU = 26,
+                            LicenseDate = new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc),
+                            LicenseNumber = 10,
+                            LicenseStatus = 1,
+                            LicenseStatusDescription = "чинна банківська ліцензія",
+                            NKB = "036",
+                            NOBL = "м.Київ",
+                            NOBLUR = "м.Київ",
+                            NP = "Київ",
+                            NameEnglish = "Raiffeisen Bank Joint Stock Company",
+                            OBLUR = 26,
+                            OpenDate = new DateTime(1992, 3, 27, 0, 0, 0, 0, DateTimeKind.Utc),
+                            PostalIndex = "01011",
+                            ShortName = "АТ \"Райффайзен Банк\"",
+                            ShortNameEnglish = "Raiffeisen Bank JSC",
                             Status = 1,
                             StatusName = "Нормальний",
                             TNP = "м.",
@@ -938,15 +1089,6 @@ namespace YFS.Repo.Migrations
                     b.Property<decimal>("CashbackAmount")
                         .HasColumnType("numeric(10,2)");
 
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<decimal>("CurrencyAmount")
-                        .HasColumnType("numeric(10,2)");
-
-                    b.Property<int?>("CurrencyId")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Description")
                         .HasMaxLength(200)
                         .HasColumnType("VARCHAR");
@@ -957,18 +1099,14 @@ namespace YFS.Repo.Migrations
                     b.Property<decimal>("MCC")
                         .HasColumnType("numeric(10,2)");
 
-                    b.Property<decimal>("OperationAmount")
-                        .HasColumnType("numeric(10,2)");
-
                     b.Property<int>("OperationCurrencyId")
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("OperationDate")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("Tag")
-                        .HasMaxLength(200)
-                        .HasColumnType("VARCHAR");
+                    b.Property<decimal>("TotalCurrencyAmount")
+                        .HasColumnType("numeric");
 
                     b.Property<int>("TransferOperationId")
                         .HasColumnType("integer");
@@ -984,11 +1122,82 @@ namespace YFS.Repo.Migrations
 
                     b.HasIndex("AccountId");
 
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("CurrencyId");
+                    b.HasIndex("OperationCurrencyId");
 
                     b.ToTable("Operations");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.OperationItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("CurrencyAmount")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(200)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<decimal>("OperationAmount")
+                        .HasColumnType("numeric(10,2)");
+
+                    b.Property<int>("OperationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("OperationId");
+
+                    b.ToTable("OperationItem");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.OperationTag", b =>
+                {
+                    b.Property<int>("OperationId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Id")
+                        .HasColumnType("integer");
+
+                    b.HasKey("OperationId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("OperationTags");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.User", b =>
@@ -1216,21 +1425,53 @@ namespace YFS.Repo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("YFS.Core.Models.Currency", "OperationCurrency")
+                        .WithMany()
+                        .HasForeignKey("OperationCurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
+                    b.Navigation("OperationCurrency");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.OperationItem", b =>
+                {
                     b.HasOne("YFS.Core.Models.Category", "Category")
                         .WithMany()
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.Currency", "Currency")
-                        .WithMany()
-                        .HasForeignKey("CurrencyId");
-
-                    b.Navigation("Account");
+                    b.HasOne("YFS.Core.Models.Operation", "Operation")
+                        .WithMany("OperationItems")
+                        .HasForeignKey("OperationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Category");
 
-                    b.Navigation("Currency");
+                    b.Navigation("Operation");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.OperationTag", b =>
+                {
+                    b.HasOne("YFS.Core.Models.Operation", "Operation")
+                        .WithMany("OperationTags")
+                        .HasForeignKey("OperationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("YFS.Core.Models.Tag", "Tag")
+                        .WithMany("OperationTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Operation");
+
+                    b.Navigation("Tag");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Account", b =>
@@ -1263,6 +1504,18 @@ namespace YFS.Repo.Migrations
             modelBuilder.Entity("YFS.Core.Models.Currency", b =>
                 {
                     b.Navigation("Accounts");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Operation", b =>
+                {
+                    b.Navigation("OperationItems");
+
+                    b.Navigation("OperationTags");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Tag", b =>
+                {
+                    b.Navigation("OperationTags");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.User", b =>

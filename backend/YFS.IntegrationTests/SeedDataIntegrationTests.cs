@@ -125,16 +125,17 @@ namespace YFS.IntegrationTests
                 return newAccounts.Id;
             }
         }
-        public async Task<IEnumerable<OperationDto>> CreateOperation(int accountId, DateTime operationDate, 
+        public async Task<IEnumerable<OperationDto>> CreateOperationUAH(int accountId, DateTime operationDate, 
             OperationDto.OperationType operationType,int categoryId, decimal operationAmount)
         {
             // Create operation 1
             if (OperationDto.OperationType.Transfer == operationType)
                 throw new Exception("Transfer operation is restricted! Use only income/expense");
-            var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
-            createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
-            var createOperation1Body = new
+            var createOperationRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
+            createOperationRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+
+            var operationRequestBody = new
             {
                 transferOperationId = 0,
                 categoryId = categoryId,
@@ -144,19 +145,22 @@ namespace YFS.IntegrationTests
                 currencyAmount = operationAmount,
                 operationAmount = operationAmount,
                 operationDate = operationDate,
-                description = "description operation 1",
-                tag = "tag operation 1"
+                description = "description operation",
+                //tagId = tagId
             };
 
-            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
-            createOperation1Request.Content = new StringContent(createOperation1RequestBody, Encoding.UTF8, "application/json");
-            var createOperation1Response = await _client.SendAsync(createOperation1Request);
-            createOperation1Response.EnsureSuccessStatusCode();
+            var requestBody = JsonConvert.SerializeObject(operationRequestBody);
+            createOperationRequest.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
 
-            var contentOperation = await createOperation1Response.Content.ReadAsStringAsync();
-            var operations = JsonConvert.DeserializeObject<OperationDto[]>(contentOperation);
+            // Send the request to create the operation
+            var createOperationResponse = await _client.SendAsync(createOperationRequest);
+            createOperationResponse.EnsureSuccessStatusCode();
 
-            return operations;
+            // Deserialize the response to get the created operation
+            var content = await createOperationResponse.Content.ReadAsStringAsync();
+            var createdOperation = JsonConvert.DeserializeObject<OperationDto[]>(content);
+
+            return createdOperation;
         }
         public async Task<IEnumerable<OperationDto>> CreateTransferOperation(int _accountWithdrawId, int _accountTargetId,
             DateTime _dateOperation, decimal _operationAmount)
@@ -196,9 +200,9 @@ namespace YFS.IntegrationTests
             for (int i = 0; i < 3; i++)
             {
                 var monthOffset = -i;
-                var operationDate = DateTime.Now.AddMonths(monthOffset);
+                var operationDate = DateTime.UtcNow.AddMonths(monthOffset);
 
-                var createdOperations = await CreateOperation(accountId, operationDate, operationType, 2, incomeAmount);
+                var createdOperations = await CreateOperationUAH(accountId, operationDate, operationType, 2, incomeAmount);
 
                 if (createdOperations.Count() == 0)
                 {

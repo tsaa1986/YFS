@@ -13,24 +13,29 @@ namespace YFS.Core.Dtos
             Income = 2,
             Transfer = 3
         }
+
         public int Id { get; set; }
-        public int TransferOperationId { get; set; } //for transfer operation between accounts
-        //public string UserId { get; set; }
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; }
-        public int TypeOperation { get; set; } //1-income,2-expense,3-transfer
-                                               //
+        public int TransferOperationId { get; set; } // for transfer operation between accounts
+        public int TypeOperation { get; set; } // 1-income, 2-expense, 3-transfer
         public int AccountId { get; set; }
-        public string? AccountName { get; set; }
+        public string AccountName { get; set; } = null!;
+        public decimal TotalCurrencyAmount { get; set; }
+        public int OperationCurrencyId { get; set; }
+        public DateTime OperationDate { get; set; }
+        public decimal Balance { get; set; }
+        public string? Description { get; set; }
+        // Collection of OperationItems
+        public List<OperationItemDto> OperationItems { get; set; } = new List<OperationItemDto>();
+    }
+
+    public class OperationItemDto
+    {
+        public int Id { get; set; }
+        public int OperationId { get; set; }
+        public int CategoryId { get; set; }
+        public string CategoryName { get; set; } = null!;
         public int OperationCurrencyId { get; set; }
         public decimal CurrencyAmount { get; set; }
         public decimal OperationAmount { get; set; }
-        public DateTime OperationDate { get; set; }
-        //public decimal ExchangeRate { get; set; }
-        //public decimal CashbackAmount { get; set; }
-        public decimal Balance { get; set; }
-        //public int MCC { get; set; }
-        public string? Description { get; set; }
-        public string? Tag { get; set; }
     }
 }

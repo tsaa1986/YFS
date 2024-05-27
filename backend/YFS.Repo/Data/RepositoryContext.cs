@@ -13,9 +13,12 @@ namespace YFS.Repo.Data
         public DbSet<AccountBalance> AccountsBalance { get; set; } = null!;
         public DbSet<AccountMonthlyBalance> AccountsMonthlyBalance { get; set; } = null!;
         public DbSet<AccountType> AccountTypes { get; set; } = null!;
-        public DbSet<AccountTypeTranslation> AccountTypeTranslations { get; set; }
+        public DbSet<AccountTypeTranslation> AccountTypeTranslations { get; set; } = null!;
         public DbSet<Currency> Currencies { get; set; } = null!;
         public DbSet<Operation> Operations { get; set; } = null!;
+        public DbSet<OperationItem> OperationItem { get; set; } = null!;
+        public DbSet<Tag> Tags { get; set; } = null!;
+        public DbSet<OperationTag> OperationTags { get; set; } = null!;
         public DbSet<Category> Categories { get; set; } = null!;
         public DbSet<Bank> Banks { get; set; } = null!;
         public DbSet<BankSyncHistory> BankSyncHistories { get; set; } = null!;
@@ -62,6 +65,19 @@ namespace YFS.Repo.Data
             modelBuilder.Entity<Currency>().HasMany(a => a.Accounts).WithOne(c => c.Currency).OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<User>().Property(b => b.CreatedOn).HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+            modelBuilder.Entity<OperationTag>()
+                .HasKey(ot => new { ot.OperationId, ot.TagId });
+
+            modelBuilder.Entity<OperationTag>()
+                .HasOne(ot => ot.Operation)
+                .WithMany(o => o.OperationTags)
+                .HasForeignKey(ot => ot.OperationId);
+
+            modelBuilder.Entity<OperationTag>()
+                .HasOne(ot => ot.Tag)
+                .WithMany(t => t.OperationTags)
+                .HasForeignKey(ot => ot.TagId);
 
             //modelBuilder.ApplyConfiguration(new UserData());
             //modelBuilder.ApplyConfiguration(new CurrencyData());

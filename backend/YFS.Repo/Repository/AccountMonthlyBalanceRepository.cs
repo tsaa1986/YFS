@@ -18,12 +18,23 @@ namespace YFS.Service.Services
             await UpdateAsync(accountMonthlyBalance);
         public async Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceAfterOperation(Operation _operation, bool trackChanges)
         {
-            DateTime nextMonthOperationDate = _operation.OperationDate.AddMonths(1);
+            DateTime operationDateUtc = _operation.OperationDate.ToUniversalTime();
+
+            // Calculate the start date of the next month in UTC
+            DateTime nextMonthOperationDateUtc = operationDateUtc.AddMonths(1);
+            DateTime dtSearchMonthUtc = new DateTime(nextMonthOperationDateUtc.Year, nextMonthOperationDateUtc.Month, 1, 0, 0, 0, DateTimeKind.Utc);
+
+            // Find account monthly balances after the operation's next month in UTC
+            var res = await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
+                                                     (amb.StartDateOfMonth >= dtSearchMonthUtc), trackChanges)
+                                                .Result.OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
+            return res;
+            /*DateTime nextMonthOperationDate = _operation.OperationDate.AddMonths(1);
             DateTime dtSearchMonth = new DateTime(nextMonthOperationDate.Year, nextMonthOperationDate.Month, 1);
             var res = await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
                 (amb.StartDateOfMonth >= dtSearchMonth), trackChanges)
                 .Result.OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
-            return res;
+            return res;*/
         }
         public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges) 
         {

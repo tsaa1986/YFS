@@ -70,15 +70,18 @@ namespace YFS.IntegrationTests
         public async Task SignUp_Post_Returns_Success_CreateNewUser()
         {
             // Arrange
+            string uniqueUserName = "UniqueUser" + Guid.NewGuid().ToString().Substring(0, 8);
+            string uniqueEmail = "uniqueuser" + Guid.NewGuid().ToString().Substring(0, 8) + "@example.com";
+
             var request = new HttpRequestMessage(HttpMethod.Post, "/api/Authentication/sign-up");
 
             var signUpDto = new
             {
                 firstName = "Anton",
                 lastName = "Test",
-                userName = "AntTest",
+                userName = uniqueUserName, // Use the unique username
                 password = "demo123$qweR",
-                email = "anton.test@gmail.com",
+                email = uniqueEmail,
                 phoneNumber = "12345678"
             };
             var jsonContent = JsonConvert.SerializeObject(signUpDto);

@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 using NuGet.Frameworks;
 using System.Net;
 using System.Net.Http.Headers;
@@ -10,6 +11,7 @@ using Xunit.Priority;
 using YFS.Controllers;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
+using YFS.Service.Interfaces;
 
 namespace YFS.IntegrationTests
 {
@@ -19,65 +21,35 @@ namespace YFS.IntegrationTests
     {
         private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
-        private readonly SeedDataIntegrationTests _seedData;
+        private readonly IServiceProvider _serviceProvider;
+        private readonly SeedDataIntegrationTests _seedDataIntegrationTests;
 
         public OperationsControllerIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _client = _factory.CreateClient();
-            _seedData = SeedDataIntegrationTests.Instance;
+            _seedDataIntegrationTests = SeedDataIntegrationTests.Instance;
+            _serviceProvider = _factory.Services;
         }
         //create 3 operation. per 100 000
         //private async Task CreateOperationIncome3monthAutomatically(int _accountId)
         //{
-            /*
-            var operationIncome1 = await _seedData.CreateOperation(_accountId, DateTime.Now,
-                OperationDto.OperationType.Income, 2, 100000M);
-            // Create operation 1
-            if (operationIncome1.Count() == 0) { throw new Exception(); }
+        /*
+        var operationIncome1 = await _seedData.CreateOperation(_accountId, DateTime.UtcNow,
+            OperationDto.OperationType.Income, 2, 100000M);
+        // Create operation 1
+        if (operationIncome1.Count() == 0) { throw new Exception(); }
 
-            // Create operation 2
-            var operationIncome2 = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
-                OperationDto.OperationType.Income, 2, 100000M);
-            if (operationIncome2.Count() == 0) { throw new Exception(); }
+        // Create operation 2
+        var operationIncome2 = await _seedData.CreateOperation(_accountId, DateTime.UtcNow.AddMonths(-1),
+            OperationDto.OperationType.Income, 2, 100000M);
+        if (operationIncome2.Count() == 0) { throw new Exception(); }
 
-            // Create operation 3
-            var operationIncome3 = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-2),
-                OperationDto.OperationType.Income, 2, 100000M);
-            if (operationIncome3.Count() == 0) { throw new Exception(); }*/
+        // Create operation 3
+        var operationIncome3 = await _seedData.CreateOperation(_accountId, DateTime.UtcNow.AddMonths(-2),
+            OperationDto.OperationType.Income, 2, 100000M);
+        if (operationIncome3.Count() == 0) { throw new Exception(); }*/
         //}
-        private async Task<int> CreateAccountUAH()
-        {
-            var createAccountRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Accounts");
-            createAccountRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            string accountName = $"AccountTest_{Guid.NewGuid()}";
-
-            // Create account
-            var createAccountBody = new
-            {
-                id = 0,
-                accountStatus = 0,
-                favorites = 0,
-                accountGroupId = 0,
-                accountTypeId = 0,
-                currencyId = 840,
-                bankId = 1,
-                name = accountName,
-                openingDate = DateTime.Now,
-                note = "test note",
-                balance = 0
-            };
-
-            var createAccountRequestBody = JsonConvert.SerializeObject(createAccountBody);
-            createAccountRequest.Content = new StringContent(createAccountRequestBody, Encoding.UTF8, "application/json");
-            var createAccountResponse = await _client.SendAsync(createAccountRequest);
-            createAccountResponse.EnsureSuccessStatusCode();
-            var responseAccountContent = await createAccountResponse.Content.ReadAsStringAsync();
-            var newAccount = JsonConvert.DeserializeObject<AccountDto>(responseAccountContent);
-
-            return newAccount.Id;
-        }
-
         [Fact, Priority(1)]
         public async Task Get_Last10OperationsAccount_Returns_Success()
         {
@@ -85,7 +57,7 @@ namespace YFS.IntegrationTests
             int _accountId = 1;
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/operations/last10/{_accountId}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            await _seedData.CreateOperationIncome3monthAutomatically(_accountId);
+            await _seedDataIntegrationTests.CreateOperationIncome3monthAutomatically(_accountId);
 
             //Act
             var responseOperation = await _client.SendAsync(requestOperation);
@@ -103,12 +75,12 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             int _accountId = 1;
-            String startDate = DateTime.Now.AddMonths(-3).ToString("yyyy-MM-dd") + " 00:00:00";
-            String endDate = DateTime.Now.ToString("yyyy-MM-dd") + " 23:59:59";
+            String startDate = DateTime.UtcNow.AddMonths(-3).ToString("yyyy-MM-dd") + " 00:00:00";
+            String endDate = DateTime.UtcNow.ToString("yyyy-MM-dd") + " 23:59:59";
             //2023 - 04 - 01 / 2023 - 04 - 28
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Operations/period/{_accountId}/{startDate}/{endDate}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            await _seedData.CreateOperationIncome3monthAutomatically(_accountId);
+            await _seedDataIntegrationTests.CreateOperationIncome3monthAutomatically(_accountId);
 
             //Act
             var responseOperation = await _client.SendAsync(requestOperation);
@@ -121,10 +93,26 @@ namespace YFS.IntegrationTests
             Assert.True(operations[0].Balance == 600000);
         }
         [Fact]
-        public async Task Post_CreateIncomeOperation_Return_Success()
+        public async Task Post_CreateSingleIncomeOperation_Return_Success()
         {
             //Arrange
-            int accountId = await CreateAccountUAH();
+            int accountId = await _seedDataIntegrationTests.CreateAccountUAH();
+            int currencyId = 0;
+
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var scopedServiceProvider = scope.ServiceProvider;
+
+                var serviceCurrency = scopedServiceProvider.GetRequiredService<ICurrencyService>();
+                var currency = await serviceCurrency.GetCurrencyByCodeAndCountry(980, "Ukraine");
+                if (currency.Data == null)
+                {
+                    throw new InvalidOperationException("Currency not found");
+                }
+                else
+                    currencyId = currency.Data.CurrencyId;
+            }
+
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -135,12 +123,28 @@ namespace YFS.IntegrationTests
                 categoryId = 2,
                 typeOperation = OperationDto.OperationType.Income, //income
                 accountId = accountId,
-                operationCurrencyId = 980,
+                operationCurrencyId = currencyId, // Assign currencyId here
                 currencyAmount = 100000.23,
                 operationAmount = 100000.23,
-                operationDate = DateTime.Now,
+                operationDate = DateTime.UtcNow,
                 description = "description operation 1",
-                tag = "tag operation 1"
+                operationItems = new[]
+                {
+                            new
+                            {
+                                categoryId = 2, // Example category ID for the operation item
+                                currencyAmount = 50000.11, // Example currency amount for the operation item
+                                operationAmount = 50000.11, // Example operation amount for the operation item
+                                description = "Description for operation item 1"
+                            },
+                            new
+                            {
+                                categoryId = 2, // Example category ID for another operation item
+                                currencyAmount = 50000.12, // Example currency amount for another operation item
+                                operationAmount = 50000.12, // Example operation amount for another operation item
+                                description = "Description for operation item 2"
+                            },
+                }
             };
 
             var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
@@ -167,7 +171,7 @@ namespace YFS.IntegrationTests
         public async Task Post_CreateExpenseOperation_Return_Success()
         {
             //Arrange
-            int accountId = await CreateAccountUAH();
+            int accountId = await _seedDataIntegrationTests.CreateAccountUAH();
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -181,7 +185,7 @@ namespace YFS.IntegrationTests
                 operationCurrencyId = 980,
                 currencyAmount = 1000.23,
                 operationAmount = 1000.23,
-                operationDate = DateTime.Now,
+                operationDate = DateTime.UtcNow,
                 description = "description operation 1",
                 tag = "tag operation 1"
             };
@@ -209,8 +213,8 @@ namespace YFS.IntegrationTests
         public async Task Post_CreateTransferOperation_Return_Success()
         {
             //Arrange
-            int accountWithdrawId = await CreateAccountUAH();
-            int accountTargetId = await CreateAccountUAH();
+            int accountWithdrawId = await _seedDataIntegrationTests.CreateAccountUAH();
+            int accountTargetId = await _seedDataIntegrationTests.CreateAccountUAH();
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, $"/api/Operations/{accountTargetId}");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -224,7 +228,7 @@ namespace YFS.IntegrationTests
                 operationCurrencyId = 980,
                 currencyAmount = 5000.13,
                 operationAmount = 5000.13,
-                operationDate = DateTime.Now,
+                operationDate = DateTime.UtcNow,
                 description = "description operation 1",
                 tag = "tag operation 1"
             };
@@ -262,8 +266,8 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             AuthenticationHeaderValue headerJwtKey = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncomeCurrentMonth = await _seedData.CreateOperation(_accountId, DateTime.Now,
+            int _accountId = await _seedDataIntegrationTests.CreateAccountUAH();
+            var operationIncomeCurrentMonth = await _seedDataIntegrationTests.CreateOperationUAH(_accountId, DateTime.UtcNow,
                 OperationDto.OperationType.Income, 2, 100000.99M);
             int operationId = operationIncomeCurrentMonth.First().Id;
             var requestOperation = new HttpRequestMessage(HttpMethod.Delete, $"/api/Operations/{operationId}");
@@ -296,8 +300,8 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             AuthenticationHeaderValue headerJwtKey = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            int _accountId = await _seedData.CreateAccountUAH();
-            var operationExpenseCurrentMonth = await _seedData.CreateOperation(_accountId, DateTime.Now,
+            int _accountId = await _seedDataIntegrationTests.CreateAccountUAH();
+            var operationExpenseCurrentMonth = await _seedDataIntegrationTests.CreateOperationUAH(_accountId, DateTime.UtcNow,
                 OperationDto.OperationType.Expense, 5, 1000.39M);
             int operationId = operationExpenseCurrentMonth.First().Id;
             var requestOperation = new HttpRequestMessage(HttpMethod.Delete, $"/api/Operations/{operationId}");
@@ -322,8 +326,8 @@ namespace YFS.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, responseAccountMonthlyBalance.StatusCode);
             var contentAccoountMonthlyBalance = await responseAccountMonthlyBalance.Content.ReadAsStringAsync();
             var accountMonthlyBalance = JsonConvert.DeserializeObject<AccountMonthlyBalanceDto[]>(contentAccoountMonthlyBalance);
-            var accountCurrentMonthlyBalance = accountMonthlyBalance.Where(amb => (amb.StartDateOfMonth.Month == DateTime.Now.Month
-            && amb.StartDateOfMonth.Year == DateTime.Now.Year));
+            var accountCurrentMonthlyBalance = accountMonthlyBalance.Where(amb => (amb.StartDateOfMonth.Month == DateTime.UtcNow.Month
+            && amb.StartDateOfMonth.Year == DateTime.UtcNow.Year));
             Assert.True(accountCurrentMonthlyBalance.Count() == 1);
             Assert.True(accountCurrentMonthlyBalance.First().OpeningMonthBalance == 0);
             Assert.True(accountCurrentMonthlyBalance.First().MonthDebit == 0);
@@ -338,8 +342,8 @@ namespace YFS.IntegrationTests
             var responseAccountMonthlyBalanceAfterDeleteOperation = await _client.SendAsync(requestAccountMonthlyBalanceAfterDeleteOperation);
             var contentAccoountMonthlyBalanceAfterDeleteOperation = await responseAccountMonthlyBalanceAfterDeleteOperation.Content.ReadAsStringAsync();           
             var accountMonthlyBalanceAfterDeleteOperation = JsonConvert.DeserializeObject<AccountMonthlyBalanceDto[]>(contentAccoountMonthlyBalanceAfterDeleteOperation);
-            var accountCurrentMonthlyBalanceAfterDeleteOperation = accountMonthlyBalanceAfterDeleteOperation.Where(amb => (amb.StartDateOfMonth.Month == DateTime.Now.Month
-            && amb.StartDateOfMonth.Year == DateTime.Now.Year));
+            var accountCurrentMonthlyBalanceAfterDeleteOperation = accountMonthlyBalanceAfterDeleteOperation.Where(amb => (amb.StartDateOfMonth.Month == DateTime.UtcNow.Month
+            && amb.StartDateOfMonth.Year == DateTime.UtcNow.Year));
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, responseOperation.StatusCode);
@@ -356,10 +360,10 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             AuthenticationHeaderValue headerJwtKey = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            int _accountTargetId = await _seedData.CreateAccountUAH();
-            int _accountWithdrawId = await _seedData.CreateAccountUAH();
-            await _seedData.CreateOperation(_accountWithdrawId, DateTime.Now, OperationDto.OperationType.Income, 2, 100000.39M);
-            var operations = await _seedData.CreateTransferOperation(_accountWithdrawId, _accountTargetId, DateTime.Now, 10000.70M);
+            int _accountTargetId = await _seedDataIntegrationTests.CreateAccountUAH();
+            int _accountWithdrawId = await _seedDataIntegrationTests.CreateAccountUAH();
+            await _seedDataIntegrationTests.CreateOperationUAH(_accountWithdrawId, DateTime.UtcNow, OperationDto.OperationType.Income, 2, 100000.39M);
+            var operations = await _seedDataIntegrationTests.CreateTransferOperation(_accountWithdrawId, _accountTargetId, DateTime.UtcNow, 10000.70M);
             var operationTransferIncome = operations.Where(o => o.TransferOperationId > 0);
             int operationTransferIncomeId = operationTransferIncome.First().Id;
             var operationTransferExpense = operations.Where(o => o.TransferOperationId == 0);
@@ -404,10 +408,10 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             AuthenticationHeaderValue headerJwtKey = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            int _accountTargetId = await _seedData.CreateAccountUAH();
-            int _accountWithdrawId = await _seedData.CreateAccountUAH();
-            await _seedData.CreateOperation(_accountWithdrawId, DateTime.Now, OperationDto.OperationType.Income, 2, 100000.39M);
-            var operations = await _seedData.CreateTransferOperation(_accountWithdrawId, _accountTargetId, DateTime.Now, 10000.70M);
+            int _accountTargetId = await _seedDataIntegrationTests.CreateAccountUAH();
+            int _accountWithdrawId = await _seedDataIntegrationTests.CreateAccountUAH();
+            await _seedDataIntegrationTests.CreateOperationUAH(_accountWithdrawId, DateTime.UtcNow, OperationDto.OperationType.Income, 2, 100000.39M);
+            var operations = await _seedDataIntegrationTests.CreateTransferOperation(_accountWithdrawId, _accountTargetId, DateTime.UtcNow, 10000.70M);
             var operationTransferIncome = operations.Where(o => o.TransferOperationId > 0);
             int operationTransferIncomeId = operationTransferIncome.First().Id;
             var operationTransferExpense = operations.Where(o => o.TransferOperationId == 0);

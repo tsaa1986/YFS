@@ -8,7 +8,7 @@ namespace YFS.Core.Models.Triggers
         {
             if (context.ChangeType == ChangeType.Modified)
             {
-                context.Entity.LastUpdateTime = DateTime.Now;
+                context.Entity.LastUpdateTime = DateTime.UtcNow;
                 
             }
 

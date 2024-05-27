@@ -175,6 +175,20 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    Name = table.Column<string>(type: "character varying(200)", maxLength: 200, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AccountTypeTranslations",
                 columns: table => new
                 {
@@ -456,19 +470,15 @@ namespace YFS.Repo.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     TransferOperationId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    CategoryId = table.Column<int>(type: "integer", nullable: false),
                     TypeOperation = table.Column<int>(type: "integer", nullable: false),
                     AccountId = table.Column<int>(type: "integer", nullable: false),
-                    OperationCurrencyId = table.Column<int>(type: "integer", nullable: false),
-                    CurrencyId = table.Column<int>(type: "integer", nullable: true),
-                    CurrencyAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    OperationAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     OperationDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    TotalCurrencyAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    OperationCurrencyId = table.Column<int>(type: "integer", nullable: false),
                     ExchangeRate = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     CashbackAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
                     MCC = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
-                    Description = table.Column<string>(type: "VARCHAR", maxLength: 200, nullable: true),
-                    Tag = table.Column<string>(type: "VARCHAR", maxLength: 200, nullable: true)
+                    Description = table.Column<string>(type: "VARCHAR", maxLength: 200, nullable: true)
                 },
                 constraints: table =>
                 {
@@ -480,16 +490,65 @@ namespace YFS.Repo.Migrations
                         principalColumn: "AccountId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Operations_Categories_CategoryId",
+                        name: "FK_Operations_Currencies_OperationCurrencyId",
+                        column: x => x.OperationCurrencyId,
+                        principalTable: "Currencies",
+                        principalColumn: "CurrencyId",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OperationItem",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    OperationId = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    CurrencyAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    OperationAmount = table.Column<decimal>(type: "numeric(10,2)", nullable: false),
+                    Description = table.Column<string>(type: "VARCHAR", maxLength: 200, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OperationItem", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OperationItem_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
                         principalColumn: "CategoryId",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Operations_Currencies_CurrencyId",
-                        column: x => x.CurrencyId,
-                        principalTable: "Currencies",
-                        principalColumn: "CurrencyId");
+                        name: "FK_OperationItem_Operations_OperationId",
+                        column: x => x.OperationId,
+                        principalTable: "Operations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "OperationTags",
+                columns: table => new
+                {
+                    OperationId = table.Column<int>(type: "integer", nullable: false),
+                    TagId = table.Column<int>(type: "integer", nullable: false),
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OperationTags", x => new { x.OperationId, x.TagId });
+                    table.ForeignKey(
+                        name: "FK_OperationTags_Operations_OperationId",
+                        column: x => x.OperationId,
+                        principalTable: "Operations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_OperationTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.InsertData(
@@ -497,8 +556,13 @@ namespace YFS.Repo.Migrations
                 columns: new[] { "GLMFO", "ADRESS", "D_CLOSE", "KOD_EDRPOU", "D_STAN", "FULLNAME", "DT_GRAND_LIC", "GR_SP", "D_GR_SP", "IDNBU", "KU", "DT_LIC", "NUM_LIC", "PR_LIC", "N_PR_LIC", "NKB", "N_OBL", "N_OBL_UR", "NP", "NAME_E", "OBL_UR", "D_OPEN", "P_IND", "SHORTNAME", "SHORTNAME_EN", "KSTAN", "N_STAN", "TNP", "TELEFON", "TYP" },
                 values: new object[,]
                 {
-                    { 351005, "вулиця Андріївська, 2/12", null, "09807750", null, "АКЦІОНЕРНЕ ТОВАРИСТВО \"УКРСИББАНК\"", new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "351005", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 75, 1, "чинна банківська ліцензія", "136", "м.Київ", "м.Київ", "Київ", "JOINT STOCK COMPANY \"UKRSIBBANK\"", 26, new DateTime(1991, 10, 28, 0, 0, 0, 0, DateTimeKind.Utc), "04070", "АТ \"УКРСИББАНК\"", "JSС \"UKRSIBBANK\"", 1, "Нормальний", "м.", null, 0 },
-                    { 351254, "вул. Гончара Олеся, буд. 76/2", null, "09620081", null, "АКЦІОНЕРНЕ ТОВАРИСТВО \"СКАЙ БАНК\"", new DateTime(2018, 6, 19, 0, 0, 0, 0, DateTimeKind.Utc), "B", null, "351254", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 32, 1, "чинна банківська ліцензія", "128", "м.Київ", "м.Київ", "Київ", "JOINT STOCK COMPANY \"SKY BANK\"", 26, new DateTime(1991, 10, 28, 0, 0, 0, 0, DateTimeKind.Utc), "01054", "АТ \"СКАЙ БАНК\"", "JSC \"SKY BANK\"", 1, "Нормальний", "м.", null, 0 }
+                    { 300335, "вулиця Генерала Алмазова, буд. 4а", null, "14305909", null, "Акціонерне товариство \"Райффайзен Банк\"", new DateTime(2021, 7, 2, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "300335", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 10, 1, "чинна банківська ліцензія", "036", "м.Київ", "м.Київ", "Київ", "Raiffeisen Bank Joint Stock Company", 26, new DateTime(1992, 3, 27, 0, 0, 0, 0, DateTimeKind.Utc), "01011", "АТ \"Райффайзен Банк\"", "Raiffeisen Bank JSC", 1, "Нормальний", "м.", null, 0 },
+                    { 300465, "вул. Госпітальна, 12г", null, "00032129", null, "акціонерне товариство \"Державний ощадний банк України\"", new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "300465", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 148, 1, "чинна банківська ліцензія", "006", "м.Київ", "м.Київ", "Київ", "Joint Stock Company \"State Savings Bank of Ukraine\"", 26, new DateTime(1991, 12, 31, 0, 0, 0, 0, DateTimeKind.Utc), "01023", "АТ \"Ощадбанк\"", "JSC \"Oschadbank\"", 1, "Нормальний", "м.", null, 0 },
+                    { 300528, "вул. Жилянська, 43", null, "21685166", null, "АКЦІОНЕРНЕ ТОВАРИСТВО \"ОТП БАНК\"", new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "300528", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 191, 1, "чинна банківська ліцензія", "296", "м.Київ", "м.Київ", "Київ", "JOINT-STOCK COMPANY OTP BANK", 26, new DateTime(1998, 3, 2, 0, 0, 0, 0, DateTimeKind.Utc), "01033", "АТ \"ОТП БАНК\"", "OTP BANK JSC", 1, "Нормальний", "м.", null, 0 },
+                    { 300614, "Район: Шевченківський, Місто: Київ, Вулиця: вул. Євгена Чикаленка, Будинок: 42/4", null, "14361575", null, "АКЦІОНЕРНЕ ТОВАРИСТВО \"КРЕДІ АГРІКОЛЬ БАНК\"", new DateTime(2011, 10, 12, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "300614", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 99, 1, "чинна банківська ліцензія", "171", "м.Київ", "м.Київ", null, "JOINT-STOCK COMPANY \"CREDIT AGRICOLE BANK\"", 26, new DateTime(1993, 2, 10, 0, 0, 0, 0, DateTimeKind.Utc), "01004", "АТ \"КРЕДІ АГРІКОЛЬ БАНК\"", "JSC \"CREDIT AGRICOLE BANK\"", 1, "Нормальний", null, "0445810700", 0 },
+                    { 305299, "вул. Грушевського, 1Д", null, "14360570", new DateTime(2016, 12, 22, 0, 0, 0, 0, DateTimeKind.Utc), "акціонерне товариство комерційний банк \"ПриватБанк\"", new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "305299", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 22, 1, "чинна банківська ліцензія", "046", "м.Київ", "м.Київ", "Київ", "Joint-Stock Company Commercial Bank \"PrivatBank\"", 26, new DateTime(1992, 3, 19, 0, 0, 0, 0, DateTimeKind.Utc), "01001", "АТ КБ \"ПриватБанк\"", "JSC CB \"PrivatBank\"", 1, "Нормальний", "м.", null, 0 },
+                    { 322001, "вул. Автозаводська,54/19", null, "21133352", null, "АКЦІОНЕРНЕ ТОВАРИСТВО \"УНІВЕРСАЛ БАНК\"", new DateTime(2011, 10, 10, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "322001", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 92, 1, "чинна банківська ліцензія", "242", "м.Київ", "м.Київ", "Київ", "JOINT STOCK COMPANY \"UNIVERSAL BANK\"", 26, new DateTime(1994, 1, 20, 0, 0, 0, 0, DateTimeKind.Utc), "04082", "АТ \"УНІВЕРСАЛ БАНК\"", "JSC \"UNIVERSAL BANK\"", 1, "Нормальний", "м.", null, 0 },
+                    { 351005, "вулиця Андріївська, 2/12", null, "09807750", null, "АКЦІОНЕРНЕ ТОВАРИСТВО \"УКРСИББАНК\"", new DateTime(2011, 10, 5, 0, 0, 0, 0, DateTimeKind.Utc), "SV", new DateTime(2023, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), "351005", 26, new DateTime(2021, 8, 5, 0, 0, 0, 0, DateTimeKind.Utc), 75, 1, "чинна банківська ліцензія", "136", "м.Київ", "м.Київ", "Київ", "JOINT STOCK COMPANY \"UKRSIBBANK\"", 26, new DateTime(1991, 10, 28, 0, 0, 0, 0, DateTimeKind.Utc), "04070", "АТ \"УКРСИББАНК\"", "JSС \"UKRSIBBANK\"", 1, "Нормальний", "м.", null, 0 }
                 });
 
             migrationBuilder.InsertData(
@@ -627,19 +691,29 @@ namespace YFS.Repo.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_OperationItem_CategoryId",
+                table: "OperationItem",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OperationItem_OperationId",
+                table: "OperationItem",
+                column: "OperationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Operations_AccountId",
                 table: "Operations",
                 column: "AccountId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Operations_CategoryId",
+                name: "IX_Operations_OperationCurrencyId",
                 table: "Operations",
-                column: "CategoryId");
+                column: "OperationCurrencyId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Operations_CurrencyId",
-                table: "Operations",
-                column: "CurrencyId");
+                name: "IX_OperationTags_TagId",
+                table: "OperationTags",
+                column: "TagId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -678,16 +752,25 @@ namespace YFS.Repo.Migrations
                 name: "Mccs");
 
             migrationBuilder.DropTable(
-                name: "Operations");
+                name: "OperationItem");
+
+            migrationBuilder.DropTable(
+                name: "OperationTags");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Accounts");
+                name: "Categories");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "Operations");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "Accounts");
 
             migrationBuilder.DropTable(
                 name: "AccountGroups");

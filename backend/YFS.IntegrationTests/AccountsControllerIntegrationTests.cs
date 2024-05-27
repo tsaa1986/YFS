@@ -95,7 +95,7 @@ namespace YFS.IntegrationTests
                 currencyId = 840,
                 bankId = 322001,
                 name = accountCreateName,
-                openingDate = DateTime.Now,
+                openingDate = DateTime.UtcNow,
                 note = "test note",
                 balance = 0
             };
@@ -120,7 +120,7 @@ namespace YFS.IntegrationTests
                 currencyId = 840,
                 bankId = 322001,
                 name = "updatedAccountName",
-                //openingDate = DateTime.Now,
+                //openingDate = DateTime.UtcNow,
                 note = "updated note",
                 balance = 0 
             };
@@ -166,7 +166,7 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             int _accountId = await _seedDataIntegrationTests.CreateAccountUAH();
-            var operationIncome = await _seedDataIntegrationTests.CreateOperation(_accountId, DateTime.Now, 
+            var operationIncome = await _seedDataIntegrationTests.CreateOperationUAH(_accountId, DateTime.UtcNow, 
                 OperationDto.OperationType.Income, 2,100000.23M);
             var requestAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
             requestAccount.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());

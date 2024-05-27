@@ -24,19 +24,28 @@ namespace YFS.Service.Services
 
                 if (account.Balance != 0)
                 {
-                    accountData.Operations = new List<Operation>() { {
-                    new Operation {
+                    var operation = new Operation
+                    {
                         AccountId = account.Id,
-                        UserId= userId,
-                        OperationAmount = account.Balance,
-                        OperationCurrencyId = account.CurrencyId,                        
-                        CurrencyAmount = account.Balance,
-                        Description = "openning account",
-                        TypeOperation = account.Balance > 0 ? 2 : 1,
-                        CategoryId = -2,
+                        UserId = userId,
                         OperationDate = account.OpeningDate,
-                    } } };
+                        Description = "Opening account",
+                        TypeOperation = account.Balance > 0 ? 2 : 1,
+                        OperationCurrencyId = account.CurrencyId, // Ensure this is correct
+                    };
+                    operation.OperationItems = new List<OperationItem>
+                    {
+                        new OperationItem
+                        {
+                            CategoryId = -2,
+                            CurrencyAmount = account.Balance,
+                            OperationAmount = account.Balance,
+                        }
+                    };
+
+                    accountData.Operations = new List<Operation> { operation };
                 }
+
                 await _repository.SaveAsync();
                 var accountReturnData = _repository.Account.GetAccountWithCurrency(accountData.Id);
                 var accountReturnDto = _mapper.Map<AccountDto>(accountReturnData.Result);

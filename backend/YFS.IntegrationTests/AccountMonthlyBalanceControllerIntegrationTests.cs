@@ -28,7 +28,7 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncome = await _seedData.CreateOperation(_accountId, DateTime.Now, 
+            var operationIncome = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow, 
                 OperationDto.OperationType.Income, 2, 100000.23M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -44,9 +44,9 @@ namespace YFS.IntegrationTests
             Assert.True(accountMonthlyBalances.Length == 1);
             Assert.NotNull(accountMonthlyBalances);
             Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == 0
-                && accountMonthlyBalances[0].ClosingMonthBalance == operationIncome.First().OperationAmount);
+                && accountMonthlyBalances[0].ClosingMonthBalance == operationIncome.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].MonthCredit == 0
-                && accountMonthlyBalances[0].MonthDebit == operationIncome.First().OperationAmount);
+                && accountMonthlyBalances[0].MonthDebit == operationIncome.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].StartDateOfMonth.Month == operationIncome.First().OperationDate.Month
                 && accountMonthlyBalances[0].StartDateOfMonth.Year == operationIncome.First().OperationDate.Year);
         }
@@ -55,9 +55,9 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncomeCurrentMonth = await _seedData.CreateOperation(_accountId,DateTime.Now,
+            var operationIncomeCurrentMonth = await _seedData.CreateOperationUAH(_accountId,DateTime.UtcNow,
                 OperationDto.OperationType.Income, 2, 100000.23M);
-            var operationIncomePreviousMonth = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
+            var operationIncomePreviousMonth = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-1),
                 OperationDto.OperationType.Income, 2, 100000.21M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -71,19 +71,19 @@ namespace YFS.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.True(accountMonthlyBalances.Length == 2);
             Assert.NotNull(accountMonthlyBalances);
-            decimal closingMonthBalance = operationIncomeCurrentMonth.First().OperationAmount 
-                + operationIncomePreviousMonth.First().OperationAmount;
-            Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == operationIncomePreviousMonth.First().OperationAmount);
+            decimal closingMonthBalance = operationIncomeCurrentMonth.First().TotalCurrencyAmount
+                + operationIncomePreviousMonth.First().TotalCurrencyAmount;
+            Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == operationIncomePreviousMonth.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].ClosingMonthBalance == closingMonthBalance);
             Assert.True(accountMonthlyBalances[0].MonthCredit == 0
-                && accountMonthlyBalances[0].MonthDebit == operationIncomeCurrentMonth.First().OperationAmount);
+                && accountMonthlyBalances[0].MonthDebit == operationIncomeCurrentMonth.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].StartDateOfMonth.Month == operationIncomeCurrentMonth.First().OperationDate.Month
                 && accountMonthlyBalances[0].StartDateOfMonth.Year == operationIncomeCurrentMonth.First().OperationDate.Year);
 
             Assert.True(accountMonthlyBalances[1].OpeningMonthBalance == 0);
-            Assert.True(accountMonthlyBalances[1].ClosingMonthBalance == operationIncomePreviousMonth.First().OperationAmount);
+            Assert.True(accountMonthlyBalances[1].ClosingMonthBalance == operationIncomePreviousMonth.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[1].MonthCredit == 0
-                && accountMonthlyBalances[1].MonthDebit == operationIncomePreviousMonth.First().OperationAmount);
+                && accountMonthlyBalances[1].MonthDebit == operationIncomePreviousMonth.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[1].StartDateOfMonth.Month == operationIncomeCurrentMonth.First().OperationDate.Month-1
                 && accountMonthlyBalances[1].StartDateOfMonth.Year == operationIncomePreviousMonth.First().OperationDate.Year);
         }
@@ -92,11 +92,11 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncomeCurrentMonth = await _seedData.CreateOperation(_accountId, DateTime.Now, 
+            var operationIncomeCurrentMonth = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow, 
                 OperationDto.OperationType.Income, 2, 100000.23M);
-            var operationIncomePreviousMonth = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
+            var operationIncomePreviousMonth = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-1),
                 OperationDto.OperationType.Income, 2, 100000.21M);
-            var operationIncome3MonthAgo = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-2), 
+            var operationIncome3MonthAgo = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-2), 
                 OperationDto.OperationType.Income, 2, 100000.11M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -110,28 +110,28 @@ namespace YFS.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.True(accountMonthlyBalances.Length == 3);
             Assert.NotNull(accountMonthlyBalances);
-            decimal closingMonthBalance = operationIncomeCurrentMonth.First().OperationAmount
-                + operationIncomePreviousMonth.First().OperationAmount
-                + operationIncome3MonthAgo.First().OperationAmount;
-            Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == operationIncomePreviousMonth.First().OperationAmount
-                + operationIncome3MonthAgo.First().OperationAmount);
+            decimal closingMonthBalance = operationIncomeCurrentMonth.First().TotalCurrencyAmount
+                + operationIncomePreviousMonth.First().TotalCurrencyAmount
+                + operationIncome3MonthAgo.First().TotalCurrencyAmount;
+            Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == operationIncomePreviousMonth.First().TotalCurrencyAmount
+                + operationIncome3MonthAgo.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].ClosingMonthBalance == closingMonthBalance);
             Assert.True(accountMonthlyBalances[0].MonthCredit == 0
-                && accountMonthlyBalances[0].MonthDebit == operationIncomeCurrentMonth.First().OperationAmount);
+                && accountMonthlyBalances[0].MonthDebit == operationIncomeCurrentMonth.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].StartDateOfMonth.Month == operationIncomeCurrentMonth.First().OperationDate.Month
                 && accountMonthlyBalances[0].StartDateOfMonth.Year == operationIncomeCurrentMonth.First().OperationDate.Year);
 
-            Assert.True(accountMonthlyBalances[1].OpeningMonthBalance == operationIncome3MonthAgo.First().OperationAmount);
-            Assert.True(accountMonthlyBalances[1].ClosingMonthBalance == (closingMonthBalance - operationIncomeCurrentMonth.First().OperationAmount));
+            Assert.True(accountMonthlyBalances[1].OpeningMonthBalance == operationIncome3MonthAgo.First().TotalCurrencyAmount);
+            Assert.True(accountMonthlyBalances[1].ClosingMonthBalance == (closingMonthBalance - operationIncomeCurrentMonth.First().TotalCurrencyAmount));
             Assert.True(accountMonthlyBalances[1].MonthCredit == 0
-                && accountMonthlyBalances[1].MonthDebit == operationIncomePreviousMonth.First().OperationAmount);
+                && accountMonthlyBalances[1].MonthDebit == operationIncomePreviousMonth.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[1].StartDateOfMonth.Month == operationIncomeCurrentMonth.First().OperationDate.Month - 1
                 && accountMonthlyBalances[1].StartDateOfMonth.Year == operationIncomePreviousMonth.First().OperationDate.Year);
 
             Assert.True(accountMonthlyBalances[2].OpeningMonthBalance == 0);
-            Assert.True(accountMonthlyBalances[2].ClosingMonthBalance == operationIncome3MonthAgo.First().OperationAmount);
+            Assert.True(accountMonthlyBalances[2].ClosingMonthBalance == operationIncome3MonthAgo.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[2].MonthCredit == 0
-                && accountMonthlyBalances[2].MonthDebit == operationIncome3MonthAgo.First().OperationAmount);
+                && accountMonthlyBalances[2].MonthDebit == operationIncome3MonthAgo.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[2].StartDateOfMonth.Month == operationIncomeCurrentMonth.First().OperationDate.Month - 2
                 && accountMonthlyBalances[2].StartDateOfMonth.Year == operationIncomePreviousMonth.First().OperationDate.Year);
         }
@@ -140,13 +140,13 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncome = await _seedData.CreateOperation(_accountId, DateTime.Now,
+            var operationIncome = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow,
                 OperationDto.OperationType.Income, 2, 100000.23M);
-            var operationIncomePreviousMonth = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-1),
+            var operationIncomePreviousMonth = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-1),
                 OperationDto.OperationType.Income, 2, 100000.21M);
-            var operationIncome3MonthAgo = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(-2),
+            var operationIncome3MonthAgo = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-2),
                 OperationDto.OperationType.Income, 2, 100000.11M);
-            var operationIncome2MonthAfterCurrent = await _seedData.CreateOperation(_accountId, DateTime.Now.AddMonths(2),
+            var operationIncome2MonthAfterCurrent = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(2),
                 OperationDto.OperationType.Income, 2, 100000.36M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -161,13 +161,13 @@ namespace YFS.IntegrationTests
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.True(accountMonthlyBalances.Length == 4);
             Assert.NotNull(accountMonthlyBalances);
-            decimal openningBalance = operationIncome.First().OperationAmount
-                + operationIncome3MonthAgo.First().OperationAmount
-                + operationIncomePreviousMonth.First().OperationAmount; 
+            decimal openningBalance = operationIncome.First().TotalCurrencyAmount
+                + operationIncome3MonthAgo.First().TotalCurrencyAmount
+                + operationIncomePreviousMonth.First().TotalCurrencyAmount; 
             Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == openningBalance
-                && accountMonthlyBalances[0].ClosingMonthBalance == openningBalance + operationIncome2MonthAfterCurrent.First().OperationAmount);
+                && accountMonthlyBalances[0].ClosingMonthBalance == openningBalance + operationIncome2MonthAfterCurrent.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].MonthCredit == 0
-                && accountMonthlyBalances[0].MonthDebit == operationIncome2MonthAfterCurrent.First().OperationAmount);
+                && accountMonthlyBalances[0].MonthDebit == operationIncome2MonthAfterCurrent.First().TotalCurrencyAmount);
             Assert.True(accountMonthlyBalances[0].StartDateOfMonth.Month == operationIncome2MonthAfterCurrent.First().OperationDate.Month
                 && accountMonthlyBalances[0].StartDateOfMonth.Year == operationIncome2MonthAfterCurrent.First().OperationDate.Year);
         }
