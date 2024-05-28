@@ -15,33 +15,28 @@ namespace YFS.Service.Services
 
         public async Task CreateAccountGroupForUser(AccountGroup accountGroup) =>
             await CreateAsync(accountGroup);
-        public async Task CreateAccountGroupsDefaultForUser(string userid) 
+        public async Task CreateAccountGroupsDefaultForUser(string userId)
         {
-            AccountGroup acGroup = new AccountGroup
+            if (!string.IsNullOrEmpty(userId))
             {
-                UserId = userid,
-                AccountGroupNameEn = "Cash",
-                AccountGroupNameRu = "Наличные",
-                AccountGroupNameUa = "Готівка"
-            };
-            AccountGroup acGroup_bank = new AccountGroup
-            {
-                UserId = userid,
-                AccountGroupNameEn = "Bank",
-                AccountGroupNameRu = "Банковские",
-                AccountGroupNameUa = "Банківські"
-            };
-            AccountGroup acGroup_internetmoney = new AccountGroup
-            {
-                UserId = userid,
-                AccountGroupNameEn = "Internet",
-                AccountGroupNameRu = "Интернет",
-                AccountGroupNameUa = "Інтернет"
-            };
+                var cashGroup = new AccountGroup { UserId = userId };
+                cashGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Cash", LanguageCode = "en" });
+                cashGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Наличные", LanguageCode = "ru" });
+                cashGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Готівка", LanguageCode = "ua" });
+                await CreateAsync(cashGroup);
 
-            await CreateAsync(acGroup);// CreateAccountGroup(ac);
-            await CreateAsync(acGroup_internetmoney);
-            await CreateAsync(acGroup_bank);
+                var bankGroup = new AccountGroup { UserId = userId };
+                bankGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Bank", LanguageCode = "en" });
+                bankGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Банковские", LanguageCode = "ru" });
+                bankGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Банківські", LanguageCode = "ua" });
+                await CreateAsync(bankGroup);
+
+                var internetGroup = new AccountGroup { UserId = userId };
+                internetGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Internet", LanguageCode = "en" });
+                internetGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Интернет", LanguageCode = "ru" });
+                internetGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Інтернет", LanguageCode = "ua" });
+                await CreateAsync(internetGroup);
+            }
         }
         public async Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
            => await FindByConditionAsync(c => c.AccountGroupId.Equals(accountGroupId), trackChanges).Result.SingleOrDefaultAsync();

@@ -13,24 +13,12 @@ namespace YFS.Core.Models
         public string UserId { get; set; } = null!;
         public User? User { get; set; }
 
-        [Column(TypeName = "VARCHAR")]
-        [MaxLength(100, ErrorMessage = "Maximum length for the GroupName is 100.")]
-        [Required]
-        public string? AccountGroupNameRu { get; set; }
-
-        [Column(TypeName = "VARCHAR")]
-        [MaxLength(100, ErrorMessage = "Maximum length for the GroupName is 100.")]
-        [Required]
-        public string AccountGroupNameEn { get; set; } = null!;
-
-        [Column(TypeName = "VARCHAR")]
-        [MaxLength(100, ErrorMessage = "Maximum length for the GroupName is 100.")]
-        [Required]
-        public string? AccountGroupNameUa { get; set; }
-
         [Required]
         public int GroupOrderBy { get; set; }
 
-        public ICollection<Account> Accounts { get; set; } = new List<Account>();       
+        public ICollection<Account> Accounts { get; set; } = new List<Account>();
+
+        // Navigation property for translations
+        public ICollection<AccountGroupTranslation> Translations { get; set; } = new List<AccountGroupTranslation>();
     }
 }

@@ -261,21 +261,6 @@ namespace YFS.Repo.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("AccountGroupId"));
 
-                    b.Property<string>("AccountGroupNameEn")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("AccountGroupNameRu")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("AccountGroupNameUa")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("VARCHAR");
-
                     b.Property<int>("GroupOrderBy")
                         .HasColumnType("integer");
 
@@ -285,16 +270,38 @@ namespace YFS.Repo.Migrations
 
                     b.HasKey("AccountGroupId");
 
-                    b.HasIndex("UserId", "AccountGroupNameEn")
-                        .IsUnique();
-
-                    b.HasIndex("UserId", "AccountGroupNameRu")
-                        .IsUnique();
-
-                    b.HasIndex("UserId", "AccountGroupNameUa")
-                        .IsUnique();
+                    b.HasIndex("UserId");
 
                     b.ToTable("AccountGroups");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.AccountGroupTranslation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountGroupId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("AccountGroupName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("VARCHAR");
+
+                    b.Property<string>("LanguageCode")
+                        .IsRequired()
+                        .HasMaxLength(10)
+                        .HasColumnType("VARCHAR");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountGroupId", "LanguageCode")
+                        .IsUnique();
+
+                    b.ToTable("AccountGroupTranslation");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountMonthlyBalance", b =>
@@ -1384,6 +1391,17 @@ namespace YFS.Repo.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("YFS.Core.Models.AccountGroupTranslation", b =>
+                {
+                    b.HasOne("YFS.Core.Models.AccountGroup", "AccountGroup")
+                        .WithMany("Translations")
+                        .HasForeignKey("AccountGroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountGroup");
+                });
+
             modelBuilder.Entity("YFS.Core.Models.AccountMonthlyBalance", b =>
                 {
                     b.HasOne("YFS.Core.Models.Account", null)
@@ -1485,6 +1503,8 @@ namespace YFS.Repo.Migrations
             modelBuilder.Entity("YFS.Core.Models.AccountGroup", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.AccountType", b =>

@@ -238,9 +238,6 @@ namespace YFS.Repo.Migrations
                     AccountGroupId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     UserId = table.Column<string>(type: "text", nullable: false),
-                    AccountGroupNameRu = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
-                    AccountGroupNameEn = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
-                    AccountGroupNameUa = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
                     GroupOrderBy = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
@@ -360,6 +357,27 @@ namespace YFS.Repo.Migrations
                         column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AccountGroupTranslation",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AccountGroupId = table.Column<int>(type: "integer", nullable: false),
+                    AccountGroupName = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    LanguageCode = table.Column<string>(type: "VARCHAR", maxLength: 10, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountGroupTranslation", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AccountGroupTranslation_AccountGroups_AccountGroupId",
+                        column: x => x.AccountGroupId,
+                        principalTable: "AccountGroups",
+                        principalColumn: "AccountGroupId",
                         onDelete: ReferentialAction.Cascade);
                 });
 
@@ -590,21 +608,14 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_AccountGroups_UserId_AccountGroupNameEn",
+                name: "IX_AccountGroups_UserId",
                 table: "AccountGroups",
-                columns: new[] { "UserId", "AccountGroupNameEn" },
-                unique: true);
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AccountGroups_UserId_AccountGroupNameRu",
-                table: "AccountGroups",
-                columns: new[] { "UserId", "AccountGroupNameRu" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AccountGroups_UserId_AccountGroupNameUa",
-                table: "AccountGroups",
-                columns: new[] { "UserId", "AccountGroupNameUa" },
+                name: "IX_AccountGroupTranslation_AccountGroupId_LanguageCode",
+                table: "AccountGroupTranslation",
+                columns: new[] { "AccountGroupId", "LanguageCode" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -718,6 +729,9 @@ namespace YFS.Repo.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "AccountGroupTranslation");
+
             migrationBuilder.DropTable(
                 name: "AccountsBalance");
 

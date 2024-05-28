@@ -44,13 +44,19 @@ namespace YFS.Repo.Data
             base.OnModelCreating(modelBuilder);
 
             //modelBuilder.Entity<Account>().HasOne(a => a.User).WithOne();//.HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
-            modelBuilder.Entity<Account>().Property(b => b.Favorites).HasDefaultValueSql("0");
+            modelBuilder.Entity<Account>()
+                        .Property(b => b.Favorites)
+                        .HasDefaultValueSql("0");
             modelBuilder.Entity<AccountBalance>().Property(ab => ab.LastUpdateTime).HasDefaultValueSql("CURRENT_TIMESTAMP");
             modelBuilder.Entity<AccountBalance>().Property(ab => ab.Balance).HasDefaultValueSql("0.0");
 
-            modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameUa }).IsUnique();
-            modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameRu }).IsUnique();
-            modelBuilder.Entity<AccountGroup>().HasIndex(entity => new { entity.UserId, entity.AccountGroupNameEn }).IsUnique();
+            modelBuilder.Entity<AccountGroup>()
+                        .HasMany(ag => ag.Translations)
+                        .WithOne(agt => agt.AccountGroup)
+                        .HasForeignKey(agt => agt.AccountGroupId);
+            modelBuilder.Entity<AccountGroupTranslation>()
+                        .HasIndex(agt => new { agt.AccountGroupId, agt.LanguageCode })
+                        .IsUnique();
             modelBuilder.Entity<AccountGroup>().HasMany(a => a.Accounts).WithOne().OnDelete(DeleteBehavior.NoAction);
 
             modelBuilder.Entity<Bank>().HasMany(ac => ac.Accounts).WithOne(b => b.Bank).OnDelete(DeleteBehavior.NoAction);

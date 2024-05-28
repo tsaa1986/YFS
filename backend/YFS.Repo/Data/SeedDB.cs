@@ -13,20 +13,34 @@ namespace YFS.Repo.Data
 {
     public static class SeedDb
     {
-        public static List<AccountGroup> InitializeAccountGroupsDefault(string _userid)
+        public static List<AccountGroup> InitializeAccountGroupsDefault(string userId)
         {
             List<AccountGroup> accountGroups = new List<AccountGroup>();
-            if (!string.IsNullOrEmpty(_userid))
+            if (!string.IsNullOrEmpty(userId))
             {
-                accountGroups.Add(new AccountGroup
-                { UserId = _userid, AccountGroupNameEn = "Cash", AccountGroupNameRu = "Наличные", AccountGroupNameUa = "Готівка" });
-                accountGroups.Add(new AccountGroup
-                { UserId = _userid, AccountGroupNameEn = "Bank", AccountGroupNameRu = "Банковские", AccountGroupNameUa = "Банківські" });
-                accountGroups.Add(new AccountGroup
-                { UserId = _userid, AccountGroupNameEn = "Internet", AccountGroupNameRu = "Интернет", AccountGroupNameUa = "Інтернет" });
+                var cashGroup = new AccountGroup { UserId = userId };
+                var bankGroup = new AccountGroup { UserId = userId };
+                var internetGroup = new AccountGroup { UserId = userId };
+
+                cashGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Cash", LanguageCode = "en" });
+                cashGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Наличные", LanguageCode = "ru" });
+                cashGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Готівка", LanguageCode = "ua" });
+
+                bankGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Bank", LanguageCode = "en" });
+                bankGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Банковские", LanguageCode = "ru" });
+                bankGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Банківські", LanguageCode = "ua" });
+
+                internetGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Internet", LanguageCode = "en" });
+                internetGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Интернет", LanguageCode = "ru" });
+                internetGroup.Translations.Add(new AccountGroupTranslation { AccountGroupName = "Інтернет", LanguageCode = "ua" });
+
+                accountGroups.Add(cashGroup);
+                accountGroups.Add(bankGroup);
+                accountGroups.Add(internetGroup);
             }
             return accountGroups;
         }
+        /*
         public static List<Account> InitializeAccountsDefault(string _userid, List<AccountGroup> _accountGroups)
         {
             List<Account> accounts = new List<Account>();
@@ -67,7 +81,7 @@ namespace YFS.Repo.Data
                             Note = "wallet euro",
                             AccountBalance = new AccountBalance()
                         });
-                    }*/
+                    }
                     if (accGroup.AccountGroupNameEn == "Bank")
                     {
                        /*accounts.Add(new Account
@@ -125,13 +139,13 @@ namespace YFS.Repo.Data
                             OpeningDate = new DateTime(),
                             Note = "monobank euro",
                             AccountBalance = new AccountBalance()
-                        });*/
+                        });
                     }
                 }
             }
 
             return accounts;
-        }
+        }*/
         public static async Task Initialize(IServiceProvider serviceProvider)
         {
             const string demoEmail = "demo@demo.com";
@@ -216,15 +230,16 @@ namespace YFS.Repo.Data
                         }
 
                         //create default accounts
+                        /*
                         if (accounts.Count == 0)
                         {
-                            List<Account> la = InitializeAccountsDefault(demoUser.Id, accountGroupUser);
+                            //List<Account> la = InitializeAccountsDefault(demoUser.Id, accountGroupUser);
                             foreach (Account account in la)
                             {
                                 await context.Accounts.AddAsync(account);
                             }
                             await context.SaveChangesAsync();
-                        }
+                        }*/
                     }
                 }
                 catch (Exception ex)
