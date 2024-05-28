@@ -54,7 +54,7 @@ namespace YFS.IntegrationTests
         public async Task Get_Last10OperationsAccount_Returns_Success()
         {
             //Arrange
-            int _accountId = 1;
+            int _accountId = await _seedDataIntegrationTests.CreateAccountUAH();
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/operations/last10/{_accountId}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
             await _seedDataIntegrationTests.CreateOperationIncome3monthAutomatically(_accountId);
@@ -74,9 +74,9 @@ namespace YFS.IntegrationTests
         public async Task Get_OperationForPeriod_Returns_Success()
         {
             //Arrange
-            int _accountId = 1;
-            String startDate = DateTime.UtcNow.AddMonths(-3).ToString("yyyy-MM-dd") + " 00:00:00";
-            String endDate = DateTime.UtcNow.ToString("yyyy-MM-dd") + " 23:59:59";
+            int _accountId = await _seedDataIntegrationTests.CreateAccountUAH();
+            string startDate = DateTime.UtcNow.AddMonths(-3).ToString("yyyy-MM-ddTHH:mm:ssZ");
+            string endDate = DateTime.UtcNow.ToString("yyyy-MM-dd") + "T23:59:59Z";
             //2023 - 04 - 01 / 2023 - 04 - 28
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Operations/period/{_accountId}/{startDate}/{endDate}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
@@ -85,33 +85,26 @@ namespace YFS.IntegrationTests
             //Act
             var responseOperation = await _client.SendAsync(requestOperation);
             var contentOperation = await responseOperation.Content.ReadAsStringAsync();
+            Assert.False(string.IsNullOrEmpty(contentOperation), "Response content should not be empty.");
             var operations = JsonConvert.DeserializeObject<OperationDto[]>(contentOperation);
 
             //Assert
+            Assert.NotNull(operations); // Ensure deserialization was successful
             Assert.Equal(HttpStatusCode.OK, responseOperation.StatusCode);
-            Assert.True(operations.Length == 6);
-            Assert.True(operations[0].Balance == 600000);
+            Assert.Equal(3, operations.Length); // Adjust the expected length as per your seeding logic
+            Assert.Equal(300000, operations[0].Balance);
         }
         [Fact]
         public async Task Post_CreateSingleIncomeOperation_Return_Success()
         {
             //Arrange
             int accountId = await _seedDataIntegrationTests.CreateAccountUAH();
-            int currencyId = 0;
 
-            using (var scope = _serviceProvider.CreateScope())
+            int currencyId = await _seedDataIntegrationTests.GetCurrencyIdByCodeAndCountry(980, "Ukraine");
+            if (currencyId == 0)
             {
-                var scopedServiceProvider = scope.ServiceProvider;
-
-                var serviceCurrency = scopedServiceProvider.GetRequiredService<ICurrencyService>();
-                var currency = await serviceCurrency.GetCurrencyByCodeAndCountry(980, "Ukraine");
-                if (currency.Data == null)
-                {
-                    throw new InvalidOperationException("Currency not found");
-                }
-                else
-                    currencyId = currency.Data.CurrencyId;
-            }
+              throw new InvalidOperationException("Currency not found");
+            }            
 
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
@@ -175,22 +168,32 @@ namespace YFS.IntegrationTests
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-
-            var createOperation1Body = new
+            int currencyId = await _seedDataIntegrationTests.GetCurrencyIdByCodeAndCountry(980, "Ukraine");
+            if (currencyId == 0)
             {
-                transferOperationId = 0,
-                categoryId = 4,
-                typeOperation = OperationDto.OperationType.Expense, //expense
+                throw new InvalidOperationException("Currency not found");
+            }
+
+            var createOperationBody = new
+            {
                 accountId = accountId,
-                operationCurrencyId = 980,
-                currencyAmount = 1000.23,
-                operationAmount = 1000.23,
+                typeOperation = OperationDto.OperationType.Expense, // Expense
+                operationCurrencyId = currencyId,
                 operationDate = DateTime.UtcNow,
                 description = "description operation 1",
-                tag = "tag operation 1"
+                operationItems = new List<object>
+                {
+                    new
+                    {
+                        categoryId = 4,
+                        currencyAmount = 1000.23,
+                        operationAmount = 1000.23,
+                        description = "description operation item"
+                    }
+                }
             };
 
-            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
+            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperationBody);
             createOperation1Request.Content = new StringContent(createOperation1RequestBody, Encoding.UTF8, "application/json");
             var createOperation1Response = await _client.SendAsync(createOperation1Request);
             createOperation1Response.EnsureSuccessStatusCode();
@@ -218,22 +221,34 @@ namespace YFS.IntegrationTests
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, $"/api/Operations/{accountTargetId}");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-
-            var createOperation1Body = new
+            int currencyId = await _seedDataIntegrationTests.GetCurrencyIdByCodeAndCountry(980, "Ukraine");
+            if (currencyId == 0)
             {
-                transferOperationId = 0,
-                categoryId = -1,
-                typeOperation = OperationDto.OperationType.Transfer, 
+                throw new InvalidOperationException("Currency not found");
+            }
+
+            var createOperationBody = new
+            {
                 accountId = accountWithdrawId,
-                operationCurrencyId = 980,
-                currencyAmount = 5000.13,
-                operationAmount = 5000.13,
+                typeOperation = OperationDto.OperationType.Transfer,
+                operationCurrencyId = currencyId, // Assuming UAH currency code
                 operationDate = DateTime.UtcNow,
                 description = "description operation 1",
-                tag = "tag operation 1"
+                operationItems = new List<object>
+                {
+                new
+                    {
+                        categoryId = -1,
+                        currencyAmount = 5000.13,
+                        operationAmount = 5000.13,
+                        description = "description operation transfer"
+                    }
+                },
+                targetAccountId = accountTargetId
             };
 
-            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
+
+            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperationBody);
             createOperation1Request.Content = new StringContent(createOperation1RequestBody, Encoding.UTF8, "application/json");
             var createOperation1Response = await _client.SendAsync(createOperation1Request);
             createOperation1Response.EnsureSuccessStatusCode();

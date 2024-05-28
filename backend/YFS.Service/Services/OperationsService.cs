@@ -12,7 +12,6 @@ namespace YFS.Service.Services
         public OperationsService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
         {
         }
-
         public enum OperationType
         {
             Expense = 1,
@@ -97,6 +96,7 @@ namespace YFS.Service.Services
                             TypeOperation = operationData.TypeOperation,
                             AccountId = targetAccountId,
                             TransferOperationId = operationData.Id,
+                            OperationCurrencyId = operationData.OperationCurrencyId,
                             OperationDate = operationData.OperationDate,
                             OperationItems = operationData.OperationItems.Select(item => new OperationItem
                             {

@@ -36,6 +36,16 @@ namespace YFS.IntegrationTests
             _serviceProvider = _factory.Services;
         }
         public static SeedDataIntegrationTests Instance => _instance;
+        public async Task<int> GetCurrencyIdByCodeAndCountry(int code, string country)
+        {
+            using (var scope = _serviceProvider.CreateScope())
+            {
+                var scopedServiceProvider = scope.ServiceProvider;
+                var serviceCurrency = scopedServiceProvider.GetRequiredService<ICurrencyService>();
+                var currency = await serviceCurrency.GetCurrencyByCodeAndCountry(code, country);
+                return currency.Data.CurrencyId;
+            }
+        }
         public async Task InitializeDatabaseAsync(IServiceProvider serviceProvider)
         {
             if (_isDatabaseInitialized)
@@ -78,21 +88,10 @@ namespace YFS.IntegrationTests
                 }
             }
 
-            // Get CurrencyId
-            using (var scope = _serviceProvider.CreateScope())
-            {
-                var scopedServiceProvider = scope.ServiceProvider;
-
-                var serviceCurrency = scopedServiceProvider.GetRequiredService<ICurrencyService>();
-                var currency = await serviceCurrency.GetCurrencyByCodeAndCountry(980, "Ukraine");
-                if (currency.Data == null)
-                {
-                    throw new InvalidOperationException("Currency not found");
-                }
-
-                // Create account
-                var createAccountBody = new
-                {
+            int currencyId = await GetCurrencyIdByCodeAndCountry(980, "Ukraine");
+            // Create account
+            var createAccountBody = new
+             {
                     Id = 0,
                     ExternalId = "",  // This value should be appropriately set
                     AccountStatus = 0,
@@ -100,30 +99,29 @@ namespace YFS.IntegrationTests
                     AccountGroupId = accountGroupId,
                     AccountTypeId = 1,
                     AccountIsEnabled = 1,
-                    CurrencyId = currency.Data.CurrencyId,
+                    CurrencyId = currencyId,
                     Bank_GLMFO = 322001,
                     Name = accountName,    // Assuming accountName is defined elsewhere in your code
                     OpeningDate = DateTime.UtcNow,
                     Note = "test note for " + accountName,
                     Balance = 0m          // Ensure the decimal is correctly formatted with 'm'
-                };
+             };
 
-                var createAccountRequestBody = JsonConvert.SerializeObject(createAccountBody);
-                createAccountRequest.Content = new StringContent(createAccountRequestBody, Encoding.UTF8, "application/json");
+            var createAccountRequestBody = JsonConvert.SerializeObject(createAccountBody);
+            createAccountRequest.Content = new StringContent(createAccountRequestBody, Encoding.UTF8, "application/json");
 
-                var createAccountResponse = await _client.SendAsync(createAccountRequest);
-                createAccountResponse.EnsureSuccessStatusCode();
+            var createAccountResponse = await _client.SendAsync(createAccountRequest);
+            createAccountResponse.EnsureSuccessStatusCode();
 
-                var responseAccountContent = await createAccountResponse.Content.ReadAsStringAsync();
-                var newAccounts = JsonConvert.DeserializeObject<AccountDto>(responseAccountContent);
+            var responseAccountContent = await createAccountResponse.Content.ReadAsStringAsync();
+            var newAccounts = JsonConvert.DeserializeObject<AccountDto>(responseAccountContent);
 
-                if (newAccounts == null)
-                {
-                    throw new InvalidOperationException("Account creation failed, no account returned.");
-                }
+            if (newAccounts == null)
+              {
+                 throw new InvalidOperationException("Account creation failed, no account returned.");
+              }
 
-                return newAccounts.Id;
-            }
+            return newAccounts.Id;
         }
         public async Task<IEnumerable<OperationDto>> CreateOperationUAH(int accountId, DateTime operationDate, 
             OperationDto.OperationType operationType,int categoryId, decimal operationAmount)
@@ -134,19 +132,25 @@ namespace YFS.IntegrationTests
 
             var createOperationRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
             createOperationRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            int currencyId = await GetCurrencyIdByCodeAndCountry(980, "Ukraine");
 
             var operationRequestBody = new
             {
-                transferOperationId = 0,
-                categoryId = categoryId,
-                typeOperation = operationType,
-                accountId = accountId,
-                operationCurrencyId = 980,
-                currencyAmount = operationAmount,
-                operationAmount = operationAmount,
-                operationDate = operationDate,
-                description = "description operation",
-                //tagId = tagId
+                AccountId = accountId,
+                TypeOperation = operationType,
+                OperationCurrencyId = currencyId,
+                OperationDate = operationDate.ToUniversalTime(), // Ensure it's UTC
+                Description = "description operation",
+                OperationItems = new List<object>
+                {
+                    new
+                    {
+                        CategoryId = categoryId,
+                        CurrencyAmount = operationAmount,
+                        OperationAmount = operationAmount,
+                        Description = "description operation item"
+                    }
+                }
             };
 
             var requestBody = JsonConvert.SerializeObject(operationRequestBody);
@@ -168,19 +172,29 @@ namespace YFS.IntegrationTests
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, $"/api/Operations/{_accountTargetId}");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            int currencyId = await GetCurrencyIdByCodeAndCountry(980, "Ukraine");
 
             var createOperation1Body = new
             {
-                    transferOperationId = 0,
-                    categoryId = -1,
-                    typeOperation = OperationDto.OperationType.Transfer, //expense
-                    accountId = _accountWithdrawId,
-                    operationCurrencyId = 980,
-                    currencyAmount = _operationAmount,
-                    operationAmount = _operationAmount,
-                    operationDate = _dateOperation,
-                    description = "description transfer operation 1",
-                    tag = "tag transfer operation 1"
+                transferOperationId = 0,
+                categoryId = -1,
+                typeOperation = OperationDto.OperationType.Transfer, // Transfer
+                accountId = _accountWithdrawId,
+                operationCurrencyId = currencyId, // Using the currencyId obtained earlier
+                currencyAmount = _operationAmount,
+                operationAmount = _operationAmount,
+                operationDate = _dateOperation.ToUniversalTime(), // Ensure operationDate is in UTC format
+                description = "description transfer operation 1",
+                operationItems = new[]
+                {
+                    new
+                    {
+                        categoryId = -1, // Assuming category ID for transfer
+                        currencyAmount = _operationAmount,
+                        operationAmount = _operationAmount,
+                        description = "Description for operation item" // Modify as needed
+                    }
+                }
             };
 
             var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);

@@ -239,7 +239,7 @@ namespace YFS.Service.Services
             return new AccountDto
             {
                 ExternalId = monoAccount.id,
-                AccountStatus = 1,
+                AccountIsEnabled = 1,
                 Favorites = 0,
                 AccountGroupId = accountGroupId,
                 AccountTypeId = 2, // banks account

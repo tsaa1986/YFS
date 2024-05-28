@@ -6,7 +6,7 @@ namespace YFS.Core.Dtos
     {
         public int Id { get; set; }
         public string ExternalId { get; set; } = null!;
-        public int AccountStatus { get; set; }
+        public string UserId { get; set; } = null!;
         public int Favorites { get; set; }
         public int AccountIsEnabled { get; set; }
         public int AccountGroupId { get; set; }

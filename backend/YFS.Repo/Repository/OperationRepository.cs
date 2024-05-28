@@ -62,6 +62,7 @@ namespace YFS.Service.Services
            => await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges)
             .Result.AsNoTracking()
             .Include(p => p.Account.AccountBalance)
+            .Include(op => op.OperationItems)
             .SingleOrDefaultAsync();
     }
 }

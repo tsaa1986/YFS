@@ -81,65 +81,35 @@ namespace YFS.IntegrationTests
         public async Task Put_Update_Account_Returns_Success()
         {
             //Arrange
-            var createAccountRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Accounts");
-            createAccountRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
-            string accountCreateName = $"AccountTest_{Guid.NewGuid()}";
+            int cerateAccountId = await _seedDataIntegrationTests.CreateAccountUAH();
+            var requestGetAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{cerateAccountId}");
+            requestGetAccount.Headers.Authorization =
+            new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            var responseAccount = await _client.SendAsync(requestGetAccount);
+            var responseAccountContent = await responseAccount.Content.ReadAsStringAsync();
+            var accountToUpdate = JsonConvert.DeserializeObject<AccountDto>(responseAccountContent);
 
-            var createAccountRequestBody = new
-            {
-                id = 0,
-                accountStatus = 0,
-                favorites = 0,
-                accountGroupId = 0,
-                accountTypeId = 0,
-                currencyId = 840,
-                bankId = 322001,
-                name = accountCreateName,
-                openingDate = DateTime.UtcNow,
-                note = "test note",
-                balance = 0
-            };
-            var createRequestBody = JsonConvert.SerializeObject(createAccountRequestBody);
-            createAccountRequest.Content = new StringContent(createRequestBody, Encoding.UTF8, "application/json");
-
-            var createResponse = await _client.SendAsync(createAccountRequest);
-            createResponse.EnsureSuccessStatusCode();
-            var createResponseContent = await createResponse.Content.ReadAsStringAsync();
-            var createdAccount = JsonConvert.DeserializeObject<AccountDto>(createResponseContent);
+            accountToUpdate.Name = "updatedAccountName";
+            accountToUpdate.Note = "updated note";
+            accountToUpdate.AccountIsEnabled = 1;
 
             var updateAccountRequest = new HttpRequestMessage(HttpMethod.Put, "/api/Accounts");
             updateAccountRequest.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
-            var updateAccountRequestBody = new
-            {
-                id = createdAccount.Id,
-                accountStatus = 1, // Example: Update the account status
-                favorites = 1,
-                accountGroupId = 0,
-                accountTypeId = 0,
-                currencyId = 840,
-                bankId = 322001,
-                name = "updatedAccountName",
-                //openingDate = DateTime.UtcNow,
-                note = "updated note",
-                balance = 0 
-            };
-
-            var updateRequestBody = JsonConvert.SerializeObject(updateAccountRequestBody);
+            var updateRequestBody = JsonConvert.SerializeObject(accountToUpdate);
             updateAccountRequest.Content = new StringContent(updateRequestBody, Encoding.UTF8, "application/json");
 
-
-            // Act
+            //Act
             var updateResponse = await _client.SendAsync(updateAccountRequest);
+            updateResponse.EnsureSuccessStatusCode();
             var updateResponseContent = await updateResponse.Content.ReadAsStringAsync();
             var updatedAccount = JsonConvert.DeserializeObject<AccountDto>(updateResponseContent);
 
-
             // Assert
-            updateResponse.EnsureSuccessStatusCode();
-            Assert.Equal(updatedAccount.AccountStatus, 1); 
-            Assert.Equal(updatedAccount.Note, "updated note"); 
-            Assert.Equal(updatedAccount.Name, "updatedAccountName");
+            Assert.NotNull(updatedAccount);
+            Assert.Equal(1, updatedAccount.AccountIsEnabled);
+            Assert.Equal("updated note", updatedAccount.Note);
+            Assert.Equal("updatedAccountName", updatedAccount.Name);
         }
         [Fact]
         public async Task Get_AccountById_Return_Success()
@@ -149,7 +119,7 @@ namespace YFS.IntegrationTests
 
             var requestGetAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{cerateAccountId}");
             requestGetAccount.Headers.Authorization = 
-                new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());            
+            new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());            
 
             //Act
             var responseAccount = await _client.SendAsync(requestGetAccount);
