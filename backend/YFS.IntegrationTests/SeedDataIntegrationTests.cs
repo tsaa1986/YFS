@@ -79,7 +79,7 @@ namespace YFS.IntegrationTests
                 if (accountGroupsForDemoUser != null)
                 {
                     // Assuming you want to find the first account group with a specific condition
-                    var desiredAccountGroup = accountGroupsForDemoUser.FirstOrDefault(ag => ag.AccountGroupNameEn.Equals("Bank"));
+                    var desiredAccountGroup = accountGroupsForDemoUser.FirstOrDefault(ag => ag.Translations.Any(t => t.AccountGroupName.Equals("Bank")));
 
                     if (desiredAccountGroup != null)
                     {

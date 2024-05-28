@@ -191,7 +191,7 @@ namespace YFS.Service.Services
             var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId);
             if (accountsGroup?.Data != null)
             {
-                var accountGroup = accountsGroup.Data.FirstOrDefault(ag => ag.AccountGroupNameEn == "Bank");
+                var accountGroup = accountsGroup.Data.FirstOrDefault(ag => ag.Translations.Any(t => t.AccountGroupName.Equals("Bank")));
                 if (accountGroup != null)
                 {
                     return accountGroup.AccountGroupId;
@@ -200,9 +200,13 @@ namespace YFS.Service.Services
 
             var newAccountGroup = await _accountGroupService.CreateAccountGroupForUser(new AccountGroupDto
             {
-                AccountGroupNameEn = "Bank",
-                AccountGroupNameRu = "",
-                AccountGroupNameUa = "",
+                UserId = userId,
+                Translations = new[]
+                    {
+                        new AccountGroupTranslationDto { LanguageCode = "ru", AccountGroupName = "Банковские" },
+                        new AccountGroupTranslationDto { LanguageCode = "en", AccountGroupName = "Bank" },
+                        new AccountGroupTranslationDto { LanguageCode = "ua", AccountGroupName = "Банківські" }
+                    },
                 GroupOrderBy = 0
             }, userId);
 

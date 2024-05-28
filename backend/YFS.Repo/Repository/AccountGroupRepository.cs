@@ -39,11 +39,19 @@ namespace YFS.Service.Services
             }
         }
         public async Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
-           => await FindByConditionAsync(c => c.AccountGroupId.Equals(accountGroupId), trackChanges).Result.SingleOrDefaultAsync();
-        
+        {
+            var query = await FindByConditionAsync(c => c.AccountGroupId == accountGroupId, trackChanges);
+            return await query.Include(c => c.Translations).SingleOrDefaultAsync();
+        }
+
         public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, bool trackChanges)
-            => await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges).Result.OrderBy(c => c.GroupOrderBy).ToListAsync();
-        
+        {
+            var accountGroupsQuery = await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges);
+            var accountGroups = await accountGroupsQuery
+                                    .Include(c => c.Translations)
+                                    .ToListAsync();
+            return accountGroups.OrderBy(c => c.GroupOrderBy);
+        }
         public async Task UpdateAccountGroupForUser(AccountGroup accountGroup) => 
             await UpdateAsync(accountGroup);
     }
