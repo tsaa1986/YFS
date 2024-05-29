@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Core.Models;
+using YFS.Core.Utilities;
 using YFS.Service.Interfaces;
 using YFS.Service.Services;
 
@@ -17,7 +19,8 @@ namespace YFS.Data.Controllers
     {
         private readonly IAccountGroupsService _accountGroupsService;
         public AccountGroupsController(IAccountGroupsService accountGroupsService, 
-            IRepositoryManager repository, IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
+            IRepositoryManager repository, IMapper mapper, ILogger<BaseApiController> logger) 
+            : base(repository, mapper, logger)
         {            
             _accountGroupsService = accountGroupsService;
         }
@@ -27,19 +30,18 @@ namespace YFS.Data.Controllers
         public async Task<IActionResult> GetAccountGroupsForUser()
         {
             string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
-            var result = await _accountGroupsService.GetAccountGroupsForUser(userId);
+            Language language = (Language)HttpContext.Items["Language"]; // Access language from request context
+            string languageCode = LanguageUtility.GetLanguageCodeFromRequest(Request);
 
-            if (result.IsSuccess)
+            var serviceResult = await _accountGroupsService.GetAccountGroupsForUser(userId, languageCode);
+
+            if (serviceResult.IsSuccess)
             {
-                return Ok(result.Data);
-            }
-            else if (result.IsNotFound)
-            {
-                return NotFound(result.ErrorMessage);
+                return Ok(serviceResult.Data);
             }
             else
             {
-                return BadRequest(result.ErrorMessage);
+                return BadRequest(serviceResult.ErrorMessage);
             }
         }
         

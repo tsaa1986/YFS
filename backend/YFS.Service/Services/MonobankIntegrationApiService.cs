@@ -12,6 +12,8 @@ using Microsoft.Extensions.Http;
 using Newtonsoft.Json.Linq;
 using YFS.Core.Models;
 using System.Data;
+using YFS.Core.Enums;
+using YFS.Core.Utilities;
 
 namespace YFS.Service.Services
 {
@@ -30,8 +32,8 @@ namespace YFS.Service.Services
             IAccountService accountService,
             IAccountGroupsService accountGroupService,
             IBankService bankService,
-            ICurrencyService currencyService
-            ) : base(repository, mapper, logger)
+            ICurrencyService currencyService, LanguageScopedService languageService
+            ) : base(repository, mapper, logger, languageService)
         {
             _httpClientFactory = httpClientFactory;
             _httpClient = _httpClientFactory.CreateClient();
@@ -136,7 +138,8 @@ namespace YFS.Service.Services
                 var monoAccounts = clientInfoResult.Data.accounts;
                 var accountData = new List<AccountDto>();
 
-                int accountGroupId = await GetOrCreateAccountGroupId(userId);
+                int accountGroupId = await GetOrCreateAccountGroupId(userId, LanguageCode);
+
                 if (accountGroupId == 0)
                 {
                     return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to get or create account group");
@@ -185,10 +188,9 @@ namespace YFS.Service.Services
                 return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts: " + ex.Message);
             }
         }
-
-        private async Task<int> GetOrCreateAccountGroupId(string userId)
+        private async Task<int> GetOrCreateAccountGroupId(string userId, string languageCode)
         {
-            var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId);
+            var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId, languageCode);
             if (accountsGroup?.Data != null)
             {
                 var accountGroup = accountsGroup.Data.FirstOrDefault(ag => ag.Translations.Any(t => t.AccountGroupName.Equals("Bank")));

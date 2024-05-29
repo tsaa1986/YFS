@@ -1,4 +1,5 @@
-﻿using YFS.Core.Models;
+﻿using YFS.Core.Enums;
+using YFS.Core.Models;
 
 namespace YFS.Service.Interfaces
 { 
@@ -7,7 +8,7 @@ namespace YFS.Service.Interfaces
         Task CreateCategoryDefaultForUser(string userId);
         Task CreateCategoryForUser(Category category);
         Task UpdateCategoryForUser(Category category);
-        Task<IEnumerable<Category>> GetCategoryForUser(string userId, bool trackChanges);
+        Task<IEnumerable<Category>> GetCategoryForUser(string userId, string languageCode, bool trackChanges);
         //Task<Category> GetCategory(int categoryId, bool trackChanges);
     }
 }

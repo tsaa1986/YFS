@@ -17,7 +17,8 @@ namespace YFS.Core.Mappings
 
             CreateMap<OperationItemDto, OperationItem>();
             CreateMap<OperationItem, OperationItemDto>()
-                .ForMember(dest => dest.CategoryName, conf => conf.MapFrom(opt => opt.Category.Name_ENG));
+                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom((src, dest, destMember, context) =>
+                    src.Category.Translations.FirstOrDefault(t => t.LanguageCode == context.Options.Items["LanguageCode"].ToString())?.Name ?? string.Empty));
 
         }
     }

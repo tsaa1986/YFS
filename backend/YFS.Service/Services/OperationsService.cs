@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
 
@@ -9,7 +10,8 @@ namespace YFS.Service.Services
 {
     public class OperationsService : BaseService, IOperationsService
     {
-        public OperationsService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
+        public OperationsService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService) 
+            : base(repository, mapper, logger, languageService)
         {
         }
         public enum OperationType

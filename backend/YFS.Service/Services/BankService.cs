@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Core.Models;
 using YFS.Core.Models.MonoIntegration;
 using YFS.Service.Interfaces;
@@ -10,7 +11,7 @@ namespace YFS.Service.Services
 {
     public class BankService : BaseService, IBankService
     {
-        public BankService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
+        public BankService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService) : base(repository, mapper, logger, languageService)
         {
         }
 

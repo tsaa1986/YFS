@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240528100011_Initial")]
+    [Migration("20240529112659_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -825,25 +825,9 @@ namespace YFS.Repo.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("CategoryId");
+                        .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Name_ENG")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Name_RU")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("VARCHAR");
-
-                    b.Property<string>("Name_UA")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("VARCHAR");
 
                     b.Property<string>("Note")
                         .HasMaxLength(100)
@@ -863,153 +847,102 @@ namespace YFS.Repo.Migrations
                         new
                         {
                             Id = -2,
-                            Name_ENG = "Account Balance adjustment",
-                            Name_RU = "Корректировка баланса счета",
-                            Name_UA = "Корегування балансу рахунка",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = -1,
-                            Name_ENG = "Money Transfer",
-                            Name_RU = "Перевод",
-                            Name_UA = "Переказ",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 1,
-                            Name_ENG = "Wages",
-                            Name_RU = "Халтура",
-                            Name_UA = "Халтура",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 2,
-                            Name_ENG = "Salary",
-                            Name_RU = "Зарплата",
-                            Name_UA = "Зарплата",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 3,
-                            Name_ENG = "Vacation",
-                            Name_RU = "Отдых",
-                            Name_UA = "Відпочинок",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 4,
-                            Name_ENG = "Loans",
-                            Name_RU = "Долги",
-                            Name_UA = "Борги",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 5,
-                            Name_ENG = "Food",
-                            Name_RU = "Продукти питания",
-                            Name_UA = "Продукти харчування",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 6,
-                            Name_ENG = "Healthcare",
-                            Name_RU = "Медицинские расходы",
-                            Name_UA = "Медичні витрати",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 8,
-                            Name_ENG = "Education",
-                            Name_RU = "Образование",
-                            Name_UA = "Освіта",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 9,
-                            Name_ENG = "Other Income",
-                            Name_RU = "Другие доходы",
-                            Name_UA = "Інші прибутки",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 10,
-                            Name_ENG = "Communal payments",
-                            Name_RU = "Коммунальные платежи",
-                            Name_UA = "Комунальні платежі",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 11,
-                            Name_ENG = "Clothing",
-                            Name_RU = "Одежда",
-                            Name_UA = "Одяг",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 12,
-                            Name_ENG = "Personal Care",
-                            Name_RU = "Личная гигиена",
-                            Name_UA = "Особиста гігієна",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 13,
-                            Name_ENG = "Household",
-                            Name_RU = "Хозяйственные расходы",
-                            Name_UA = "Побутові видатки",
                             Note = "",
                             RootId = 0
                         },
                         new
                         {
                             Id = 14,
-                            Name_ENG = "Improvements",
-                            Name_RU = "Улучшения",
-                            Name_UA = "Покращення",
                             Note = "",
                             RootId = 13
                         },
                         new
                         {
                             Id = 15,
-                            Name_ENG = "Furnishings",
-                            Name_RU = "Мебель",
-                            Name_UA = "Меблі",
                             Note = "",
                             RootId = 13
                         },
                         new
                         {
                             Id = 16,
-                            Name_ENG = "Electronics",
-                            Name_RU = "Електроника",
-                            Name_UA = "Електроніка",
                             Note = "",
                             RootId = 13
                         });
@@ -1433,6 +1366,403 @@ namespace YFS.Repo.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("YFS.Core.Models.Category", b =>
+                {
+                    b.OwnsMany("YFS.Core.Models.CategoryTranslation", "Translations", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("integer");
+
+                            NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b1.Property<int>("Id"));
+
+                            b1.Property<int>("CategoryId")
+                                .HasColumnType("integer");
+
+                            b1.Property<string>("LanguageCode")
+                                .IsRequired()
+                                .HasMaxLength(10)
+                                .HasColumnType("VARCHAR");
+
+                            b1.Property<string>("Name")
+                                .IsRequired()
+                                .HasMaxLength(100)
+                                .HasColumnType("VARCHAR");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("CategoryId");
+
+                            b1.ToTable("CategoryTranslations", (string)null);
+
+                            b1.WithOwner("Category")
+                                .HasForeignKey("CategoryId");
+
+                            b1.Navigation("Category");
+
+                            b1.HasData(
+                                new
+                                {
+                                    Id = 1,
+                                    CategoryId = -2,
+                                    LanguageCode = "ua",
+                                    Name = "Корегування балансу рахунка"
+                                },
+                                new
+                                {
+                                    Id = 2,
+                                    CategoryId = -2,
+                                    LanguageCode = "en",
+                                    Name = "Account Balance adjustment"
+                                },
+                                new
+                                {
+                                    Id = 3,
+                                    CategoryId = -2,
+                                    LanguageCode = "ru",
+                                    Name = "Корректировка баланса счета"
+                                },
+                                new
+                                {
+                                    Id = 4,
+                                    CategoryId = -1,
+                                    LanguageCode = "ua",
+                                    Name = "Переказ"
+                                },
+                                new
+                                {
+                                    Id = 5,
+                                    CategoryId = -1,
+                                    LanguageCode = "en",
+                                    Name = "Money Transfer"
+                                },
+                                new
+                                {
+                                    Id = 6,
+                                    CategoryId = -1,
+                                    LanguageCode = "ru",
+                                    Name = "Перевод"
+                                },
+                                new
+                                {
+                                    Id = 7,
+                                    CategoryId = 1,
+                                    LanguageCode = "ua",
+                                    Name = "Халтура"
+                                },
+                                new
+                                {
+                                    Id = 8,
+                                    CategoryId = 1,
+                                    LanguageCode = "en",
+                                    Name = "Wages"
+                                },
+                                new
+                                {
+                                    Id = 9,
+                                    CategoryId = 1,
+                                    LanguageCode = "ru",
+                                    Name = "Халтура"
+                                },
+                                new
+                                {
+                                    Id = 10,
+                                    CategoryId = 2,
+                                    LanguageCode = "ua",
+                                    Name = "Зарплата"
+                                },
+                                new
+                                {
+                                    Id = 11,
+                                    CategoryId = 2,
+                                    LanguageCode = "en",
+                                    Name = "Salary"
+                                },
+                                new
+                                {
+                                    Id = 12,
+                                    CategoryId = 2,
+                                    LanguageCode = "ru",
+                                    Name = "Зарплата"
+                                },
+                                new
+                                {
+                                    Id = 13,
+                                    CategoryId = 3,
+                                    LanguageCode = "ua",
+                                    Name = "Відпочинок"
+                                },
+                                new
+                                {
+                                    Id = 14,
+                                    CategoryId = 3,
+                                    LanguageCode = "en",
+                                    Name = "Vacation"
+                                },
+                                new
+                                {
+                                    Id = 15,
+                                    CategoryId = 3,
+                                    LanguageCode = "ru",
+                                    Name = "Отдых"
+                                },
+                                new
+                                {
+                                    Id = 16,
+                                    CategoryId = 4,
+                                    LanguageCode = "ua",
+                                    Name = "Борги"
+                                },
+                                new
+                                {
+                                    Id = 17,
+                                    CategoryId = 4,
+                                    LanguageCode = "en",
+                                    Name = "Loans"
+                                },
+                                new
+                                {
+                                    Id = 18,
+                                    CategoryId = 4,
+                                    LanguageCode = "ru",
+                                    Name = "Долги"
+                                },
+                                new
+                                {
+                                    Id = 19,
+                                    CategoryId = 5,
+                                    LanguageCode = "ua",
+                                    Name = "Продукти харчування"
+                                },
+                                new
+                                {
+                                    Id = 20,
+                                    CategoryId = 5,
+                                    LanguageCode = "en",
+                                    Name = "Food"
+                                },
+                                new
+                                {
+                                    Id = 21,
+                                    CategoryId = 5,
+                                    LanguageCode = "ru",
+                                    Name = "Продукти питания"
+                                },
+                                new
+                                {
+                                    Id = 22,
+                                    CategoryId = 6,
+                                    LanguageCode = "ua",
+                                    Name = "Медичні витрати"
+                                },
+                                new
+                                {
+                                    Id = 23,
+                                    CategoryId = 6,
+                                    LanguageCode = "en",
+                                    Name = "Healthcare"
+                                },
+                                new
+                                {
+                                    Id = 24,
+                                    CategoryId = 6,
+                                    LanguageCode = "ru",
+                                    Name = "Медицинские расходы"
+                                },
+                                new
+                                {
+                                    Id = 25,
+                                    CategoryId = 8,
+                                    LanguageCode = "ua",
+                                    Name = "Освіта"
+                                },
+                                new
+                                {
+                                    Id = 26,
+                                    CategoryId = 8,
+                                    LanguageCode = "en",
+                                    Name = "Education"
+                                },
+                                new
+                                {
+                                    Id = 27,
+                                    CategoryId = 8,
+                                    LanguageCode = "ru",
+                                    Name = "Образование"
+                                },
+                                new
+                                {
+                                    Id = 28,
+                                    CategoryId = 9,
+                                    LanguageCode = "ua",
+                                    Name = "Інші прибутки"
+                                },
+                                new
+                                {
+                                    Id = 29,
+                                    CategoryId = 9,
+                                    LanguageCode = "en",
+                                    Name = "Other Income"
+                                },
+                                new
+                                {
+                                    Id = 30,
+                                    CategoryId = 9,
+                                    LanguageCode = "ru",
+                                    Name = "Другие доходы"
+                                },
+                                new
+                                {
+                                    Id = 31,
+                                    CategoryId = 10,
+                                    LanguageCode = "ua",
+                                    Name = "Комунальні платежі"
+                                },
+                                new
+                                {
+                                    Id = 32,
+                                    CategoryId = 10,
+                                    LanguageCode = "en",
+                                    Name = "Communal payments"
+                                },
+                                new
+                                {
+                                    Id = 33,
+                                    CategoryId = 10,
+                                    LanguageCode = "ru",
+                                    Name = "Коммунальные платежи"
+                                },
+                                new
+                                {
+                                    Id = 34,
+                                    CategoryId = 11,
+                                    LanguageCode = "ua",
+                                    Name = "Одяг"
+                                },
+                                new
+                                {
+                                    Id = 35,
+                                    CategoryId = 11,
+                                    LanguageCode = "en",
+                                    Name = "Clothing"
+                                },
+                                new
+                                {
+                                    Id = 36,
+                                    CategoryId = 11,
+                                    LanguageCode = "ru",
+                                    Name = "Одежда"
+                                },
+                                new
+                                {
+                                    Id = 37,
+                                    CategoryId = 12,
+                                    LanguageCode = "ua",
+                                    Name = "Особиста гігієна"
+                                },
+                                new
+                                {
+                                    Id = 38,
+                                    CategoryId = 12,
+                                    LanguageCode = "en",
+                                    Name = "Personal Care"
+                                },
+                                new
+                                {
+                                    Id = 39,
+                                    CategoryId = 12,
+                                    LanguageCode = "ru",
+                                    Name = "Личная гигиена"
+                                },
+                                new
+                                {
+                                    Id = 40,
+                                    CategoryId = 13,
+                                    LanguageCode = "ua",
+                                    Name = "Побутові видатки"
+                                },
+                                new
+                                {
+                                    Id = 41,
+                                    CategoryId = 13,
+                                    LanguageCode = "en",
+                                    Name = "Household"
+                                },
+                                new
+                                {
+                                    Id = 42,
+                                    CategoryId = 13,
+                                    LanguageCode = "ru",
+                                    Name = "Хозяйственные расходы"
+                                },
+                                new
+                                {
+                                    Id = 43,
+                                    CategoryId = 14,
+                                    LanguageCode = "ua",
+                                    Name = "Покращення"
+                                },
+                                new
+                                {
+                                    Id = 44,
+                                    CategoryId = 14,
+                                    LanguageCode = "en",
+                                    Name = "Improvements"
+                                },
+                                new
+                                {
+                                    Id = 45,
+                                    CategoryId = 14,
+                                    LanguageCode = "ru",
+                                    Name = "Улучшения"
+                                },
+                                new
+                                {
+                                    Id = 46,
+                                    CategoryId = 15,
+                                    LanguageCode = "ua",
+                                    Name = "Меблі"
+                                },
+                                new
+                                {
+                                    Id = 47,
+                                    CategoryId = 15,
+                                    LanguageCode = "en",
+                                    Name = "Furnishings"
+                                },
+                                new
+                                {
+                                    Id = 48,
+                                    CategoryId = 15,
+                                    LanguageCode = "ru",
+                                    Name = "Мебель"
+                                },
+                                new
+                                {
+                                    Id = 49,
+                                    CategoryId = 16,
+                                    LanguageCode = "ua",
+                                    Name = "Електроніка"
+                                },
+                                new
+                                {
+                                    Id = 50,
+                                    CategoryId = 16,
+                                    LanguageCode = "en",
+                                    Name = "Electronics"
+                                },
+                                new
+                                {
+                                    Id = 51,
+                                    CategoryId = 16,
+                                    LanguageCode = "ru",
+                                    Name = "Електроника"
+                                });
+                        });
+
+                    b.Navigation("Translations");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Operation", b =>

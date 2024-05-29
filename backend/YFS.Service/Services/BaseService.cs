@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using YFS.Core.Enums;
+using YFS.Core.Utilities;
 using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
@@ -14,11 +16,14 @@ namespace YFS.Service.Services
         protected readonly IMapper _mapper;
         protected readonly IRepositoryManager _repository;
         protected readonly ILogger<BaseService> _logger;
-        public BaseService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger)
+        protected readonly LanguageScopedService _languageService;
+        public BaseService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService)
         {
             _mapper = mapper;
             _repository = repository;
             _logger = logger;
+            _languageService = languageService;
         }
+        protected string LanguageCode => LanguageUtility.GetLanguageCode(_languageService.Language);
     }
 }

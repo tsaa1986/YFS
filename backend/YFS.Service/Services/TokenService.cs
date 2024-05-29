@@ -7,6 +7,7 @@ using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
 
@@ -14,7 +15,8 @@ namespace YFS.Service.Services
 {
     public class TokenService : BaseService, ITokenService
     {
-        public TokenService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
+        public TokenService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService) 
+            : base(repository, mapper, logger, languageService)
         {
         }
 

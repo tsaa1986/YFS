@@ -1,13 +1,15 @@
 ﻿using AutoMapper;
 using Microsoft.Extensions.Logging;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
 {
     public class CurrencyService : BaseService, ICurrencyService
     {
-        public CurrencyService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
+        public CurrencyService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService) 
+            : base(repository, mapper, logger, languageService)
         {
         }
 

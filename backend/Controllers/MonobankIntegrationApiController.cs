@@ -7,7 +7,9 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Core.Models;
+using YFS.Core.Utilities;
 using YFS.Service.Interfaces;
 
 namespace YFS.Data.Controllers

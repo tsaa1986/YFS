@@ -18,7 +18,7 @@ namespace YFS.Core.Models
         public Operation Operation { get; set; } = new Operation();
         [Required]
         public int CategoryId { get; set; }
-        public Category? Category { get; set; }
+        public Category Category { get; set; } = null!;
         [Required]
         [Column(TypeName = "decimal(10,2)")]
         public decimal CurrencyAmount { get; set; }

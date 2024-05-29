@@ -43,6 +43,8 @@ namespace YFS.Repo.Data
         {
             base.OnModelCreating(modelBuilder);
 
+            //modelBuilder.Ignore<CategoryTranslation>();
+
             //modelBuilder.Entity<Account>().HasOne(a => a.User).WithOne();//.HasForeignKey(a => a.UserId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Account>()
                         .Property(b => b.Favorites)
@@ -85,13 +87,19 @@ namespace YFS.Repo.Data
                 .WithMany(t => t.OperationTags)
                 .HasForeignKey(ot => ot.TagId);
 
-            //modelBuilder.ApplyConfiguration(new UserData());
-            //modelBuilder.ApplyConfiguration(new CurrencyData());
+            modelBuilder.Entity<Category>()
+                    .OwnsMany(c => c.Translations, t =>
+                    {
+                        t.ToTable("CategoryTranslations"); 
+                        t.HasKey(ct => ct.Id); 
+                        t.Property(ct => ct.Name).IsRequired().HasMaxLength(100).HasColumnType("VARCHAR");
+                        t.Property(ct => ct.LanguageCode).IsRequired().HasMaxLength(10).HasColumnType("VARCHAR");
+                        // Other configuration if needed
+                    });
+
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CategoryData());
             modelBuilder.ApplyConfiguration(new BankData());
-
-
         } 
     }
 }

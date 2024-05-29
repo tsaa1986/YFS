@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using YFS.Core.Enums;
 using YFS.Core.Models;
+using YFS.Core.Utilities;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
 using YFS.Service.Interfaces;
@@ -47,8 +49,15 @@ namespace YFS.Service.Services
         {
             throw new NotImplementedException();
         }
-        public async Task<IEnumerable<Category>> GetCategoryForUser(string userId, bool trackChanges)
-            => await FindByConditionAsync(c => (c.UserId.Equals(userId)) || (c.UserId == null), trackChanges).Result.OrderBy(c => c.Name_ENG).ToListAsync();
+        public async Task<IEnumerable<Category>> GetCategoryForUser(string userId, string languageCode, bool trackChanges)
+        {
+            var categoriesQuery = await FindByConditionAsync(c => (c.UserId.Equals(userId)) || (c.UserId == null), trackChanges);
+            var categories = await categoriesQuery
+                .Include(c => c.Translations)
+                .ToListAsync();
+
+            return categories.OrderBy(c => c.Translations.FirstOrDefault(t => t.LanguageCode == languageCode)?.Name);
+        }
         public async Task UpdateCategoryForUser(Category category) => 
             await UpdateAsync(category);
 

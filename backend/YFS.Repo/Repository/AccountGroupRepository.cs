@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using YFS.Core.Enums;
 using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
@@ -43,13 +44,15 @@ namespace YFS.Service.Services
             var query = await FindByConditionAsync(c => c.AccountGroupId == accountGroupId, trackChanges);
             return await query.Include(c => c.Translations).SingleOrDefaultAsync();
         }
-
-        public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, bool trackChanges)
+        public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, string languageCode, bool trackChanges)
         {
             var accountGroupsQuery = await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges);
+
+            // Include translations and filter by language
             var accountGroups = await accountGroupsQuery
-                                    .Include(c => c.Translations)
-                                    .ToListAsync();
+                .Include(c => c.Translations.Where(t => t.LanguageCode == languageCode))
+                .ToListAsync();
+
             return accountGroups.OrderBy(c => c.GroupOrderBy);
         }
         public async Task UpdateAccountGroupForUser(AccountGroup accountGroup) => 

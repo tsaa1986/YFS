@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Service.Services;
 
 namespace YFS.Service.Interfaces

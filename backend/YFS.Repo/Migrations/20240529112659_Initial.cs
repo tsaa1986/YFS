@@ -126,18 +126,15 @@ namespace YFS.Repo.Migrations
                 name: "Categories",
                 columns: table => new
                 {
-                    CategoryId = table.Column<int>(type: "integer", nullable: false)
+                    Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     RootId = table.Column<int>(type: "integer", nullable: false),
                     UserId = table.Column<string>(type: "text", nullable: true),
-                    Name_UA = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
-                    Name_ENG = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
-                    Name_RU = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
                     Note = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Categories", x => x.CategoryId);
+                    table.PrimaryKey("PK_Categories", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -361,6 +358,27 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "CategoryTranslations",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "VARCHAR", maxLength: 100, nullable: false),
+                    LanguageCode = table.Column<string>(type: "VARCHAR", maxLength: 10, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoryTranslations", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CategoryTranslations_Categories_CategoryId",
+                        column: x => x.CategoryId,
+                        principalTable: "Categories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AccountGroupTranslation",
                 columns: table => new
                 {
@@ -534,7 +552,7 @@ namespace YFS.Repo.Migrations
                         name: "FK_OperationItem_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "CategoryId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_OperationItem_Operations_OperationId",
@@ -585,26 +603,84 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.InsertData(
                 table: "Categories",
-                columns: new[] { "CategoryId", "Name_ENG", "Name_RU", "Name_UA", "Note", "RootId", "UserId" },
+                columns: new[] { "Id", "Note", "RootId", "UserId" },
                 values: new object[,]
                 {
-                    { -2, "Account Balance adjustment", "Корректировка баланса счета", "Корегування балансу рахунка", "", 0, null },
-                    { -1, "Money Transfer", "Перевод", "Переказ", "", 0, null },
-                    { 1, "Wages", "Халтура", "Халтура", "", 0, null },
-                    { 2, "Salary", "Зарплата", "Зарплата", "", 0, null },
-                    { 3, "Vacation", "Отдых", "Відпочинок", "", 0, null },
-                    { 4, "Loans", "Долги", "Борги", "", 0, null },
-                    { 5, "Food", "Продукти питания", "Продукти харчування", "", 0, null },
-                    { 6, "Healthcare", "Медицинские расходы", "Медичні витрати", "", 0, null },
-                    { 8, "Education", "Образование", "Освіта", "", 0, null },
-                    { 9, "Other Income", "Другие доходы", "Інші прибутки", "", 0, null },
-                    { 10, "Communal payments", "Коммунальные платежи", "Комунальні платежі", "", 0, null },
-                    { 11, "Clothing", "Одежда", "Одяг", "", 0, null },
-                    { 12, "Personal Care", "Личная гигиена", "Особиста гігієна", "", 0, null },
-                    { 13, "Household", "Хозяйственные расходы", "Побутові видатки", "", 0, null },
-                    { 14, "Improvements", "Улучшения", "Покращення", "", 13, null },
-                    { 15, "Furnishings", "Мебель", "Меблі", "", 13, null },
-                    { 16, "Electronics", "Електроника", "Електроніка", "", 13, null }
+                    { -2, "", 0, null },
+                    { -1, "", 0, null },
+                    { 1, "", 0, null },
+                    { 2, "", 0, null },
+                    { 3, "", 0, null },
+                    { 4, "", 0, null },
+                    { 5, "", 0, null },
+                    { 6, "", 0, null },
+                    { 8, "", 0, null },
+                    { 9, "", 0, null },
+                    { 10, "", 0, null },
+                    { 11, "", 0, null },
+                    { 12, "", 0, null },
+                    { 13, "", 0, null },
+                    { 14, "", 13, null },
+                    { 15, "", 13, null },
+                    { 16, "", 13, null }
+                });
+
+            migrationBuilder.InsertData(
+                table: "CategoryTranslations",
+                columns: new[] { "Id", "CategoryId", "LanguageCode", "Name" },
+                values: new object[,]
+                {
+                    { 1, -2, "ua", "Корегування балансу рахунка" },
+                    { 2, -2, "en", "Account Balance adjustment" },
+                    { 3, -2, "ru", "Корректировка баланса счета" },
+                    { 4, -1, "ua", "Переказ" },
+                    { 5, -1, "en", "Money Transfer" },
+                    { 6, -1, "ru", "Перевод" },
+                    { 7, 1, "ua", "Халтура" },
+                    { 8, 1, "en", "Wages" },
+                    { 9, 1, "ru", "Халтура" },
+                    { 10, 2, "ua", "Зарплата" },
+                    { 11, 2, "en", "Salary" },
+                    { 12, 2, "ru", "Зарплата" },
+                    { 13, 3, "ua", "Відпочинок" },
+                    { 14, 3, "en", "Vacation" },
+                    { 15, 3, "ru", "Отдых" },
+                    { 16, 4, "ua", "Борги" },
+                    { 17, 4, "en", "Loans" },
+                    { 18, 4, "ru", "Долги" },
+                    { 19, 5, "ua", "Продукти харчування" },
+                    { 20, 5, "en", "Food" },
+                    { 21, 5, "ru", "Продукти питания" },
+                    { 22, 6, "ua", "Медичні витрати" },
+                    { 23, 6, "en", "Healthcare" },
+                    { 24, 6, "ru", "Медицинские расходы" },
+                    { 25, 8, "ua", "Освіта" },
+                    { 26, 8, "en", "Education" },
+                    { 27, 8, "ru", "Образование" },
+                    { 28, 9, "ua", "Інші прибутки" },
+                    { 29, 9, "en", "Other Income" },
+                    { 30, 9, "ru", "Другие доходы" },
+                    { 31, 10, "ua", "Комунальні платежі" },
+                    { 32, 10, "en", "Communal payments" },
+                    { 33, 10, "ru", "Коммунальные платежи" },
+                    { 34, 11, "ua", "Одяг" },
+                    { 35, 11, "en", "Clothing" },
+                    { 36, 11, "ru", "Одежда" },
+                    { 37, 12, "ua", "Особиста гігієна" },
+                    { 38, 12, "en", "Personal Care" },
+                    { 39, 12, "ru", "Личная гигиена" },
+                    { 40, 13, "ua", "Побутові видатки" },
+                    { 41, 13, "en", "Household" },
+                    { 42, 13, "ru", "Хозяйственные расходы" },
+                    { 43, 14, "ua", "Покращення" },
+                    { 44, 14, "en", "Improvements" },
+                    { 45, 14, "ru", "Улучшения" },
+                    { 46, 15, "ua", "Меблі" },
+                    { 47, 15, "en", "Furnishings" },
+                    { 48, 15, "ru", "Мебель" },
+                    { 49, 16, "ua", "Електроніка" },
+                    { 50, 16, "en", "Electronics" },
+                    { 51, 16, "ru", "Електроника" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -702,6 +778,11 @@ namespace YFS.Repo.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_CategoryTranslations_CategoryId",
+                table: "CategoryTranslations",
+                column: "CategoryId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OperationItem_CategoryId",
                 table: "OperationItem",
                 column: "CategoryId");
@@ -761,6 +842,9 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.DropTable(
                 name: "BankSyncHistories");
+
+            migrationBuilder.DropTable(
+                name: "CategoryTranslations");
 
             migrationBuilder.DropTable(
                 name: "Mccs");

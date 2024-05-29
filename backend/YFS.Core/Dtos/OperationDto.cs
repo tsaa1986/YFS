@@ -27,15 +27,4 @@ namespace YFS.Core.Dtos
         // Collection of OperationItems
         public List<OperationItemDto> OperationItems { get; set; } = new List<OperationItemDto>();
     }
-
-    public class OperationItemDto
-    {
-        public int Id { get; set; }
-        public int OperationId { get; set; }
-        public int CategoryId { get; set; }
-        public string CategoryName { get; set; } = null!;
-        public int OperationCurrencyId { get; set; }
-        public decimal CurrencyAmount { get; set; }
-        public decimal OperationAmount { get; set; }
-    }
 }

@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -6,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
+using YFS.Core.Enums;
 using YFS.Core.Models;
 using YFS.Service.Interfaces;
 
@@ -13,7 +15,8 @@ namespace YFS.Service.Services
 {
     public class AccountGroupsService : BaseService, IAccountGroupsService
     {
-        public AccountGroupsService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger) : base(repository, mapper, logger)
+        public AccountGroupsService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService) 
+            : base(repository, mapper, logger, languageService)
         {
         }
 
@@ -36,12 +39,11 @@ namespace YFS.Service.Services
                 return ServiceResult<AccountGroupDto>.Error(ex.Message);
             }
         }
-
-        public async Task<ServiceResult<IEnumerable<AccountGroupDto>>> GetAccountGroupsForUser(string userId)
+        public async Task<ServiceResult<IEnumerable<AccountGroupDto>>> GetAccountGroupsForUser(string userId, string languageCode)
         {
             try
             {
-                var accountGroups = await _repository.AccountGroup.GetAccountGroupsForUser(userId, false);
+                var accountGroups = await _repository.AccountGroup.GetAccountGroupsForUser(userId, languageCode, false);
                 var accountGroupsDto = _mapper.Map<IEnumerable<AccountGroupDto>>(accountGroups);
                 return ServiceResult<IEnumerable<AccountGroupDto>>.Success(accountGroupsDto);
             }

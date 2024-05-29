@@ -104,7 +104,8 @@ namespace YFS.Extension
             services.AddScoped<IBankService, BankService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddHttpClient();
-            services.AddScoped<IMonobankIntegrationApiService, MonobankIntegrationApiService>();            
+            services.AddScoped<IMonobankIntegrationApiService, MonobankIntegrationApiService>();
+            services.AddScoped<LanguageScopedService>();
         }
     }
 }

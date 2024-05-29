@@ -9,6 +9,7 @@ using YFS.Extension;
 using YFS.Repo.Data;
 using Microsoft.Extensions.Logging;
 using Serilog;
+using YFS.Middleware;
 
 namespace YFS
 {
@@ -100,6 +101,7 @@ namespace YFS
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors(ConfigCors);
+            app.UseMiddleware<LanguageMiddleware>();
 
             app.UseEndpoints(endpoints =>
             {
