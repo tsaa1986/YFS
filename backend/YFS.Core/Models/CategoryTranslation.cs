@@ -16,7 +16,6 @@ namespace YFS.Core.Models
 
         [Required]
         public int CategoryId { get; set; }
-        public Category Category { get; set; } = null!;
 
         [Required]
         [Column(TypeName = "VARCHAR")]

@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240529112659_Initial")]
+    [Migration("20240530085128_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1397,10 +1397,8 @@ namespace YFS.Repo.Migrations
 
                             b1.ToTable("CategoryTranslations", (string)null);
 
-                            b1.WithOwner("Category")
+                            b1.WithOwner()
                                 .HasForeignKey("CategoryId");
-
-                            b1.Navigation("Category");
 
                             b1.HasData(
                                 new
@@ -1792,15 +1790,13 @@ namespace YFS.Repo.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("YFS.Core.Models.Operation", "Operation")
+                    b.HasOne("YFS.Core.Models.Operation", null)
                         .WithMany("OperationItems")
                         .HasForeignKey("OperationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
-
-                    b.Navigation("Operation");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.OperationTag", b =>

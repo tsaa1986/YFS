@@ -30,7 +30,7 @@ namespace YFS.Data.Controllers
         public async Task<IActionResult> GetAccountGroupsForUser()
         {
             string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
-            Language language = (Language)HttpContext.Items["Language"]; // Access language from request context
+            //Language language = (Language)HttpContext.Items["Language"]; // Access language from request context
             string languageCode = LanguageUtility.GetLanguageCodeFromRequest(Request);
 
             var serviceResult = await _accountGroupsService.GetAccountGroupsForUser(userId, languageCode);

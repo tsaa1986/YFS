@@ -4,6 +4,7 @@ using NuGet.Frameworks;
 using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection.Metadata;
+using System.Reflection.PortableExecutable;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,6 +58,7 @@ namespace YFS.IntegrationTests
             int _accountId = await _seedDataIntegrationTests.CreateAccountUAH();
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/operations/last10/{_accountId}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            requestOperation.Headers.Add("Accept-Language", "en");
             await _seedDataIntegrationTests.CreateOperationIncome3monthAutomatically(_accountId);
 
             //Act
@@ -80,6 +82,7 @@ namespace YFS.IntegrationTests
             //2023 - 04 - 01 / 2023 - 04 - 28
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/Operations/period/{_accountId}/{startDate}/{endDate}");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            requestOperation.Headers.Add("Accept-Language", "en");
             await _seedDataIntegrationTests.CreateOperationIncome3monthAutomatically(_accountId);
 
             //Act
@@ -104,13 +107,14 @@ namespace YFS.IntegrationTests
             if (currencyId == 0)
             {
               throw new InvalidOperationException("Currency not found");
-            }            
+            }
 
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
+            createOperation1Request.Headers.Add("Accept-Language", "en");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
-            var createOperation1Body = new
+            var createOperationBody = new
             {
                 transferOperationId = 0,
                 categoryId = 2,
@@ -140,13 +144,14 @@ namespace YFS.IntegrationTests
                 }
             };
 
-            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperation1Body);
+            var createOperation1RequestBody = JsonConvert.SerializeObject(createOperationBody);
             createOperation1Request.Content = new StringContent(createOperation1RequestBody, Encoding.UTF8, "application/json");
             var createOperation1Response = await _client.SendAsync(createOperation1Request);
             createOperation1Response.EnsureSuccessStatusCode();
 
 
             var requestOperation = new HttpRequestMessage(HttpMethod.Get, $"/api/operations/last10/{accountId}");
+            requestOperation.Headers.Add("Accept-Language", "en");
             requestOperation.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
 
@@ -168,6 +173,7 @@ namespace YFS.IntegrationTests
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, "/api/Operations/0");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            createOperation1Request.Headers.Add("Accept-Language", "en");
             int currencyId = await _seedDataIntegrationTests.GetCurrencyIdByCodeAndCountry(980, "Ukraine");
             if (currencyId == 0)
             {
@@ -221,6 +227,7 @@ namespace YFS.IntegrationTests
             // Create operation 1
             var createOperation1Request = new HttpRequestMessage(HttpMethod.Post, $"/api/Operations/{accountTargetId}");
             createOperation1Request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            createOperation1Request.Headers.Add("Accept-Language", "en");
             int currencyId = await _seedDataIntegrationTests.GetCurrencyIdByCodeAndCountry(980, "Ukraine");
             if (currencyId == 0)
             {

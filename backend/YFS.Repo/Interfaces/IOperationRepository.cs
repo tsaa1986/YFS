@@ -8,10 +8,10 @@ namespace YFS.Service.Interfaces
         Task UpdateOperation(Operation operation);
         Task RemoveOperation(Operation operation);
         Task<Operation?> GetOperationByIdWithoutCategory(int operationId, bool trackChanges);
-        Task<Operation?> GetOperationById(int operationId, bool trackChanges);
-        Task<Operation?> GetTransferOperationById(int transferOperationId);
-        Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(int accountId, DateTime startDate, DateTime endDate, bool trackChanges);
-        Task<IEnumerable<Operation>> GetLast10OperationsForAccount(int accountId, bool trackChanges);
-        Task<IEnumerable<Operation>> GetOperationsForAccountGroupForPeriod(int accountGroupId, bool trackChanges);
+        Task<Operation?> GetOperationById(string languageCode,int operationId, bool trackChanges);
+        Task<Operation?> GetTransferOperationById(string languageCode, int transferOperationId);
+        Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(string languageCode, int accountId, DateTime startDate, DateTime endDate, bool trackChanges);
+        Task<IEnumerable<Operation>> GetLast10OperationsForAccount(string languageCode, int accountId, bool trackChanges);
+        Task<IEnumerable<Operation>> GetOperationsForAccountGroupForPeriod(string languageCode, int accountGroupId, bool trackChanges);
     }
 }

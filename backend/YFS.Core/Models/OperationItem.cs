@@ -15,7 +15,6 @@ namespace YFS.Core.Models
         public int Id { get; set; }
         [Required]
         public int OperationId { get; set; }
-        public Operation Operation { get; set; } = new Operation();
         [Required]
         public int CategoryId { get; set; }
         public Category Category { get; set; } = null!;

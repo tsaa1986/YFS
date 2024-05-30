@@ -79,7 +79,7 @@ namespace YFS.Service.Services
                 await _repository.Account.UpdateAccount(account);
                 await _repository.SaveAsync();
 
-                var operationReturnData = await _repository.Operation.GetOperationById(operationData.Id, false);
+                var operationReturnData = await _repository.Operation.GetOperationById(LanguageCode, operationData.Id, false);
                 var operationDataReturnDto = _mapper.Map<OperationDto>(operationReturnData);
 
                 List<OperationDto> listOperationReturn = new List<OperationDto> { operationDataReturnDto };
@@ -129,7 +129,7 @@ namespace YFS.Service.Services
                         await _repository.Operation.CreateOperation(transferOperationData);
                         await _repository.SaveAsync();
 
-                        transferOperationData = await _repository.Operation.GetOperationById(transferOperationData.Id, false);
+                        transferOperationData = await _repository.Operation.GetOperationById(LanguageCode, transferOperationData.Id, false);
                         var operationTransferDataReturnDto = _mapper.Map<OperationDto>(transferOperationData);
 
                         listOperationReturn.Add(operationTransferDataReturnDto);
@@ -160,7 +160,7 @@ namespace YFS.Service.Services
             {
                 var operation = _mapper.Map<Operation>(operationDto);
 
-                var existingOperation = await _repository.Operation.GetOperationById(operation.Id, trackChanges: true);
+                var existingOperation = await _repository.Operation.GetOperationById(LanguageCode, operation.Id, trackChanges: true);
 
                 if (existingOperation == null)
                 {
@@ -171,7 +171,7 @@ namespace YFS.Service.Services
 
                 await _repository.Operation.UpdateOperation(existingOperation);
                 await _repository.SaveAsync();
-                var updatedOperation = await _repository.Operation.GetOperationById(operation.Id, trackChanges: true);
+                var updatedOperation = await _repository.Operation.GetOperationById(LanguageCode, operation.Id, trackChanges: true);
                 var updatedOperationDto = _mapper.Map<OperationDto>(updatedOperation);
                 return ServiceResult<OperationDto>.Success(updatedOperationDto);
             }
@@ -263,7 +263,7 @@ namespace YFS.Service.Services
                     if (operationData.TransferOperationId > 0)
                     {
                         operationIncomeData = operationData;
-                        operationWithdrawData = await _repository.Operation.GetOperationById(operationIncomeData.TransferOperationId, false);
+                        operationWithdrawData = await _repository.Operation.GetOperationById(LanguageCode, operationIncomeData.TransferOperationId, false);
 
                         if (operationWithdrawData != null)
                         {
@@ -275,7 +275,7 @@ namespace YFS.Service.Services
                     else
                     {
                         operationWithdrawData = operationData;
-                        operationIncomeData = await _repository.Operation.GetTransferOperationById(operationWithdrawData.Id);
+                        operationIncomeData = await _repository.Operation.GetTransferOperationById(LanguageCode, operationWithdrawData.Id);
 
                         if (operationIncomeData != null)
                         {
@@ -341,7 +341,7 @@ namespace YFS.Service.Services
         {
             try
             {
-                var operations = await _repository.Operation.GetOperationsForAccountForPeriod(accountId, startDate, endDate, trackChanges: false);
+                var operations = await _repository.Operation.GetOperationsForAccountForPeriod(LanguageCode, accountId, startDate, endDate, trackChanges: false);
                 var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
                 return ServiceResult<IEnumerable<OperationDto>>.Success(operationsDto);
             }
@@ -355,7 +355,7 @@ namespace YFS.Service.Services
         {
             try
             {
-                var operations = await _repository.Operation.GetLast10OperationsForAccount(accountId, trackChanges: false);
+                var operations = await _repository.Operation.GetLast10OperationsForAccount(LanguageCode, accountId, trackChanges: false);
                 var operationsDto = _mapper.Map<IEnumerable<OperationDto>>(operations);
                 return ServiceResult<IEnumerable<OperationDto>>.Success(operationsDto);
             }

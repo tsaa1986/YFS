@@ -8,6 +8,7 @@ namespace YFS.Core.Mappings
     {
         public AccountGroupMappingProfile()
         {
+            // Mapping from AccountGroup to AccountGroupDto
             CreateMap<AccountGroup, AccountGroupDto>()
                 .ForMember(dest => dest.Translations, opt => opt.MapFrom(src => src.Translations));
 

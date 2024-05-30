@@ -27,12 +27,13 @@ namespace YFS.IntegrationTests
             //Arrange
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/AccountGroups");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            request.Headers.Add("Accept-Language", "en");
 
             //Act
             var response = await _client.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            var accountGroupsForDemoUser = JsonConvert.DeserializeObject<AccountGroupTranslationDto[]>(content);
+            var accountGroupsForDemoUser = JsonConvert.DeserializeObject<AccountGroupDto[]>(content);
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -77,6 +78,39 @@ namespace YFS.IntegrationTests
             Assert.True(newAccountGroup.Translations.Any(t => t.LanguageCode == "en" && t.AccountGroupName == ("accountGroupDemoUserEn-" + accountGuid)));
             Assert.True(newAccountGroup.Translations.Any(t => t.LanguageCode == "ru" && t.AccountGroupName == ("accountGroupDemoUserRu-" + accountGuid)));
             Assert.True(newAccountGroup.Translations.Any(t => t.LanguageCode == "ua" && t.AccountGroupName == ("accountGroupDemoUserUa-" + accountGuid)));
+        }
+        [Fact]
+        public async Task Post_Create_AccountGroupsUaForDemoUser_Return_Success()
+        {
+            string accountGuid = Guid.NewGuid().ToString();
+            // Arrange
+            string accountGroupNameUa = "accountGroupDemoUserUa-" + accountGuid;
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/AccountGroups");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+
+            var requestBody = new
+            {
+                translations = new[]
+                {
+                new { languageCode = "ua", accountGroupName = accountGroupNameUa }
+            },
+                groupOrderBy = 5
+            };
+            var jsonRequestBody = JsonConvert.SerializeObject(requestBody);
+            var content = new StringContent(jsonRequestBody, Encoding.UTF8, "application/json");
+            request.Content = content;
+
+            // Act
+            var response = await _client.SendAsync(request);
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var newAccountGroup = JsonConvert.DeserializeObject<AccountGroupDto>(responseContent);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.NotNull(newAccountGroup);
+            Assert.Equal(1, newAccountGroup.Translations.Count);
+            Assert.True(newAccountGroup.Translations.Any(t => t.LanguageCode == "ua" && t.AccountGroupName.Equals(accountGroupNameUa)));
         }
         [Fact]
         public async Task Put_Update_AccountGroup_Return_Success()

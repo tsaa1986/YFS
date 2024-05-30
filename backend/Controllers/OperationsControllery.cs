@@ -7,6 +7,7 @@ using YFS.Service.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using YFS.Core.Dtos;
 using Microsoft.Extensions.Logging;
+using YFS.Core.Utilities;
 
 namespace YFS.Controllers
 {
