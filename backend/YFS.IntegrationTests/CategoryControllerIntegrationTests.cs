@@ -7,6 +7,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using YFS.Core.Dtos;
+using YFS.Core.Models;
 
 namespace YFS.IntegrationTests
 {
@@ -27,6 +28,7 @@ namespace YFS.IntegrationTests
             //Arrange
             var request = new HttpRequestMessage(HttpMethod.Get, "/api/Category");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            request.Headers.Add("Accept-Language", "en");
 
             //Act
             var response = await _client.SendAsync(request);
@@ -43,6 +45,5 @@ namespace YFS.IntegrationTests
             Assert.NotNull(categoryForDemoUser);
             Assert.True(categoryForDemoUser.Length > 0);
         }
-
     }
 }

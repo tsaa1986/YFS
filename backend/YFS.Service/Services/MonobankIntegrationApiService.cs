@@ -23,7 +23,7 @@ namespace YFS.Service.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAccountService _accountService;
         private readonly IAccountGroupsService _accountGroupService;
-        private readonly IBankService _bankService; 
+        private readonly Interfaces.IBankService _bankService; 
         private readonly ICurrencyService _currencyService;
         public MonobankIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
             IMapper mapper, 
@@ -31,7 +31,7 @@ namespace YFS.Service.Services
             HttpClient httpClient,
             IAccountService accountService,
             IAccountGroupsService accountGroupService,
-            IBankService bankService,
+            Interfaces.IBankService bankService,
             ICurrencyService currencyService, LanguageScopedService languageService
             ) : base(repository, mapper, logger, languageService)
         {

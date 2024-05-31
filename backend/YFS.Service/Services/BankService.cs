@@ -11,7 +11,8 @@ namespace YFS.Service.Services
 {
     public class BankService : BaseService, IBankService
     {
-        public BankService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService) : base(repository, mapper, logger, languageService)
+        public BankService(IRepositoryManager repository, IMapper mapper, ILogger<BaseService> logger, LanguageScopedService languageService) 
+            : base(repository, mapper, logger, languageService)
         {
         }
 
