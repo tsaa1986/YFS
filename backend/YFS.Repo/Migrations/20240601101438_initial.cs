@@ -6,7 +6,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace YFS.Repo.Migrations
 {
-    public partial class Initial : Migration
+    public partial class initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -154,6 +154,21 @@ namespace YFS.Repo.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Currencies", x => x.CurrencyId);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MccCategoryMappings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MccCode = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    Description = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MccCategoryMappings", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -783,6 +798,12 @@ namespace YFS.Repo.Migrations
                 column: "CategoryId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_MccCategoryMappings_MccCode_CategoryId_Description",
+                table: "MccCategoryMappings",
+                columns: new[] { "MccCode", "CategoryId", "Description" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OperationItem_CategoryId",
                 table: "OperationItem",
                 column: "CategoryId");
@@ -845,6 +866,9 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.DropTable(
                 name: "CategoryTranslations");
+
+            migrationBuilder.DropTable(
+                name: "MccCategoryMappings");
 
             migrationBuilder.DropTable(
                 name: "Mccs");

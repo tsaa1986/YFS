@@ -24,6 +24,7 @@ namespace YFS.Repo.Data
         public DbSet<BankSyncHistory> BankSyncHistories { get; set; } = null!;
         public DbSet<ApiToken> ApiTokens { get; set; } = null!;
         public DbSet<MerchantCategoryCode> Mccs { get; set; } = null!;
+        public DbSet<MccCategoryMapping> MccCategoryMappings { get; set; } = null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
@@ -96,6 +97,10 @@ namespace YFS.Repo.Data
                         t.Property(ct => ct.LanguageCode).IsRequired().HasMaxLength(10).HasColumnType("VARCHAR");
                         // Other configuration if needed
                     });
+
+            modelBuilder.Entity<MccCategoryMapping>()
+                .HasIndex(e => new { e.MccCode, e.CategoryId, e.Description })
+                .IsUnique();
 
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CategoryData());

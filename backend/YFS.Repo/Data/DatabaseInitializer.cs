@@ -11,6 +11,7 @@ namespace YFS.Repo.Data
             InitializeCurrencies(context);
             InitializeMccs(context);
             InitializeAccountTypes(context);
+            InitializeMccCategoryMapping(context);
         }
     }
 }

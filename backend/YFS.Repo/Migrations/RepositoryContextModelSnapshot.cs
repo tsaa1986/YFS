@@ -989,6 +989,33 @@ namespace YFS.Repo.Migrations
                     b.ToTable("Currencies");
                 });
 
+            modelBuilder.Entity("YFS.Core.Models.MccCategoryMapping", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<int>("MccCode")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MccCode", "CategoryId", "Description")
+                        .IsUnique();
+
+                    b.ToTable("MccCategoryMappings");
+                });
+
             modelBuilder.Entity("YFS.Core.Models.MerchantCategoryCode", b =>
                 {
                     b.Property<int>("Code")
