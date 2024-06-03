@@ -166,7 +166,7 @@ namespace YFS.Data.Controllers
 
         [HttpGet("statements/{account}/{fromDate}/{toDate}")]
         [Authorize]
-        public async Task<IActionResult> GetStatementsBetweenDates(string account, DateTime fromDate, DateTime toDate)
+        public async Task<IActionResult> GetTransactions(string account, DateTime fromDate, DateTime toDate)
         {
             string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
 
@@ -176,7 +176,7 @@ namespace YFS.Data.Controllers
                 return BadRequest("Failed to get API token for the user");
             }
 
-            var result = await _monobankIntegrationApiService.GetStatementsBetweenDates(tokenResult.Data.TokenValue, account, fromDate, toDate);
+            var result = await _monobankIntegrationApiService.GetTransactions(tokenResult.Data.TokenValue, account, fromDate, toDate);
 
             if (result.IsSuccess)
             {

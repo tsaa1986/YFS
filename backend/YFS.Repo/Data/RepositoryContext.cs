@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using YFS.Core.Models;
+using YFS.Core.Models.MonoIntegration;
 using YFS.Core.Models.Triggers;
 
 namespace YFS.Repo.Data
@@ -25,6 +26,7 @@ namespace YFS.Repo.Data
         public DbSet<ApiToken> ApiTokens { get; set; } = null!;
         public DbSet<MerchantCategoryCode> Mccs { get; set; } = null!;
         public DbSet<MccCategoryMapping> MccCategoryMappings { get; set; } = null!;
+        public DbSet<AccountSyncSettings> AccountSyncSettings { get; set; } = null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {
@@ -101,6 +103,15 @@ namespace YFS.Repo.Data
             modelBuilder.Entity<MccCategoryMapping>()
                 .HasIndex(e => new { e.MccCode, e.CategoryId, e.Description })
                 .IsUnique();
+
+            modelBuilder.Entity<MonoSyncTransaction>()
+                .HasIndex(mst => new { mst.MonobankTransactionId, mst.OperationId })
+                .IsUnique();
+
+            modelBuilder.Entity<MonoSyncTransaction>()
+                .HasOne(mst => mst.Operation)
+                .WithOne(o => o.MonoSyncTransaction)
+                .HasForeignKey<MonoSyncTransaction>(mst => mst.OperationId);
 
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CategoryData());

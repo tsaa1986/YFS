@@ -82,7 +82,7 @@ namespace YFS.Service.Services
                 return ServiceResult<MonoClientInfoResponse>.Error(ex.Message);
             }
         }
-        public async Task<ServiceResult<IEnumerable<MonoStatement>>> GetStatementsBetweenDates(string xToken, string account, DateTime fromDate, DateTime toDate)
+        public async Task<ServiceResult<IEnumerable<MonoTransaction>>> GetTransactions(string xToken, string account, DateTime fromDate, DateTime toDate)
         {
             try
             {
@@ -103,26 +103,26 @@ namespace YFS.Service.Services
                 if (response.IsSuccessStatusCode)
                 {
                     string responseBody = await response.Content.ReadAsStringAsync();
-                    IEnumerable<MonoStatement>? statements = JsonConvert.DeserializeObject<IEnumerable<MonoStatement>>(responseBody);
-                    if (statements != null)
+                    IEnumerable<MonoTransaction>? transactions = JsonConvert.DeserializeObject<IEnumerable<MonoTransaction>>(responseBody);
+                    if (transactions != null)
                     {
-                        return ServiceResult<IEnumerable<MonoStatement>>.Success(statements);
+                        return ServiceResult<IEnumerable<MonoTransaction>>.Success(transactions);
                     }
                     else
                     {
-                        return ServiceResult<IEnumerable<MonoStatement>>.Error("Failed to deserialize statements");
+                        return ServiceResult<IEnumerable<MonoTransaction>>.Error("Failed to deserialize statements");
                     }
                 }
                 else
                 {
                     _logger.LogError($"Failed to retrieve statements from Monobank API: {response.StatusCode}");
-                    return ServiceResult<IEnumerable<MonoStatement>>.Error($"Failed to retrieve statements: {response.StatusCode}");
+                    return ServiceResult<IEnumerable<MonoTransaction>>.Error($"Failed to retrieve statements: {response.StatusCode}");
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError($"Error in GetStatementsBetweenDates method: {ex.Message}");
-                return ServiceResult<IEnumerable<MonoStatement>>.Error($"Error: {ex.Message}");
+                return ServiceResult<IEnumerable<MonoTransaction>>.Error($"Error: {ex.Message}");
             }
         }
         public async Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId)
@@ -256,155 +256,5 @@ namespace YFS.Service.Services
                 Note = monoAccount.type
             };
         }
-
-        public Task<ServiceResult<IEnumerable<MonoStatement>>> GetStatements(string xToken, string accountId, DateTime fromDate, DateTime toDate)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
-        /*    
-            public async Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId)
-            {
-                try
-                {
-                    var clientInfoResult = await GetClientInfo(xToken);
-                    if (clientInfoResult.Data.accounts.Count == 0)
-                        return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
-
-
-                    if ((clientInfoResult.IsSuccess))
-                    {
-                        // get accounts from mono
-                        var monoAccounts = clientInfoResult.Data.accounts;
-                        var accountData = new List<AccountDto>();
-
-                        //get accountgroup by name (Bank)
-                        var accountsGroup = await _accountGroupService.GetAccountGroupsForUser(userId);
-                        int accountGroupId = 0;
-                        if (accountsGroup != null && accountsGroup.Data != null)
-                        {
-                            foreach (var accountGroup in accountsGroup.Data)
-                            {
-                                if (accountGroup?.AccountGroupNameEn != null && accountGroup.AccountGroupNameEn.Equals("Bank"))
-                                {
-                                    accountGroupId = accountGroup.AccountGroupId;
-                                    break;
-                                }
-                            }
-                        }
-                        else
-                        {
-                            AccountGroupDto ag = new AccountGroupDto
-                            {
-                                AccountGroupNameEn = "Bank",
-                                AccountGroupNameRu = "",
-                                AccountGroupNameUa = "",
-                                GroupOrderBy = 0
-                            };
-                            var newAccountGroup = await _accountGroupService.CreateAccountGroupForUser(ag, userId);
-                            if (newAccountGroup.IsSuccess == true)
-                            {
-                                accountGroupId = newAccountGroup.Data.AccountGroupId;
-                            }
-                            else
-                            {
-                                //ServiceResult<AccountGroupDto>.Error("Failed to create accountGroup");
-                                return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to create accountGroup");
-                            }
-                        }
-
-                        //get monobank id glmfo=322001
-                        var monobank = await _bankService.GetBankByGLMFO(322001);
-                        int monoBankId = 0;
-                        if (accountsGroup != null && accountsGroup.Data != null)
-                            monoBankId = monobank.Data.GLMFO;
-                        else
-                            return ServiceResult<IEnumerable<AccountDto>>.NotFound("Monobank from UnivarsalBank not found");
-
-
-                        foreach (var monoAccount in monoAccounts)
-                        {
-                                var accountFromDB = await _accountService.GetExternalAccountById(monoAccount.id, userId, false);
-
-                                if (accountFromDB.Data != null)
-                                    continue;
-
-                            //get currencyid
-                            string currencyCountry = "";
-
-                            switch (monoAccount.currencyCode)
-                            {
-                                case 840: currencyCountry = "United States of America (the)"; 
-                                    break;
-                                case 980: currencyCountry = "Ukraine";
-                                    break;
-                                case 978: currencyCountry = "European Union";
-                                    break;
-                                default:
-                                    return ServiceResult<IEnumerable<AccountDto>>.NotFound($"Currency {monoAccount.currencyCode} not found");
-                                    //break;
-                            }
-
-                            var currency = _currencyService.GetCurrencyByCountry(monoAccount.currencyCode, currencyCountry);
-                            int currencyId = 0;
-                            string currencyCode = "";
-
-                            if (currency.Result.IsSuccess)
-                            {
-                                currencyId = currency.Result.Data.CurrencyId;
-                                currencyCode = currency.Result.Data.Code;
-                            }
-                            else
-                                ServiceResult<Bank>.NotFound($"Currency {monoAccount.currencyCode} not found");
-
-                            //create account for adding
-                            var accountDto = new AccountDto
-                            {
-                                ExternalId = monoAccount.id,
-                                AccountStatus = 1,
-                                Favorites = 0,
-                                AccountGroupId = accountGroupId,
-                                AccountTypeId = 2, //banks account
-                                                   //CurrencyId =
-                                                   //BankId =
-                                Name = "Mono | " + monoAccount.type + " card |  " + $"[{currencyCode}]",
-                                Bank_GLMFO = monoBankId,
-                                CurrencyId = currencyId,
-                                OpeningDate = DateTime.UtcNow,
-                                Note = monoAccount.type
-                                };
-
-                                // Add the created AccountDto to the list
-                                //accountData.Add(accountDto);
-
-                            var createdAccount = await _accountService.CreateAccountForUser(accountDto , userId);
-                            if (createdAccount.IsSuccess == false )
-                                return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to add accounts from monobank");
-
-                            accountData.Add(createdAccount.Data);
-                         }
-
-                        if (accountData.Count == 0)
-                        {
-                            return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts for synchronization not found");
-                        }
-
-
-
-                        return ServiceResult<IEnumerable<AccountDto>>.Success(accountData);
-                    }   
-                    else
-                    {
-                        return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts from monobank");
-                    }
-                }
-                catch(Exception ex)
-                {
-                    return ServiceResult<IEnumerable<AccountDto>>.Error("Failed to fetch accounts" + ex.Message);
-                }
-            }
-        */
     }
 }

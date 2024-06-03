@@ -6,10 +6,26 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace YFS.Repo.Migrations
 {
-    public partial class initial : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AccountSyncSettings",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AccountId = table.Column<int>(type: "integer", nullable: false),
+                    FromSyncDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    LastSuccessSyncDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
+                    AdditionalSettings = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AccountSyncSettings", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "AccountTypes",
                 columns: table => new
@@ -549,6 +565,27 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "MonoSyncTransaction",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    MonobankTransactionId = table.Column<string>(type: "text", nullable: false),
+                    OperationId = table.Column<int>(type: "integer", nullable: false),
+                    SyncedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MonoSyncTransaction", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MonoSyncTransaction_Operations_OperationId",
+                        column: x => x.OperationId,
+                        principalTable: "Operations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "OperationItem",
                 columns: table => new
                 {
@@ -804,6 +841,18 @@ namespace YFS.Repo.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_MonoSyncTransaction_MonobankTransactionId_OperationId",
+                table: "MonoSyncTransaction",
+                columns: new[] { "MonobankTransactionId", "OperationId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MonoSyncTransaction_OperationId",
+                table: "MonoSyncTransaction",
+                column: "OperationId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OperationItem_CategoryId",
                 table: "OperationItem",
                 column: "CategoryId");
@@ -841,6 +890,9 @@ namespace YFS.Repo.Migrations
                 name: "AccountsMonthlyBalance");
 
             migrationBuilder.DropTable(
+                name: "AccountSyncSettings");
+
+            migrationBuilder.DropTable(
                 name: "AccountTypeTranslations");
 
             migrationBuilder.DropTable(
@@ -872,6 +924,9 @@ namespace YFS.Repo.Migrations
 
             migrationBuilder.DropTable(
                 name: "Mccs");
+
+            migrationBuilder.DropTable(
+                name: "MonoSyncTransaction");
 
             migrationBuilder.DropTable(
                 name: "OperationItem");

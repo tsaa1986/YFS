@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace YFS.Core.Models.MonoIntegration
 {
-    public class MonoStatement
+    public class MonoTransaction
     {
         public string Id { get; set; } = null!;
         public long Time { get; set; }  //Час транзакції в секундах в форматі Unix time

@@ -18,7 +18,6 @@ namespace YFS.Service.Interfaces
         /// <param name="fromDate">string Example: 1546304461 Початок часу виписки.</param>
         /// <param name="toDate">string Example: 1546306461 Останній час виписки (якщо відсутній, буде використовуватись поточний час).</param>
         /// <returns></returns>
-        Task<ServiceResult<IEnumerable<MonoStatement>>> GetStatements(string xToken, string accountId, DateTime fromDate, DateTime toDate);
         Task<ServiceResult<MonoClientInfoResponse>> GetClientInfo(string xToken);
         /// <summary>
         /// for getting accounts from monobank
@@ -28,7 +27,7 @@ namespace YFS.Service.Interfaces
         /// <param name="fromDate"></param>
         /// <param name="toDate"></param>
         /// <returns></returns>
-        Task<ServiceResult<IEnumerable<MonoStatement>>> GetStatementsBetweenDates(string xToken, string account, DateTime fromDate, DateTime toDate);
+        Task<ServiceResult<IEnumerable<MonoTransaction>>> GetTransactions(string xToken, string account, DateTime fromDate, DateTime toDate);
         /// <summary>
         /// this method for adding accounts from monobank
         /// </summary>
