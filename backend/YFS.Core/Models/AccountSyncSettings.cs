@@ -12,6 +12,6 @@ namespace YFS.Core.Models
         public int AccountId { get; set; }
         public DateTime? FromSyncDate { get; set; }
         public DateTime? LastSuccessSyncDate { get; set; }
-        public string AdditionalSettings { get; set; }
+        public string? AdditionalSettings { get; set; }
     }
 }

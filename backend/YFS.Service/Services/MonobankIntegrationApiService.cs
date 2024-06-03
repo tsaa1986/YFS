@@ -25,6 +25,7 @@ namespace YFS.Service.Services
         private readonly IAccountGroupsService _accountGroupService;
         private readonly Interfaces.IBankService _bankService; 
         private readonly ICurrencyService _currencyService;
+        private readonly IOperationsService _operationsService;
         public MonobankIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
             IMapper mapper, 
             ILogger<BaseService> logger, 
@@ -32,7 +33,9 @@ namespace YFS.Service.Services
             IAccountService accountService,
             IAccountGroupsService accountGroupService,
             Interfaces.IBankService bankService,
-            ICurrencyService currencyService, LanguageScopedService languageService
+            ICurrencyService currencyService,
+            IOperationsService operationsService,
+            LanguageScopedService languageService
             ) : base(repository, mapper, logger, languageService)
         {
             _httpClientFactory = httpClientFactory;
@@ -44,6 +47,7 @@ namespace YFS.Service.Services
             _accountGroupService = accountGroupService;
             _bankService = bankService;
             _currencyService = currencyService;
+            _operationsService = operationsService;
         }
         public async Task<ServiceResult<MonoClientInfoResponse>> GetClientInfo(string xToken)
         {
@@ -220,7 +224,11 @@ namespace YFS.Service.Services
             var accountFromDB = await _accountService.GetExternalAccountById(externalId, userId, false);
             return accountFromDB.Data != null;
         }
-
+        private async Task<int> GetAccountId(string externalId, string userId)
+        {
+            var accountFromDB = await _accountService.GetExternalAccountById(externalId, userId, false);
+            return accountFromDB.Data == null ? 0 : accountFromDB.Data.Id;
+        }
         private async Task<ServiceResult<CurrencyDto>> GetCurrency(int currencyCode)
         {
             string? currencyCountry = currencyCode switch
@@ -255,6 +263,11 @@ namespace YFS.Service.Services
                 OpeningDate = DateTime.UtcNow,
                 Note = monoAccount.type
             };
+        }
+
+        public Task<ServiceResult<bool>> SynchronizeTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions)
+        {
+            throw new NotImplementedException();
         }
     }
 }
