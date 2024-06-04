@@ -34,7 +34,7 @@ namespace YFS.Service.Interfaces
         /// <param name="xToken"></param>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId);
-        Task<ServiceResult<bool>> SynchronizeTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions);
+        Task<ServiceResult<IEnumerable<AccountDto>>> SyncAccounts(string xToken, string userId);
+        Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions);
     }
 }

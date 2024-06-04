@@ -27,6 +27,7 @@ namespace YFS.Repo.Data
         public DbSet<MerchantCategoryCode> Mccs { get; set; } = null!;
         public DbSet<MccCategoryMapping> MccCategoryMappings { get; set; } = null!;
         public DbSet<AccountSyncSettings> AccountSyncSettings { get; set; } = null!;
+        public DbSet<MonoSyncRule> MonoSyncRules { get; set; } = null!;
 
         public RepositoryContext(DbContextOptions options) : base(options)
         {

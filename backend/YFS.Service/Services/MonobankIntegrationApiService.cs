@@ -129,7 +129,7 @@ namespace YFS.Service.Services
                 return ServiceResult<IEnumerable<MonoTransaction>>.Error($"Error: {ex.Message}");
             }
         }
-        public async Task<ServiceResult<IEnumerable<AccountDto>>> SynchronizeAccounts(string xToken, string userId)
+        public async Task<ServiceResult<IEnumerable<AccountDto>>> SyncAccounts(string xToken, string userId)
         {
             try
             {
@@ -265,7 +265,7 @@ namespace YFS.Service.Services
             };
         }
 
-        public Task<ServiceResult<bool>> SynchronizeTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions)
+        public Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions)
         {
             throw new NotImplementedException();
         }
