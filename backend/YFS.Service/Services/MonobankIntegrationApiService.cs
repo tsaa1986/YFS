@@ -12,8 +12,8 @@ using Microsoft.Extensions.Http;
 using Newtonsoft.Json.Linq;
 using YFS.Core.Models;
 using System.Data;
-using YFS.Core.Enums;
-using YFS.Core.Utilities;
+using Newtonsoft.Json;
+using System.Reflection;
 
 namespace YFS.Service.Services
 {
@@ -23,7 +23,7 @@ namespace YFS.Service.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAccountService _accountService;
         private readonly IAccountGroupsService _accountGroupService;
-        private readonly Interfaces.IBankService _bankService; 
+        private readonly IBankService _bankService; 
         private readonly ICurrencyService _currencyService;
         private readonly IOperationsService _operationsService;
         public MonobankIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
@@ -32,7 +32,7 @@ namespace YFS.Service.Services
             HttpClient httpClient,
             IAccountService accountService,
             IAccountGroupsService accountGroupService,
-            Interfaces.IBankService bankService,
+            IBankService bankService,
             ICurrencyService currencyService,
             IOperationsService operationsService,
             LanguageScopedService languageService
@@ -128,7 +128,7 @@ namespace YFS.Service.Services
                 _logger.LogError($"Error in GetStatementsBetweenDates method: {ex.Message}");
                 return ServiceResult<IEnumerable<MonoTransaction>>.Error($"Error: {ex.Message}");
             }
-        }
+        }        
         public async Task<ServiceResult<IEnumerable<AccountDto>>> SyncAccounts(string xToken, string userId)
         {
             try
@@ -269,5 +269,86 @@ namespace YFS.Service.Services
         {
             throw new NotImplementedException();
         }
+
+        #region analyze transaction
+        public async void ApplySyncRules(IEnumerable<MonoTransaction> transactions, int apiTokenId)
+        {
+            var activeRules = await _repository.MonoSyncRule.GetRules(apiTokenId);
+
+            foreach (var transaction in transactions)
+            {
+                foreach (var rule in activeRules)
+                {
+                    if (EvaluateCondition(transaction, rule.Condition))
+                    {
+                        ApplyAction(transaction, rule.Action);
+                        break; // Assuming one rule per transaction
+                    }
+                }
+            }
+        }
+
+        private bool EvaluateCondition(MonoTransaction transaction, string action)
+        {
+            if (transaction == null || string.IsNullOrEmpty(action))
+            {
+                throw new ArgumentException("Transaction and condition cannot be null or empty.");
+            }
+            Dictionary<string, object> actionDict;
+            try
+            {
+                actionDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(action);
+            }
+            catch (JsonException ex)
+            {
+                throw new InvalidOperationException("Failed to deserialize action string.", ex);
+            }
+
+            if (actionDict == null)
+            {
+                throw new InvalidOperationException("Deserialized action dictionary is null.");
+            }
+
+
+            if (actionDict == null)
+            {
+                throw new InvalidOperationException("Failed to deserialize condition.");
+            }
+
+            if (actionDict.TryGetValue("Mcc", out var mccValue) && (int)mccValue == transaction.Mcc)
+            {
+                return true;
+            }
+            if (actionDict.TryGetValue("DescriptionEquals", out var descriptionEqualsValue) && (string)descriptionEqualsValue == transaction.Description)
+            {
+                return true;
+            }
+            if (actionDict.TryGetValue("DescriptionContains", out var descriptionContainsValue) && transaction.Description != null && transaction.Description.Contains((string)descriptionContainsValue))
+            {
+                return true;
+            }
+            return false;
+        }
+
+        private void ApplyAction(MonoTransaction transaction, string action)
+        {
+            if (transaction == null || string.IsNullOrEmpty(action))
+            {
+                throw new ArgumentException("Transaction and action cannot be null or empty.");
+            }
+
+            var actionDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(action);
+            Operation newOperation = new Operation();
+            newOperation.OperationItems = new List<OperationItem>();
+
+            if (actionDict.TryGetValue("CategoryId", out var categoryIdValue))
+            {
+                OperationItem item = new OperationItem();
+                // Assuming transaction has a CategoryId property
+                item.CategoryId = (int)categoryIdValue;
+                newOperation.OperationItems.Add(item);
+            }
+        }
+        #endregion
     }
 }

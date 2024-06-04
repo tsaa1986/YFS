@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,7 @@ using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Enums;
 using YFS.Core.Models;
+using YFS.Core.Models.MonoIntegration;
 using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
@@ -27,6 +30,9 @@ namespace YFS.Service.Services
                 var tokenData = _mapper.Map<ApiToken>(token);
                 await _repository.ApiToken.AddToken(tokenData);
                 await _repository.SaveAsync();
+
+                // Initialize default rules
+                await InitializeDefaultRules(tokenData.Id);
 
                 return ServiceResult<ApiTokenDto>.Success(token);
             }
@@ -78,6 +84,38 @@ namespace YFS.Service.Services
             {
                 _logger.LogError(ex, "Error while  UpdateToken: userid: {UserId}, token: {token}", token.UserId, token);
                 return ServiceResult<ApiTokenDto>.Error(ex.Message);
+            }
+        }
+
+        private async Task<ServiceResult<bool>> InitializeDefaultRules(int apiTokenId)
+        {
+            try
+            {
+                var defaultRules = new List<MonoSyncRule>
+                    {
+                        new MonoSyncRule
+                        {
+                            ApiTokenId = apiTokenId,
+                            RuleName = "Set Category for MCC 4829",
+                            Description = "Set CategoryId to -1 if MCC is 4378",
+                            Condition = "{\"Mcc\": 4378}",
+                            Action = "{\"CategoryId\": -1}",
+                            Priority = 1,
+                            IsActive = true
+                        },
+
+
+                    };
+                await _repository.MonoSyncRule.AddRange(defaultRules);
+                await _repository.SaveAsync();
+
+                return ServiceResult<bool>.Success(true);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while  CreateRules for Token");
+                return ServiceResult<bool>.Error(ex.Message);
+
             }
         }
     }

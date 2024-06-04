@@ -26,6 +26,7 @@ namespace YFS.Service.Services
         private IBankSyncHistoryRepository _bankSyncHistoryRepository;
         private IApiTokenRepository _apiTokenRepository;
         private IMccRepository _mccRepository;
+        private IMonoSyncRuleRepository _monoSyncRuleRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -162,6 +163,15 @@ namespace YFS.Service.Services
                 if (_mccRepository is null)
                     _mccRepository = new MccRepository(_repositoryContext);
                 return _mccRepository;
+            }
+        }
+        public IMonoSyncRuleRepository MonoSyncRule
+        {
+            get
+            {
+                if (_monoSyncRuleRepository is null)
+                    _monoSyncRuleRepository = new MonoSyncRuleRepository(_repositoryContext);
+                return _monoSyncRuleRepository;
             }
         }
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
