@@ -17,7 +17,7 @@ using System.Reflection;
 
 namespace YFS.Service.Services
 {
-    public class MonobankIntegrationApiService : BaseService, IMonobankIntegrationApiService
+    public class MonoIntegrationApiService : BaseService, IMonoIntegrationApiService
     {
         private readonly HttpClient _httpClient;
         private readonly IHttpClientFactory _httpClientFactory;
@@ -26,7 +26,7 @@ namespace YFS.Service.Services
         private readonly IBankService _bankService; 
         private readonly ICurrencyService _currencyService;
         private readonly IOperationsService _operationsService;
-        public MonobankIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
+        public MonoIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
             IMapper mapper, 
             ILogger<BaseService> logger, 
             HttpClient httpClient,
@@ -273,7 +273,7 @@ namespace YFS.Service.Services
         #region analyze transaction
         public async void ApplySyncRules(IEnumerable<MonoTransaction> transactions, int apiTokenId)
         {
-            var activeRules = await _repository.MonoSyncRule.GetRules(apiTokenId);
+            var activeRules = await _repository.MonoSyncRule.GetActiveRulesByApiTokenIdAsync(apiTokenId);
 
             foreach (var transaction in transactions)
             {
@@ -347,6 +347,78 @@ namespace YFS.Service.Services
                 // Assuming transaction has a CategoryId property
                 item.CategoryId = (int)categoryIdValue;
                 newOperation.OperationItems.Add(item);
+            }
+        }
+        #endregion
+
+        #region Action For Rules
+        public async Task<ServiceResult<IEnumerable<MonoSyncRule>>> GetActiveRulesByApiTokenIdAsync(int apiTokenId)
+        {
+            try
+            {
+                var rules = await _repository.MonoSyncRule.GetActiveRulesByApiTokenIdAsync(apiTokenId);
+                return ServiceResult<IEnumerable<MonoSyncRule>>.Success(rules);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting active rules by ApiTokenId: {ApiTokenId}", apiTokenId);
+                return ServiceResult<IEnumerable<MonoSyncRule>>.Error(ex.Message);
+            }
+        }
+
+        public async Task<ServiceResult<MonoSyncRule>> AddRuleAsync(MonoSyncRule newRule)
+        {
+            try
+            {
+                await _repository.MonoSyncRule.AddRule(newRule);
+                return ServiceResult<MonoSyncRule>.Success(newRule);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while adding new rule");
+                return ServiceResult<MonoSyncRule>.Error(ex.Message);
+            }
+        }
+
+        public async Task<ServiceResult<IEnumerable<MonoSyncRule>>> AddRulesAsync(IEnumerable<MonoSyncRule> rules)
+        {
+            try
+            {
+                await _repository.MonoSyncRule.AddRange(rules);
+                return ServiceResult<IEnumerable<MonoSyncRule>>.Success(rules);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while adding multiple rules");
+                return ServiceResult<IEnumerable<MonoSyncRule>>.Error(ex.Message);
+            }
+        }
+
+        public async Task<ServiceResult<MonoSyncRule>> UpdateRuleAsync(MonoSyncRule updatedRule)
+        {
+            try
+            {
+                await _repository.MonoSyncRule.UpdateRule(updatedRule);
+                return ServiceResult<MonoSyncRule>.Success(updatedRule);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while updating rule");
+                return ServiceResult<MonoSyncRule>.Error(ex.Message);
+            }
+        }
+
+        public async Task<ServiceResult<MonoSyncRule>> GetRuleAsync(int ruleId)
+        {
+            try
+            {
+                var rule = await _repository.MonoSyncRule.GetRule(ruleId);
+                return ServiceResult<MonoSyncRule>.Success(rule);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error while getting rule by ID: {RuleId}", ruleId);
+                return ServiceResult<MonoSyncRule>.Error(ex.Message);
             }
         }
         #endregion

@@ -5,8 +5,8 @@ using YFS.Service.Services;
 
 namespace YFS.Service.Interfaces
 {
-   public interface IMonobankIntegrationApiService
-   {
+   public interface IMonoIntegrationApiService: IMonoSyncRulesService
+    {
         /// <summary>
         /// Отримання виписки за час від {from} до {to} часу в секундах в форматі Unix time. 
         /// Максимальний час, за який можливо отримати виписку — 31 доба + 1 година (2682000 секунд).

@@ -9,6 +9,6 @@ namespace YFS.Service.Interfaces
         Task AddRange(IEnumerable<MonoSyncRule> rules);
         Task UpdateRule(MonoSyncRule updatedRule);
         Task<MonoSyncRule?> GetRule(int ruleId);
-        Task<IEnumerable<MonoSyncRule>> GetRules(int apiTokenId);
+        Task<IEnumerable<MonoSyncRule>> GetActiveRulesByApiTokenIdAsync(int apiTokenId);
     }
 }

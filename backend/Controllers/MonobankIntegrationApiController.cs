@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using YFS.Core.Dtos;
 using YFS.Core.Enums;
 using YFS.Core.Models;
+using YFS.Core.Models.MonoIntegration;
 using YFS.Core.Utilities;
 using YFS.Service.Interfaces;
 
@@ -19,9 +20,9 @@ namespace YFS.Data.Controllers
     public class MonobankIntegrationApiController : BaseApiController
     {
         private readonly ITokenService _tokenService;
-        private readonly IMonobankIntegrationApiService _monobankIntegrationApiService;
+        private readonly IMonoIntegrationApiService _monobankIntegrationApiService;
         public MonobankIntegrationApiController(ITokenService tokenService,
-            IMonobankIntegrationApiService monobankIntegrationApiService,
+            IMonoIntegrationApiService monobankIntegrationApiService,
             IRepositoryManager repository, 
             IMapper mapper, ILogger<BaseApiController> logger) : base(repository, mapper, logger)
         {
@@ -189,6 +190,30 @@ namespace YFS.Data.Controllers
             else
             {
                 return BadRequest(result.ErrorMessage);
+            }
+        }
+        [HttpPost("rules")]
+        [Authorize]
+        public async Task<IActionResult> AddRule([FromBody] MonoSyncRule rule)
+        {
+            try
+            {
+                string userId = GetUserIdFromJwt(Request.Headers["Authorization"]);
+
+                var tokenResult = await _tokenService.GetTokenByNameForUser("apiMonoBank", userId);
+                if (!tokenResult.IsSuccess)
+                {
+                    return BadRequest("Failed to get API token for the user");
+                }
+
+                var addRuleResult = await _monobankIntegrationApiService.AddRuleAsync(rule);
+                return Ok(addRuleResult.Data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error in AddRule action: {ex}");
+
+                return StatusCode(500, "An error occurred while processing your request");
             }
         }
     }
