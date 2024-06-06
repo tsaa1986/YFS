@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using System.Text;
 using YFS.Repo.Data;
+using YFS.Service.Interfaces;
 using YFS.Service.Services;
 
 namespace YFS.IntegrationTests

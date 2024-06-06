@@ -22,7 +22,6 @@ namespace YFS.Service.Services
             : base(repository, mapper, logger, languageService)
         {
         }
-
         public async Task<ServiceResult<ApiTokenDto>> CreateToken(ApiTokenDto token)
         {
             try
@@ -33,8 +32,9 @@ namespace YFS.Service.Services
 
                 // Initialize default rules
                 await InitializeDefaultRules(tokenData.Id);
+                var resultToken = _mapper.Map<ApiTokenDto>(tokenData);
 
-                return ServiceResult<ApiTokenDto>.Success(token);
+                return ServiceResult<ApiTokenDto>.Success(resultToken);
             }
             catch (Exception ex)
             {

@@ -61,6 +61,50 @@ namespace YFS.IntegrationTests
 
             _isDatabaseInitialized = true;
         }
+        public async Task<UserAccountDto> CreateUserSignUpAsync(HttpClient client)
+        {
+            string uniqueUserName = "UniqueUser" + Guid.NewGuid().ToString().Substring(0, 8);
+            string uniqueEmail = "uniqueuser" + Guid.NewGuid().ToString().Substring(0, 8) + "@example.com";
+            string uniqueFirstName = "username" + Guid.NewGuid().ToString().Substring(0, 8);
+            string uniqueLastName = "lastname-" + DateTime.UtcNow.ToString();
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "/api/Authentication/sign-up");
+
+            var signUpDto = new
+            {
+                firstName = uniqueFirstName,
+                lastName = uniqueLastName,
+                userName = uniqueUserName, // Use the unique username
+                password = "demo123$qweR",
+                email = uniqueEmail,
+                phoneNumber = "12345678"
+            };
+            var jsonContent = JsonConvert.SerializeObject(signUpDto);
+            request.Content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            var response = await client.SendAsync(request);
+            
+            response.EnsureSuccessStatusCode();
+
+            var responseContent = await response.Content.ReadAsStringAsync();
+            var createdUser = JsonConvert.DeserializeObject<UserAccountDto>(responseContent);
+
+            return createdUser;
+        }
+        public ApiTokenDto CreateApiTokenMonobank(string userId)
+        {
+            ApiTokenDto token = new ApiTokenDto
+            {
+                    UserId = userId,
+                    Name = "apiMonoBank",
+                    TokenType = "X-Token",
+                    TokenValue = Guid.NewGuid().ToString(), // Generate a unique token value
+                    Url = "https://api.monobank.ua/personal/client-info",
+                    Note = "This token is used for accessing Monobank API"
+             };
+
+            return token;
+        }
         public async Task<int> CreateAccountUAH()
         {
             var createAccountRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Accounts");
