@@ -1,0 +1,71 @@
+{
+  "clientId": "9gH621xWoT",
+  "name": "LastnameTest FirstnameTest",
+  "webHookUrl": "",
+  "permissions": "psfj",
+  "accounts": [
+    {
+      "id": "iWM5RyEvbsfgsfgaodERTkjA",
+      "sendId": "9gH6fsg21xWoT",
+      "currencyCode": 980,
+      "cashbackType": "UAH",
+      "balance": 1666692,
+      "creditLimit": 1500000,
+      "maskedPan": [
+        "537541******5799"
+      ],
+      "type": "black",
+      "iban": "UA523221234567896205123456789"
+    },
+    {
+      "id": "z53CmasdFGgddFrOPuYwTgQ",
+      "sendId": "2Wt3FLfPH6",
+      "currencyCode": 980,
+      "cashbackType": "UAH",
+      "balance": 592868,
+      "creditLimit": 0,
+      "maskedPan": [
+        "444111******5122"
+      ],
+      "type": "white",
+      "iban": "UA573221234567896209123456789"
+    },
+    {
+      "id": "e1Ee8NXu2LmLQvlIdf5ANg",
+      "sendId": "2Ne1Bmm1yp",
+      "currencyCode": 840,
+      "cashbackType": "UAH",
+      "balance": 89992,
+      "creditLimit": 0,
+      "maskedPan": [
+        "537541******0238"
+      ],
+      "type": "black",
+      "iban": "UA263221234567896206123456789"
+    },
+    {
+      "id": "Hg2q-4Fgy7f4_lQWZyA5Iw",
+      "sendId": "2RPHj4iH4d",
+      "currencyCode": 978,
+      "cashbackType": "UAH",
+      "balance": 64516,
+      "creditLimit": 0,
+      "maskedPan": [
+        "537541******4523"
+      ],
+      "type": "black",
+      "iban": "UA373220123456789209123456789"
+    }
+  ],
+  "jars": [
+    {
+      "id": "okJFj1dibDFGrew46HkpCiGAOQLudks",
+      "sendId": "jar/2P5TBdfgHx",
+      "title": "Money for Something",
+      "description": "",
+      "currencyCode": 980,
+      "balance": 1287516,
+      "goal": 2000000
+    }
+  ]
+}

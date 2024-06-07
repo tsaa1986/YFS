@@ -11,9 +11,6 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Http;
 using Newtonsoft.Json.Linq;
 using YFS.Core.Models;
-using System.Data;
-using Newtonsoft.Json;
-using System.Reflection;
 
 namespace YFS.Service.Services
 {
