@@ -1,0 +1,16 @@
+[
+    {
+        "id": "UUVNl6vHvob7Gg6V_w",
+        "time": 1715076390,
+        "description": "З білої картки",
+        "mcc": 4829,
+        "originalMcc": 4829,
+        "amount": 10000,
+        "operationAmount": 428800,
+        "currencyCode": 980,
+        "commissionRate": 0,
+        "cashbackAmount": 0,
+        "balance": 64516,
+        "hold": false
+    }
+]

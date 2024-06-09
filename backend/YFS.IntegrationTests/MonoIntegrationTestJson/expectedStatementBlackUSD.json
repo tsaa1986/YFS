@@ -1,0 +1,32 @@
+[
+    {
+        "id": "TImqclsy8AiIwx8B1g",
+        "time": 1715269635,
+        "description": "Операція квазі-готівка MERCURYO",
+        "mcc": 6051,
+        "originalMcc": 6051,
+        "amount": -3000,
+        "operationAmount": -3000,
+        "currencyCode": 840,
+        "commissionRate": 0,
+        "cashbackAmount": 0,
+        "balance": 94992,
+        "hold": false,
+        "receiptId": "03HK-5H4K-E281-0TK9"
+    },
+    {
+        "id": "6ErsA-W99ei1kSGyTg",
+        "time": 1715138755,
+        "description": "Операція квазі-готівка MERCURYO",
+        "mcc": 6051,
+        "originalMcc": 6051,
+        "amount": -5000,
+        "operationAmount": -5000,
+        "currencyCode": 840,
+        "commissionRate": 0,
+        "cashbackAmount": 0,
+        "balance": 97992,
+        "hold": false,
+        "receiptId": "CE02-3C03-2MP0-98X6"
+    }
+]

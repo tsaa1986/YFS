@@ -31,19 +31,10 @@ namespace YFS.IntegrationTests
         private readonly TestingWebAppFactory<Program> _factory;
         private readonly IServiceProvider _serviceProvider;
         private readonly SeedDataIntegrationTests _seedDataIntegrationTests;
-        private readonly Mock<IMonoIntegrationApiService> _mockMonobankIntegrationApiService;
-        private readonly Mock<IRepositoryManager> _mockRepositoryManager;
-        private readonly Mock<IMapper> _mockMapper;
-        private readonly Mock<ILogger<BaseApiController>> _mockLogger;
-        private readonly MonobankIntegrationApiController _controller;
         private readonly ITokenService _tokenService;
 
         public MonoIntegrationApiControllerIntegrationTests(TestingWebAppFactory<Program> factory)
         {
-            _mockMonobankIntegrationApiService = new Mock<IMonoIntegrationApiService>();
-            _mockRepositoryManager = new Mock<IRepositoryManager>();
-            _mockMapper = new Mock<IMapper>();
-            _mockLogger = new Mock<ILogger<BaseApiController>>();
             _factory = factory;
             _serviceProvider = _factory.Services;
             _seedDataIntegrationTests = SeedDataIntegrationTests.Instance;
@@ -54,7 +45,22 @@ namespace YFS.IntegrationTests
                 _serviceProvider = scope.ServiceProvider;
                 _seedDataIntegrationTests.InitializeDatabaseAsync(_serviceProvider).Wait();
             }
+
+            // Initialize MonoClientInfoResponse immediately
+            //_monoClientInfoResponse = _seedDataIntegrationTests.GetClientInfoFromJsonAsync("MonoIntegrationTestJson/expectedClientInfo.json").GetAwaiter().GetResult();
+
         }
+
+        [Fact]
+        public async Task GetClientInfo_ShouldReturnOk_WhenValidTokenProvided()
+        {
+            //Arrange
+            MonoClientInfoResponse _monoClientInfoResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
+
+            //Assert
+            Assert.NotNull(_monoClientInfoResponse);
+        }
+
         /*
         [Fact]
         public async Task GetClientInfo_ShouldReturnOk_WhenValidTokenProvided()
@@ -62,7 +68,7 @@ namespace YFS.IntegrationTests
             //Arrange
             var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
             var userSignIn = new UserLoginDto { UserName = user.UserName, Password = "demo123$qweR" }; // Provide valid credentials
-            
+
             var authenticationRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Authentication/sign-in")
             {
                 Content = new StringContent(JsonConvert.SerializeObject(userSignIn), Encoding.UTF8, "application/json")

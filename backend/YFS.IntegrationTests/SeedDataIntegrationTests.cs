@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using YFS.Controllers;
 using YFS.Core.Dtos;
 using YFS.Core.Models;
+using YFS.Core.Models.MonoIntegration;
 using YFS.Repo.Data;
 using YFS.Service.Interfaces;
 
@@ -23,6 +24,11 @@ namespace YFS.IntegrationTests
         private static readonly SeedDataIntegrationTests _instance = new SeedDataIntegrationTests(new TestingWebAppFactory<Program>());
         private readonly IServiceProvider _serviceProvider;
         private static bool _isDatabaseInitialized = false;
+        private readonly MonoClientInfoResponse _monoClientInfoResponse;
+        private readonly List<MonoTransaction> _transactionsFromWhiteUAH;
+        private readonly List<MonoTransaction> _transactionsFromBlackUAH;
+        private readonly List<MonoTransaction> _transactionsFromBlackEURO;
+        private readonly List<MonoTransaction> _transactionsFromBlackUSD;
 
         /*public SeedDataIntegrationTests(TestingWebAppFactory<Program> factory)
         {
@@ -34,8 +40,23 @@ namespace YFS.IntegrationTests
             _factory = factory;
             _client = _factory.CreateClient();
             _serviceProvider = _factory.Services;
+
+            _monoClientInfoResponse = GetClientInfoFromJsonAsync("../../../MonoIntegrationTestJson/expectedClientInfo.json").GetAwaiter().GetResult();
+            // Initialize statement
+            _transactionsFromWhiteUAH = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementWhiteUAH.json").GetAwaiter().GetResult();
+            _transactionsFromBlackUAH = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementBlackUAH.json").GetAwaiter().GetResult();
+            _transactionsFromBlackEURO = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementBlackEuro.json").GetAwaiter().GetResult();
+            _transactionsFromBlackUSD = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementBlackUSD.json").GetAwaiter().GetResult();
+
         }
         public static SeedDataIntegrationTests Instance => _instance;
+
+        public MonoClientInfoResponse MonoClientInfoResponse => _monoClientInfoResponse;
+        public List<MonoTransaction> MonoStatementWhiteUAH => _transactionsFromWhiteUAH;
+        public List<MonoTransaction> MonoStatementBlackUAH => _transactionsFromBlackUAH;
+        public List<MonoTransaction> MonoStatementBlackUSD => _transactionsFromBlackUSD;
+        public List<MonoTransaction> MonoStatementBlackEURO => _transactionsFromBlackEURO;
+
         public async Task<int> GetCurrencyIdByCodeAndCountry(int code, string country)
         {
             using (var scope = _serviceProvider.CreateScope())
@@ -267,6 +288,47 @@ namespace YFS.IntegrationTests
                     throw new Exception($"Failed to create income operation for {operationDate}");
                 }
             }
+        }
+
+        public async Task<MonoClientInfoResponse> GetClientInfoFromJsonAsync(string filePath)
+        {
+            // Log the current directory to help with debugging the file path
+            //string path = Directory.GetCurrentDirectory();
+            //Console.WriteLine($"Current Directory: {Directory.GetCurrentDirectory()}");
+
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"The file {filePath} does not exist.");
+            }
+
+            string jsonData = await File.ReadAllTextAsync(filePath);
+
+            MonoClientInfoResponse clientInfo = JsonConvert.DeserializeObject<MonoClientInfoResponse>(jsonData);
+
+            if (clientInfo == null)
+            {
+                throw new InvalidOperationException("Deserialization resulted in a null object.");
+            }
+
+            return clientInfo;
+        }
+
+        private async Task<List<MonoTransaction>> InitializeTransactionsAsync(string filePath)
+        {
+            if (!File.Exists(filePath))
+            {
+                throw new FileNotFoundException($"The file {filePath} does not exist.");
+            }
+
+            string jsonData = await File.ReadAllTextAsync(filePath);
+            List<MonoTransaction> transactions = JsonConvert.DeserializeObject<List<MonoTransaction>>(jsonData);
+
+            if (transactions == null)
+            {
+                throw new InvalidOperationException("Deserialization resulted in a null object.");
+            }
+
+            return transactions;
         }
     }
 }
