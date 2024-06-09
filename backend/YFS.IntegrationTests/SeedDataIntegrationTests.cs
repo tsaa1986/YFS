@@ -47,7 +47,6 @@ namespace YFS.IntegrationTests
             _transactionsFromBlackUAH = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementBlackUAH.json").GetAwaiter().GetResult();
             _transactionsFromBlackEURO = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementBlackEuro.json").GetAwaiter().GetResult();
             _transactionsFromBlackUSD = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementBlackUSD.json").GetAwaiter().GetResult();
-
         }
         public static SeedDataIntegrationTests Instance => _instance;
 
