@@ -309,6 +309,11 @@ namespace YFS.IntegrationTests
                 throw new InvalidOperationException("Deserialization resulted in a null object.");
             }
 
+            foreach(MonoAccount account in clientInfo.accounts)
+            {
+                account.id = Guid.NewGuid().ToString();
+            }
+
             return clientInfo;
         }
 

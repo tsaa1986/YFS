@@ -14,6 +14,7 @@ namespace YFS.Core.Dtos
         public int CurrencyId { get; set; }
         public string CurrencyName { get; set; } = null!;
         public int Bank_GLMFO { get; set; }
+        public string? IBAN { get; set; } 
         public string? Name { get; set; }
         public DateTime OpeningDate { get; set; }
         public string? Note { get; set; }

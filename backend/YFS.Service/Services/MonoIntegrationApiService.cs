@@ -130,11 +130,6 @@ namespace YFS.Service.Services
         {
             try
             {
-                /*var clientInfoResult = await GetClientInfo(xToken);
-                if (!clientInfoResult.IsSuccess || clientInfoResult.Data.accounts.Count == 0)
-                {
-                    return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
-                }*/
                 if ((clientInfoResponse == null) || (clientInfoResponse.accounts == null) 
                     || clientInfoResponse.accounts.Count == 0) {
                     return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
@@ -262,6 +257,7 @@ namespace YFS.Service.Services
                 Bank_GLMFO = monoBankId,
                 CurrencyId = currency.CurrencyId,
                 CreditLimit = monoAccount.calculatedCreditLimit,
+                IBAN = monoAccount.iban,
                 OpeningDate = DateTime.UtcNow,
                 Note = monoAccount.type
             };

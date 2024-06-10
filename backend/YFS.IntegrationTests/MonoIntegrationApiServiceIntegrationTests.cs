@@ -21,23 +21,24 @@ using Controllers;
 using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Newtonsoft.Json.Linq;
+using Xunit.Sdk;
 
 namespace YFS.IntegrationTests
 {
     [Collection("IntegrationTests")]
-    public class MonoIntegrationApiControllerIntegrationTests
+    public class MonoIntegrationApiServiceIntegrationTests
     {
-        //private readonly HttpClient _client;
+        private readonly HttpClient _client;
         private readonly TestingWebAppFactory<Program> _factory;
         private readonly IServiceProvider _serviceProvider;
         private readonly SeedDataIntegrationTests _seedDataIntegrationTests;
 
-        public MonoIntegrationApiControllerIntegrationTests(TestingWebAppFactory<Program> factory)
+        public MonoIntegrationApiServiceIntegrationTests(TestingWebAppFactory<Program> factory)
         {
             _factory = factory;
             _serviceProvider = _factory.Services;
             _seedDataIntegrationTests = SeedDataIntegrationTests.Instance;
-            //_client = factory.CreateClient();
+            _client = factory.CreateClient();
 
             using (var scope = _serviceProvider.CreateScope())
             {
@@ -45,19 +46,70 @@ namespace YFS.IntegrationTests
                 _seedDataIntegrationTests.InitializeDatabaseAsync(_serviceProvider).Wait();
             }
 
-            // Initialize MonoClientInfoResponse immediately
-            //_monoClientInfoResponse = _seedDataIntegrationTests.GetClientInfoFromJsonAsync("MonoIntegrationTestJson/expectedClientInfo.json").GetAwaiter().GetResult();
+         }
+
+        [Fact]
+        public async Task GetClientInfoFromMono_ShouldReturnOk_ShouldReturn4Accounts()
+        {
+            //Arrange
+            var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
+
+
         }
 
         [Fact]
-        public async Task GetClientInfo_ShouldReturnOk_WhenValidTokenProvided()
+        public async Task SyncAllAccountsFromMono_ShouldReturnOk_Return4Accounts()
         {
             //Arrange
-            MonoClientInfoResponse _monoClientInfoResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
+            var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
 
-            //Assert
-            Assert.NotNull(_monoClientInfoResponse);
+            ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
+            ApiTokenDto savedToken;
+
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var tokenService = serviceProvider.GetRequiredService<ITokenService>();
+                var result = await tokenService.CreateToken(apiTokenMono);
+                savedToken = result.Data;
+                Assert.NotNull(result.Data);
+                var getResultToken = await tokenService.GetTokenByNameForUser(apiTokenMono.Name, user.Id);
+
+                // Act
+                Assert.True(getResultToken.IsSuccess);
+                Assert.NotNull(getResultToken.Data);
+
+                var monoIntegrationApiService = serviceProvider.GetRequiredService<IMonoIntegrationApiService>();
+                MonoClientInfoResponse monoClientResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
+                Assert.NotNull(monoClientResponse);
+                if (monoClientResponse == null)
+                {
+                    throw new Exception("monClientResponse is empty! Check SeedData json files");
+                }
+                var syncAccountsResult = monoIntegrationApiService.SyncAccounts(getResultToken.Data.TokenValue, user.Id, monoClientResponse);
+                if (syncAccountsResult == null)
+                {
+                    throw new Exception("moon account is not found! Check SeedData json files");
+                }
+
+                Assert.NotNull(syncAccountsResult);
+                Assert.True(syncAccountsResult?.Result.IsSuccess);
+
+                //check account data
+                Assert.Equal(syncAccountsResult.Result.Data.Count(), 4);
+            }
+
+
+            //GetActiveRulesByApiTokenIdAsync should 1 rule
+
+            //AddRuleAsync(MonoSyncRule newRule)
+
+            //<IEnumerable<MonoSyncRule>>> AddRulesAsync
+
+
+
         }
+
 
         /*
         [Fact]

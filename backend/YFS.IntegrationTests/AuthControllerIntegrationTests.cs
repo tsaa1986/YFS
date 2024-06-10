@@ -15,9 +15,9 @@ namespace YFS.IntegrationTests
 {
     [Collection("IntegrationTests")]
     [TestCaseOrderer(PriorityOrderer.Name, PriorityOrderer.Assembly)]
-    public class AuthControllerIntegrationTests //: IClassFixture<TestingWebAppFactory<Program>>
+    public class AuthControllerIntegrationTests
     {
-        private static string? _jwtTokenDemoUser;
+        //private static string? _jwtTokenDemoUser;
         private readonly HttpClient _client;
 
         public AuthControllerIntegrationTests(TestingWebAppFactory<Program> factory)
