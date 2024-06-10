@@ -144,8 +144,12 @@ namespace YFS.Data.Controllers
                 {
                     return BadRequest("Failed to get API token for the user");
                 }
-
-                var importAccountResult = await _monobankIntegrationApiService.SyncAccounts(tokenResult.Data.TokenValue, userId);
+                var clientInfoResponse = await _monobankIntegrationApiService.GetClientInfo(tokenResult.Data.TokenValue);
+                if (!clientInfoResponse.IsSuccess)
+                {
+                    return BadRequest("Failed to get ClientInfo from monobank api");
+                }
+                var importAccountResult = await _monobankIntegrationApiService.SyncAccounts(tokenResult.Data.TokenValue, userId, clientInfoResponse.Data);
                 if (importAccountResult.IsSuccess)
                 {
                     return Ok(importAccountResult.Data);

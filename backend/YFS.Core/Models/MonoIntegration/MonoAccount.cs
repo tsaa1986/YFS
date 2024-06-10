@@ -17,5 +17,6 @@ namespace YFS.Core.Models.MonoIntegration
         public string cashbackType { get; set; } = null!;    //Enum: "None" "UAH" "Miles"   Тип кешбеку який нараховується на рахунок
         public List<string>? maskedPan { get; set; }
         public string iban { get; set; } = null!;
+        public decimal calculatedCreditLimit => creditLimit == 0 ? 0 : creditLimit / 100.0m;
     }
 }

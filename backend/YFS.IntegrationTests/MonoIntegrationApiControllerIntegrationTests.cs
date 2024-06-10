@@ -48,7 +48,6 @@ namespace YFS.IntegrationTests
 
             // Initialize MonoClientInfoResponse immediately
             //_monoClientInfoResponse = _seedDataIntegrationTests.GetClientInfoFromJsonAsync("MonoIntegrationTestJson/expectedClientInfo.json").GetAwaiter().GetResult();
-
         }
 
         [Fact]

@@ -126,17 +126,21 @@ namespace YFS.Service.Services
                 return ServiceResult<IEnumerable<MonoTransaction>>.Error($"Error: {ex.Message}");
             }
         }        
-        public async Task<ServiceResult<IEnumerable<AccountDto>>> SyncAccounts(string xToken, string userId)
+        public async Task<ServiceResult<IEnumerable<AccountDto>>> SyncAccounts(string xToken, string userId, MonoClientInfoResponse clientInfoResponse)
         {
             try
             {
-                var clientInfoResult = await GetClientInfo(xToken);
+                /*var clientInfoResult = await GetClientInfo(xToken);
                 if (!clientInfoResult.IsSuccess || clientInfoResult.Data.accounts.Count == 0)
                 {
                     return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
+                }*/
+                if ((clientInfoResponse == null) || (clientInfoResponse.accounts == null) 
+                    || clientInfoResponse.accounts.Count == 0) {
+                    return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
                 }
 
-                var monoAccounts = clientInfoResult.Data.accounts;
+                var monoAccounts = clientInfoResponse.accounts;
                 var accountData = new List<AccountDto>();
 
                 int accountGroupId = await GetOrCreateAccountGroupId(userId, LanguageCode);
@@ -257,6 +261,7 @@ namespace YFS.Service.Services
                 Name = $"Mono | {monoAccount.type} card | [{currency.Code}]",
                 Bank_GLMFO = monoBankId,
                 CurrencyId = currency.CurrencyId,
+                CreditLimit = monoAccount.calculatedCreditLimit,
                 OpeningDate = DateTime.UtcNow,
                 Note = monoAccount.type
             };

@@ -18,5 +18,6 @@ namespace YFS.Core.Dtos
         public DateTime OpeningDate { get; set; }
         public string? Note { get; set; }
         public decimal Balance { get; set; }
+        public decimal CreditLimit { get; set; }
     }
 }
