@@ -19,7 +19,7 @@ namespace YFS.Repo.Migrations
                     AccountId = table.Column<int>(type: "integer", nullable: false),
                     FromSyncDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
                     LastSuccessSyncDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    AdditionalSettings = table.Column<string>(type: "text", nullable: false)
+                    AdditionalSettings = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -200,6 +200,26 @@ namespace YFS.Repo.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Mccs", x => x.Code);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MonoSyncRules",
+                columns: table => new
+                {
+                    RuleId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    RuleName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: false),
+                    Description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: true),
+                    Condition = table.Column<string>(type: "text", nullable: false),
+                    Action = table.Column<string>(type: "text", nullable: false),
+                    Priority = table.Column<int>(type: "integer", nullable: false),
+                    IsActive = table.Column<bool>(type: "boolean", nullable: false),
+                    CreatedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ApiTokenId = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MonoSyncRules", x => x.RuleId);
                 });
 
             migrationBuilder.CreateTable(
@@ -565,20 +585,21 @@ namespace YFS.Repo.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "MonoSyncTransaction",
+                name: "MonoSyncedTransaction",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    MonobankTransactionId = table.Column<string>(type: "text", nullable: false),
+                    MonoTransactionId = table.Column<string>(type: "text", nullable: false),
                     OperationId = table.Column<int>(type: "integer", nullable: false),
+                    TransferOperationId = table.Column<int>(type: "integer", nullable: false),
                     SyncedOn = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MonoSyncTransaction", x => x.Id);
+                    table.PrimaryKey("PK_MonoSyncedTransaction", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MonoSyncTransaction_Operations_OperationId",
+                        name: "FK_MonoSyncedTransaction_Operations_OperationId",
                         column: x => x.OperationId,
                         principalTable: "Operations",
                         principalColumn: "Id",
@@ -841,14 +862,14 @@ namespace YFS.Repo.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MonoSyncTransaction_MonobankTransactionId_OperationId",
-                table: "MonoSyncTransaction",
-                columns: new[] { "MonobankTransactionId", "OperationId" },
+                name: "IX_MonoSyncedTransaction_MonoTransactionId_OperationId",
+                table: "MonoSyncedTransaction",
+                columns: new[] { "MonoTransactionId", "OperationId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_MonoSyncTransaction_OperationId",
-                table: "MonoSyncTransaction",
+                name: "IX_MonoSyncedTransaction_OperationId",
+                table: "MonoSyncedTransaction",
                 column: "OperationId",
                 unique: true);
 
@@ -926,7 +947,10 @@ namespace YFS.Repo.Migrations
                 name: "Mccs");
 
             migrationBuilder.DropTable(
-                name: "MonoSyncTransaction");
+                name: "MonoSyncedTransaction");
+
+            migrationBuilder.DropTable(
+                name: "MonoSyncRules");
 
             migrationBuilder.DropTable(
                 name: "OperationItem");

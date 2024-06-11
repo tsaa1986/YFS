@@ -42,6 +42,6 @@ namespace YFS.Core.Models
         [MaxLength(200, ErrorMessage = "Maximum length for the GroupName is 200.")]
         public virtual List<OperationItem> OperationItems { get; set; } = new List<OperationItem>();
         public virtual ICollection<OperationTag> OperationTags { get; set; } = new List<OperationTag>();
-        public MonoSyncTransaction MonoSyncTransaction { get; set; } = null!;
+        public MonoSyncedTransaction? MonoSyncedTransaction { get; set; }
     }
 }

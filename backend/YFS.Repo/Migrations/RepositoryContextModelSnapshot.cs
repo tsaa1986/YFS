@@ -1065,6 +1065,38 @@ namespace YFS.Repo.Migrations
                     b.ToTable("Mccs");
                 });
 
+            modelBuilder.Entity("YFS.Core.Models.MonoIntegration.MonoSyncedTransaction", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("MonoTransactionId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("OperationId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("SyncedOn")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("TransferOperationId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OperationId")
+                        .IsUnique();
+
+                    b.HasIndex("MonoTransactionId", "OperationId")
+                        .IsUnique();
+
+                    b.ToTable("MonoSyncedTransaction");
+                });
+
             modelBuilder.Entity("YFS.Core.Models.MonoIntegration.MonoSyncRule", b =>
                 {
                     b.Property<int>("RuleId")
@@ -1105,35 +1137,6 @@ namespace YFS.Repo.Migrations
                     b.HasKey("RuleId");
 
                     b.ToTable("MonoSyncRules");
-                });
-
-            modelBuilder.Entity("YFS.Core.Models.MonoIntegration.MonoSyncTransaction", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("MonobankTransactionId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("OperationId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("SyncedOn")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OperationId")
-                        .IsUnique();
-
-                    b.HasIndex("MonobankTransactionId", "OperationId")
-                        .IsUnique();
-
-                    b.ToTable("MonoSyncTransaction");
                 });
 
             modelBuilder.Entity("YFS.Core.Models.Operation", b =>
@@ -1884,11 +1887,11 @@ namespace YFS.Repo.Migrations
                     b.Navigation("Translations");
                 });
 
-            modelBuilder.Entity("YFS.Core.Models.MonoIntegration.MonoSyncTransaction", b =>
+            modelBuilder.Entity("YFS.Core.Models.MonoIntegration.MonoSyncedTransaction", b =>
                 {
                     b.HasOne("YFS.Core.Models.Operation", "Operation")
-                        .WithOne("MonoSyncTransaction")
-                        .HasForeignKey("YFS.Core.Models.MonoIntegration.MonoSyncTransaction", "OperationId")
+                        .WithOne("MonoSyncedTransaction")
+                        .HasForeignKey("YFS.Core.Models.MonoIntegration.MonoSyncedTransaction", "OperationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1986,8 +1989,7 @@ namespace YFS.Repo.Migrations
 
             modelBuilder.Entity("YFS.Core.Models.Operation", b =>
                 {
-                    b.Navigation("MonoSyncTransaction")
-                        .IsRequired();
+                    b.Navigation("MonoSyncedTransaction");
 
                     b.Navigation("OperationItems");
 

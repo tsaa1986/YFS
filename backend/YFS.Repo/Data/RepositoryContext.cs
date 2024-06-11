@@ -105,14 +105,14 @@ namespace YFS.Repo.Data
                 .HasIndex(e => new { e.MccCode, e.CategoryId, e.Description })
                 .IsUnique();
 
-            modelBuilder.Entity<MonoSyncTransaction>()
-                .HasIndex(mst => new { mst.MonobankTransactionId, mst.OperationId })
+            modelBuilder.Entity<MonoSyncedTransaction>()
+                .HasIndex(mst => new { mst.MonoTransactionId, mst.OperationId })
                 .IsUnique();
 
-            modelBuilder.Entity<MonoSyncTransaction>()
+            modelBuilder.Entity<MonoSyncedTransaction>()
                 .HasOne(mst => mst.Operation)
-                .WithOne(o => o.MonoSyncTransaction)
-                .HasForeignKey<MonoSyncTransaction>(mst => mst.OperationId);
+                .WithOne(o => o.MonoSyncedTransaction)
+                .HasForeignKey<MonoSyncedTransaction>(mst => mst.OperationId);
 
             modelBuilder.ApplyConfiguration(new AccountTypeData());
             modelBuilder.ApplyConfiguration(new CategoryData());
