@@ -23,6 +23,7 @@ namespace YFS.Service.Services
         private readonly IBankService _bankService; 
         private readonly ICurrencyService _currencyService;
         private readonly IOperationsService _operationsService;
+        private readonly ITokenService _tokenService;
         public MonoIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
             IMapper mapper, 
             ILogger<BaseService> logger, 
@@ -32,6 +33,7 @@ namespace YFS.Service.Services
             IBankService bankService,
             ICurrencyService currencyService,
             IOperationsService operationsService,
+            ITokenService tokenService,
             LanguageScopedService languageService
             ) : base(repository, mapper, logger, languageService)
         {
@@ -45,6 +47,7 @@ namespace YFS.Service.Services
             _bankService = bankService;
             _currencyService = currencyService;
             _operationsService = operationsService;
+            _tokenService = tokenService;
         }
         public async Task<ServiceResult<MonoClientInfoResponse>> GetClientInfo(string xToken)
         {
@@ -263,72 +266,154 @@ namespace YFS.Service.Services
             };
         }
 
-        public Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions)
+        public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions)
         {
-            throw new NotImplementedException();
-        }
-
-        #region analyze transaction
-        public async void ApplySyncRules(IEnumerable<MonoTransaction> transactions, int apiTokenId)
-        {
-            var activeRules = await _repository.MonoSyncRule.GetActiveRulesByApiTokenIdAsync(apiTokenId);
+            if (transactions == null)
+            {
+                return ServiceResult<bool>.Error("No transactions to sync.");
+            }
 
             foreach (var transaction in transactions)
             {
-                foreach (var rule in activeRules)
+                if (transaction == null)
                 {
-                    if (EvaluateCondition(transaction, rule.Condition))
+                    continue; // Skip null transactions
+                }
+
+                // Check if the transaction already exists in the MonoSyncedTransaction table
+                var existingTransaction = await _repository.MonoSyncedTransaction.ExistsAsync(transaction.Id);
+
+                if (existingTransaction == true)
+                {
+                    continue; // Skip already synced transactions
+                }
+
+                // Retrieve the API token for the user
+                var apiToken = await _tokenService.GetTokenByNameForUser(userId, xToken);
+                if (apiToken == null)
+                {
+                    return ServiceResult<bool>.Error("Invalid token.");
+                }
+
+                // Apply sync rules and create operations
+                var operations = ApplySyncRules(transaction, apiToken.Data.Id);
+                var operationsDto = _mapper.Map<List<OperationDto>>(operations);
+
+                int? operationId = null;
+                int? transferFromOperationId = null;
+                int? transferToOperationId = null;
+
+                foreach (var operationDto in operationsDto)
+                {
+                    var result = await _operationsService.CreateOperation(operationDto, operationDto.AccountId, userId);
+
+                    if (!result.IsSuccess)
                     {
-                        ApplyAction(transaction, rule.Action);
-                        break; // Assuming one rule per transaction
+                        // Log the error and continue with the next transaction
+                        continue;
+                    }
+
+                    var createdOperations = result.Data.ToList();
+
+                    // Determine the type of operation
+                    foreach (var createdOperation in createdOperations)
+                    {
+                        if (createdOperation.TypeOperation == 1 || createdOperation.TypeOperation == 2)
+                        {
+                            operationId = createdOperation.Id;
+                        }
+                        else if (createdOperation.TypeOperation == 3)
+                        {
+                            if (transferFromOperationId == null)
+                            {
+                                transferFromOperationId = createdOperation.Id;
+                            }
+                            else
+                            {
+                                transferToOperationId = createdOperation.Id;
+                            }
+                        }
                     }
                 }
+
+
+                // Save the successful sync status in the MonoSyncedTransaction table
+                var syncedTransaction = new MonoSyncedTransaction
+                {
+                    MonoTransactionId = transaction.Id,
+                    //UserId = userId,
+                    //OperationId = operationId,
+                    //TransferFromOperationId = transferFromOperationId,
+                    //TransferToOperationId = transferToOperationId,
+                    //IsSynced = true,
+                    SyncedOn = DateTime.UtcNow
+                };
+
+                await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction);
+                await _repository.SaveAsync();
             }
+
+            return ServiceResult<bool>.Success(true);
         }
 
-        private bool EvaluateCondition(MonoTransaction transaction, string action)
+        #region analyze transaction
+        private List<Operation> ApplySyncRules(MonoTransaction transaction, int apiTokenId)
         {
-            if (transaction == null || string.IsNullOrEmpty(action))
+            var activeRules = _repository.MonoSyncRule.GetActiveRulesByApiTokenIdAsync(apiTokenId).Result;
+            var operations = new List<Operation>();
+
+            foreach (var rule in activeRules)
+            {
+                if (EvaluateCondition(transaction, rule.Condition))
+                {
+                    var operation = ApplyAction(transaction, rule.Action);
+                    operations.Add(operation);
+                    // Assuming one rule per transaction
+                    break;
+                }
+            }
+
+            return operations;
+        }
+
+        private bool EvaluateCondition(MonoTransaction transaction, string condition)
+        {
+            if (transaction == null || string.IsNullOrEmpty(condition))
             {
                 throw new ArgumentException("Transaction and condition cannot be null or empty.");
             }
-            Dictionary<string, object> actionDict;
+
+            Dictionary<string, object> conditionDict;
             try
             {
-                actionDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(action);
+                conditionDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(condition);
             }
             catch (JsonException ex)
             {
-                throw new InvalidOperationException("Failed to deserialize action string.", ex);
+                throw new InvalidOperationException("Failed to deserialize condition string.", ex);
             }
 
-            if (actionDict == null)
+            if (conditionDict == null)
             {
-                throw new InvalidOperationException("Deserialized action dictionary is null.");
+                throw new InvalidOperationException("Deserialized condition dictionary is null.");
             }
 
-
-            if (actionDict == null)
-            {
-                throw new InvalidOperationException("Failed to deserialize condition.");
-            }
-
-            if (actionDict.TryGetValue("Mcc", out var mccValue) && (int)mccValue == transaction.Mcc)
+            if (conditionDict.TryGetValue("Mcc", out var mccValue) && (int)mccValue == transaction.Mcc)
             {
                 return true;
             }
-            if (actionDict.TryGetValue("DescriptionEquals", out var descriptionEqualsValue) && (string)descriptionEqualsValue == transaction.Description)
+            if (conditionDict.TryGetValue("DescriptionEquals", out var descriptionEqualsValue) && (string)descriptionEqualsValue == transaction.Description)
             {
                 return true;
             }
-            if (actionDict.TryGetValue("DescriptionContains", out var descriptionContainsValue) && transaction.Description != null && transaction.Description.Contains((string)descriptionContainsValue))
+            if (conditionDict.TryGetValue("DescriptionContains", out var descriptionContainsValue) && transaction.Description != null && transaction.Description.Contains((string)descriptionContainsValue))
             {
                 return true;
             }
             return false;
         }
 
-        private void ApplyAction(MonoTransaction transaction, string action)
+        private Operation ApplyAction(MonoTransaction transaction, string action)
         {
             if (transaction == null || string.IsNullOrEmpty(action))
             {
@@ -336,16 +421,30 @@ namespace YFS.Service.Services
             }
 
             var actionDict = JsonConvert.DeserializeObject<Dictionary<string, object>>(action);
-            Operation newOperation = new Operation();
-            newOperation.OperationItems = new List<OperationItem>();
+            var operation = new Operation
+            {
+                //UserId = transaction.UserId,
+                TypeOperation = actionDict.TryGetValue("TypeOperation", out var typeOperationValue) ? (int)typeOperationValue : 0,
+                AccountId = actionDict.TryGetValue("AccountId", out var accountIdValue) ? (int)accountIdValue : 0,
+                OperationDate = DateTime.UtcNow,
+                TotalCurrencyAmount = transaction.AmountCalculated,
+                OperationCurrencyId = actionDict.TryGetValue("OperationCurrencyId", out var operationCurrencyIdValue) ? (int)operationCurrencyIdValue : 0,
+                ExchangeRate = 1, // Assuming a default exchange rate of 1
+                CashbackAmount = transaction.CashbackAmountCalculated,
+                MCC = transaction.Mcc,
+                Description = transaction.Description
+            };
 
             if (actionDict.TryGetValue("CategoryId", out var categoryIdValue))
             {
-                OperationItem item = new OperationItem();
-                // Assuming transaction has a CategoryId property
-                item.CategoryId = (int)categoryIdValue;
-                newOperation.OperationItems.Add(item);
+                var item = new OperationItem
+                {
+                    CategoryId = (int)categoryIdValue
+                };
+                operation.OperationItems.Add(item);
             }
+
+            return operation;
         }
         #endregion
 

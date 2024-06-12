@@ -17,6 +17,7 @@ namespace YFS.Service.Interfaces
         IBankSyncHistoryRepository BankSyncHistory { get; }
         IApiTokenRepository ApiToken { get; }
         IMonoSyncRuleRepository MonoSyncRule { get; }
+        IMonoSyncedTransactionRepository MonoSyncedTransaction { get; }
         Task SaveAsync();
     }
 }

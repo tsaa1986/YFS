@@ -14,6 +14,7 @@ using YFS.Repo.Data;
 using YFS.Service.Filters.ActionFilters;
 using System;
 using Microsoft.AspNetCore.DataProtection;
+using YFS.Repo.Repository;
 
 namespace YFS.Extension
 {
@@ -105,6 +106,7 @@ namespace YFS.Extension
             services.AddScoped<ITokenService, TokenService>();
             services.AddHttpClient();
             services.AddScoped<IMonoIntegrationApiService, MonoIntegrationApiService>();
+            services.AddScoped<IMonoSyncedTransactionRepository, MonoSyncedTransactionRepository>();
             services.AddScoped<LanguageScopedService>();
         }
     }
