@@ -288,7 +288,6 @@ namespace YFS.IntegrationTests
                 }
             }
         }
-
         public async Task<MonoClientInfoResponse> GetClientInfoFromJsonAsync(string filePath)
         {
             // Log the current directory to help with debugging the file path
@@ -316,7 +315,6 @@ namespace YFS.IntegrationTests
 
             return clientInfo;
         }
-
         private async Task<List<MonoTransaction>> InitializeTransactionsAsync(string filePath)
         {
             if (!File.Exists(filePath))

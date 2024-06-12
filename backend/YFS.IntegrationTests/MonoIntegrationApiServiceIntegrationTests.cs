@@ -47,7 +47,7 @@ namespace YFS.IntegrationTests
             }
 
          }
-
+        /*
         [Fact]
         public async Task GetClientInfoFromMono_ShouldReturnOk_ShouldReturn4Accounts()
         {
@@ -55,7 +55,7 @@ namespace YFS.IntegrationTests
             var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
 
 
-        }
+        }*/
 
         [Fact]
         public async Task SyncAllAccountsFromMono_ShouldReturnOk_Return4Accounts()
@@ -105,11 +105,55 @@ namespace YFS.IntegrationTests
             //AddRuleAsync(MonoSyncRule newRule)
 
             //<IEnumerable<MonoSyncRule>>> AddRulesAsync
-
-
-
         }
 
+        [Fact]
+        public async Task SyncTransactionFromStatementsMonoBlackUAH_ShouldReturnO() {
+           //arrange
+            var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
+            ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
+            List<MonoTransaction> monoTransactionsUAH = _seedDataIntegrationTests.MonoStatementBlackUAH;
+            MonoClientInfoResponse monoClientResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
+            Assert.NotNull(monoClientResponse);
+            if (monoClientResponse == null)
+            {
+                throw new Exception("monClientResponse is empty! Check SeedData json files");
+            }            
+
+            //act
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var monoIntegrationApiService = serviceProvider.GetRequiredService<IMonoIntegrationApiService>();
+                var tokenService = serviceProvider.GetRequiredService<ITokenService>();
+                var resultToken = await tokenService.CreateToken(apiTokenMono);
+
+                var syncAccountsResult = monoIntegrationApiService.SyncAccounts(resultToken.Data.TokenValue, user.Id, monoClientResponse);
+                if (syncAccountsResult == null)
+                {
+                    throw new Exception("moon account is not found! Check SeedData json files");
+                }
+                var accountsBlackUAH = syncAccountsResult?.Result.Data
+                        .Where(account => account.Name == "Mono | black card | [UAH]")
+                        .SingleOrDefault();
+
+
+                var result = await monoIntegrationApiService.SyncTransactionFromStatements(resultToken.Data.TokenValue,user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
+                
+
+                //savedToken = result.Data;
+                //Assert.NotNull(result.Data);
+                //var getResultToken = await tokenService.GetTokenByNameForUser(apiTokenMono.Name, user.Id);
+
+                // Act
+
+                //Assert.True(getResultToken.IsSuccess);
+                //Assert.NotNull(getResultToken.Data);
+            }
+
+
+            //assert
+        }
 
         /*
         [Fact]

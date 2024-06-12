@@ -94,6 +94,16 @@ namespace YFS.Service.Services
                 var defaultRules = new List<MonoSyncRule>
                     {
                         new MonoSyncRule
+                            {
+                                ApiTokenId = apiTokenId,
+                                RuleName = "Set Category for MCC 4829",
+                                Description = "Set CategoryId to -1 if MCC is 4378",
+                                Condition = "{\"Mcc\": 4378}",
+                                Action = "{\"CategoryId\": -1}",
+                                Priority = 100,
+                                IsActive = true
+                            }
+                       /* new MonoSyncRule
                         {
                             ApiTokenId = apiTokenId,
                             RuleName = "Set Category for MCC 4829",
@@ -102,7 +112,7 @@ namespace YFS.Service.Services
                             Action = "{\"CategoryId\": -1}",
                             Priority = 1,
                             IsActive = true
-                        },
+                        } */,
 
 
                     };

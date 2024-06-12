@@ -266,11 +266,27 @@ namespace YFS.Service.Services
             };
         }
 
-        public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction> transactions)
+        public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, string externalIdAccount,
+            IEnumerable<MonoTransaction> transactions)
         {
             if (transactions == null)
             {
                 return ServiceResult<bool>.Error("No transactions to sync.");
+            }
+
+            //find account? if not exist return error
+            var account = await _repository.Account.GetExternalAccountById(externalIdAccount, userId, false);
+
+            if (account == null)
+            {
+                return ServiceResult<bool>.NotFound("account not found for import statement");
+            }
+
+            // Retrieve the API token for the user
+            var apiToken = await _tokenService.GetTokenByNameForUser("apiMonoBank", userId);
+            if (apiToken == null)
+            {
+                return ServiceResult<bool>.Error("Invalid token.");
             }
 
             foreach (var transaction in transactions)
@@ -286,13 +302,6 @@ namespace YFS.Service.Services
                 if (existingTransaction == true)
                 {
                     continue; // Skip already synced transactions
-                }
-
-                // Retrieve the API token for the user
-                var apiToken = await _tokenService.GetTokenByNameForUser(userId, xToken);
-                if (apiToken == null)
-                {
-                    return ServiceResult<bool>.Error("Invalid token.");
                 }
 
                 // Apply sync rules and create operations
