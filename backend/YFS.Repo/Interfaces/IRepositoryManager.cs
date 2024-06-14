@@ -18,6 +18,7 @@ namespace YFS.Service.Interfaces
         IApiTokenRepository ApiToken { get; }
         IMonoSyncRuleRepository MonoSyncRule { get; }
         IMonoSyncedTransactionRepository MonoSyncedTransaction { get; }
+        IMccCategoryMappingRepository MccCategoryMapping { get; }
         Task SaveAsync();
     }
 }

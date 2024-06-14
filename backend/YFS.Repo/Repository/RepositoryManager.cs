@@ -28,6 +28,7 @@ namespace YFS.Service.Services
         private IMccRepository _mccRepository;
         private IMonoSyncRuleRepository _monoSyncRuleRepository;
         private IMonoSyncedTransactionRepository _monoSyncedTransactionRepository;
+        private IMccCategoryMappingRepository _mccCategoryMappingRepository;
 
         private UserManager<User> _userManager;
         private RoleManager<IdentityRole> _roleManager;
@@ -182,6 +183,15 @@ namespace YFS.Service.Services
                 if (_monoSyncedTransactionRepository is null)
                     _monoSyncedTransactionRepository = new MonoSyncedTransactionRepository(_repositoryContext);
                 return _monoSyncedTransactionRepository;
+            }
+        }
+        public IMccCategoryMappingRepository MccCategoryMapping
+        {
+            get
+            {
+                if (_mccCategoryMappingRepository is null)
+                    _mccCategoryMappingRepository = new MccCategoryMappingRepository(_repositoryContext);
+                return _mccCategoryMappingRepository;
             }
         }
         public Task SaveAsync() => _repositoryContext.SaveChangesAsync();
