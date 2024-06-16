@@ -149,7 +149,7 @@ namespace YFS.Service.Services
                 }
 
                 var monobank = await _bankService.GetBankByGLMFO(322001);
-                if (monobank == null || !monobank.IsSuccess)
+                if (monobank.Data == null || !monobank.IsSuccess)
                 {
                     return ServiceResult<IEnumerable<AccountDto>>.NotFound("Monobank from UniversalBank not found");
                 }

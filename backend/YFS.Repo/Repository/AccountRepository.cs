@@ -20,48 +20,44 @@ namespace YFS.Service.Services
        // public async Task <Account> GetAccount(int _accountId) =>
        //     await FindByConditionAsync(c => c.Id.Equals(_accountId), false);
 
-        public async Task<IEnumerable<Account>> GetAccountsByGroup(int accountGroupId, string userId, bool trackChanges) =>
-            await FindByConditionAsync(c => c.AccountGroupId.Equals(accountGroupId) && c.AccountIsEnabled.Equals(1), trackChanges);
+        public async Task<IEnumerable<Account>> GetAccountsByGroup(int accountGroupId, 
+            string userId, 
+            bool trackChanges) =>
+                await FindByConditionAsync(c => c.AccountGroupId.Equals(accountGroupId) 
+                && c.AccountIsEnabled.Equals(1), trackChanges);
         public async Task UpdateAccount(Account account) => 
             await UpdateAsync(account);
         public async Task<IEnumerable<Account>> GetOpenAccountsByUserId(string userId, bool trackChanges) =>
-            await FindByConditionAsync(c => c.AccountIsEnabled.Equals(1) && c.UserId.Equals(userId), trackChanges)        
-            .Result
+            await (await FindByConditionAsync(c => c.AccountIsEnabled.Equals(1) && c.UserId.Equals(userId), trackChanges))        
             .OrderByDescending(c => c.Favorites)
             .Include(c => c.Currency).AsNoTracking()
             .Include(p => p.AccountBalance)
             .Include(amb => amb.AccountsMonthlyBalance)
             .ToListAsync();
         public async Task<Account?> GetAccount(int _accountId) =>
-            await FindByConditionAsync(a => a.Id.Equals(_accountId), false)
-                .Result
-                //.Include(c => c.Currency).AsNoTracking()
+            await (await FindByConditionAsync(a => a.Id.Equals(_accountId), false))
+                 //.Include(c => c.Currency).AsNoTracking()
                 .Include(p => p.AccountBalance)
                 .SingleOrDefaultAsync();
 
         public async Task<Account?> GetAccountWithCurrency(int _accountId) =>
-            await FindByConditionAsync(a => a.Id.Equals(_accountId), false)
-                .Result
+            await (await FindByConditionAsync(a => a.Id.Equals(_accountId), false))
                 .Include(c => c.Currency).AsNoTracking()
                 .Include(p => p.AccountBalance)
                 .SingleOrDefaultAsync();
 
         public async Task<IEnumerable<Account>> GetAccountsByUserId(string userId, bool trackChanges) =>
-            await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges)
-            .Result
-            .OrderByDescending(c => c.Favorites)
-            .Include(c => c.Currency).AsNoTracking()
-            .Include(p => p.AccountBalance)
-            .Include(amb => amb.AccountsMonthlyBalance)
-            .ToListAsync();
+            await (await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges))
+                .OrderByDescending(c => c.Favorites)
+                .Include(c => c.Currency).AsNoTracking()
+                .Include(p => p.AccountBalance)
+                .Include(amb => amb.AccountsMonthlyBalance)
+                .ToListAsync();
 
         public async Task<Account?> GetExternalAccountById(string externalAccountId, string userId, bool trackChanges) =>
-            await FindByConditionAsync(c => c.UserId.Equals(userId) && c.ExternalId.Equals(externalAccountId), trackChanges)
-            .Result
-            .OrderByDescending(c => c.Favorites)
+            await (await FindByConditionAsync(c => c.UserId.Equals(userId) && c.ExternalId.Equals(externalAccountId), trackChanges)).OrderByDescending(c => c.Favorites)
             .Include(c => c.Currency).AsNoTracking()
             .Include(p => p.AccountBalance)
-            .Include(amb => amb.AccountsMonthlyBalance)
-            .SingleOrDefaultAsync();
+            .Include(amb => amb.AccountsMonthlyBalance).SingleOrDefaultAsync();
     }
 }

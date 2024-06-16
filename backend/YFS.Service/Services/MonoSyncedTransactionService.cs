@@ -12,15 +12,11 @@ namespace YFS.Service.Services
 {
     public class MonoSyncedTransactionService: BaseService
     {
-        private readonly IMonoSyncedTransactionRepository _monoSyncedTransactionRepository;
-
         public MonoSyncedTransactionService(IRepositoryManager repository, 
             IMapper mapper, ILogger<BaseService> logger,
-            LanguageScopedService languageService,
-            IMonoSyncedTransactionRepository monoSyncedTransactionRepository)
+            LanguageScopedService languageService)
             : base(repository, mapper, logger, languageService)
         {
-            _monoSyncedTransactionRepository = monoSyncedTransactionRepository;
         }
         public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction>? transactions)
         {
@@ -37,7 +33,8 @@ namespace YFS.Service.Services
                 }
 
                 // Check if the transaction already exists in the MonoSyncedTransaction table
-                var existingTransaction = await _monoSyncedTransactionRepository.GetByTransactionIdAsync(transaction.Id);
+                //var existingTransaction = await _monoSyncedTransactionRepository.GetByTransactionIdAsync(transaction.Id);
+                var existingTransaction = await _repository.MonoSyncedTransaction.GetByTransactionIdAsync(transaction.Id);
 
                 if (existingTransaction != null)
                 {
@@ -54,7 +51,7 @@ namespace YFS.Service.Services
                     // other fields
                 };
 
-                await _monoSyncedTransactionRepository.AddAsync(syncedTransaction);
+                await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction);
                 await _repository.SaveAsync();
             }
 

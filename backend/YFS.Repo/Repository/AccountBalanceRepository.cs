@@ -12,16 +12,12 @@ namespace YFS.Service.Services
         public AccountBalanceRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
-
         public async Task CreateAccountBalance(AccountBalance accountBalance) =>
             await CreateAsync(accountBalance);
-
         public async Task UpdateAccountBalance(AccountBalance accountBalance) => 
             await UpdateAsync(accountBalance);
-
         public async Task<AccountBalance?> GetAccountBalance(int _accountId) =>
-            await FindByConditionAsync(c => c.Id.Equals(_accountId), false)
-                .Result
+            await (await FindByConditionAsync(c => c.Id.Equals(_accountId), false))
                 .SingleOrDefaultAsync();
     }
 }

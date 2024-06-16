@@ -128,13 +128,13 @@ namespace YFS.IntegrationTests
                 var tokenService = serviceProvider.GetRequiredService<ITokenService>();
                 var resultToken = await tokenService.CreateToken(apiTokenMono);
 
-                var syncAccountsResult = monoIntegrationApiService.SyncAccounts(resultToken.Data.TokenValue, user.Id, monoClientResponse);
-                if (syncAccountsResult == null)
+                var syncAccountsResult = await monoIntegrationApiService.SyncAccounts(resultToken.Data.TokenValue, user.Id, monoClientResponse);
+                if (syncAccountsResult.Data == null)
                 {
                     throw new Exception("moon account is not found! Check SeedData json files");
                 }
-                var accountsBlackUAH = syncAccountsResult?.Result.Data
-                        .Where(account => account.Name == "Mono | black card | [UAH]")
+                var accountsBlackUAH = syncAccountsResult.Data
+                    .Where(account => account.Name.Equals("Mono | black card | [UAH]"))
                         .SingleOrDefault();
 
 
@@ -142,7 +142,7 @@ namespace YFS.IntegrationTests
                 
 
                 //savedToken = result.Data;
-                //Assert.NotNull(result.Data);
+                Assert.True(result.Data);
                 //var getResultToken = await tokenService.GetTokenByNameForUser(apiTokenMono.Name, user.Id);
 
                 // Act

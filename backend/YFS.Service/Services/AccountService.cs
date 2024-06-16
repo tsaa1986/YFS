@@ -49,8 +49,8 @@ namespace YFS.Service.Services
                 }
 
                 await _repository.SaveAsync();
-                var accountReturnData = _repository.Account.GetAccountWithCurrency(accountData.Id);
-                var accountReturnDto = _mapper.Map<AccountDto>(accountReturnData.Result);
+                var accountReturnData = await _repository.Account.GetAccountWithCurrency(accountData.Id);
+                var accountReturnDto = _mapper.Map<AccountDto>(accountReturnData);
                 return ServiceResult<AccountDto>.Success(accountReturnDto);
             }
             catch (Exception ex)

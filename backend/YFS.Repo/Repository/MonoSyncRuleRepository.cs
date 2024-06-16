@@ -25,12 +25,12 @@ namespace YFS.Service.Services
         public async Task AddRule(MonoSyncRule newRule) =>
             await CreateAsync(newRule);
         public async Task<MonoSyncRule?> GetRule(int ruleId) =>
-            await FindByConditionAsync(m => m.RuleId.Equals(ruleId), false).Result.SingleOrDefaultAsync() 
-            ?? throw new InvalidOperationException($"Rule not found");
+            await (await FindByConditionAsync(m => m.RuleId.Equals(ruleId), false))
+                .SingleOrDefaultAsync() ?? throw new InvalidOperationException($"Rule not found");
 
         public async Task<IEnumerable<MonoSyncRule>> GetActiveRulesByApiTokenIdAsync(int apiTokenId) => 
-            await FindByConditionAsync(m => m.IsActive.Equals(true) && m.ApiTokenId.Equals(apiTokenId), false)
-                .Result.OrderBy(m => m.Priority).ToListAsync();
+            await (await FindByConditionAsync(m => m.IsActive.Equals(true) && m.ApiTokenId.Equals(apiTokenId), false))
+            .OrderBy(m => m.Priority).ToListAsync();
 
         public async Task UpdateRule(MonoSyncRule updatedRule) => await UpdateAsync(updatedRule);
     }
