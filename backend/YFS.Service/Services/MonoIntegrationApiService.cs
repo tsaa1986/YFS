@@ -305,7 +305,7 @@ namespace YFS.Service.Services
                 }
 
                 // Apply sync rules and create operations
-                var operations = ApplySyncRules(transaction, apiToken.Data.Id);
+                var operations = ApplySyncRules(transaction, apiToken.Data.Id, account, userId);
                 var operationsDto = _mapper.Map<List<OperationDto>>(operations);
 
                 int? operationId = null;
@@ -366,20 +366,29 @@ namespace YFS.Service.Services
         }
 
         #region analyze transaction
-        private List<Operation> ApplySyncRules(MonoTransaction transaction, int apiTokenId)
+        private List<Operation> ApplySyncRules(MonoTransaction transaction, int apiTokenId, Account account, string userId)
         {
             var activeRules = _repository.MonoSyncRule.GetActiveRulesByApiTokenIdAsync(apiTokenId).Result;
             var operations = new List<Operation>();
+
+            bool ruleApplied = false;
 
             foreach (var rule in activeRules)
             {
                 if (EvaluateCondition(transaction, rule.Condition))
                 {
-                    var operation = ApplyAction(transaction, rule.Action);
+                    var operation = ApplyAction(transaction, rule.Action, account, userId);
                     operations.Add(operation);
-                    // Assuming one rule per transaction
+                    ruleApplied = true; // Set flag to true if rule applied
+                                        // Assuming one rule per transaction
                     break;
                 }
+            }
+
+            // Apply MccCategoryMapping if no rule was applied
+            if (!ruleApplied)
+            {
+                ApplyMccCategoryMapping(transaction, operations);
             }
 
             return operations;
@@ -422,7 +431,28 @@ namespace YFS.Service.Services
             return false;
         }
 
-        private Operation ApplyAction(MonoTransaction transaction, string action)
+        private async void ApplyMccCategoryMapping(MonoTransaction transaction, List<Operation> operations)
+        {
+            // Get the MCC code from the transaction
+            int mccCode = transaction.Mcc;
+
+            // Find the matching MccCategoryMapping
+            var mapping = await _repository.MccCategoryMapping.GetCategoryMappingByMccCodeAsync(mccCode);
+
+            if (mapping != null)
+            {
+                // Update the CategoryId in each operation if a mapping is found
+                foreach (var operation in operations)
+                {
+                    // Assuming operation has an OperationItems collection
+                    foreach (var item in operation.OperationItems)
+                    {
+                        item.CategoryId = mapping.CategoryId;
+                    }
+                }
+            }
+        }
+        private Operation ApplyAction(MonoTransaction transaction, string action, Account account, string userId)
         {
             if (transaction == null || string.IsNullOrEmpty(action))
             {
@@ -435,7 +465,7 @@ namespace YFS.Service.Services
                 //UserId = transaction.UserId,
                 TypeOperation = actionDict.TryGetValue("TypeOperation", out var typeOperationValue) ? (int)typeOperationValue : 0,
                 AccountId = actionDict.TryGetValue("AccountId", out var accountIdValue) ? (int)accountIdValue : 0,
-                OperationDate = DateTime.UtcNow,
+                OperationDate = transaction.OperationDate,
                 TotalCurrencyAmount = transaction.AmountCalculated,
                 OperationCurrencyId = actionDict.TryGetValue("OperationCurrencyId", out var operationCurrencyIdValue) ? (int)operationCurrencyIdValue : 0,
                 ExchangeRate = 1, // Assuming a default exchange rate of 1

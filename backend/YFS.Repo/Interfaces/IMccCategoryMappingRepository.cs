@@ -4,10 +4,10 @@ namespace YFS.Service.Interfaces
 { 
     public interface IMccCategoryMappingRepository
     {
-        Task CreateMccCategoryMappingAsync(MerchantCategoryCode mcc);
-        Task<IEnumerable<MerchantCategoryCode>> GetAllMccsCategoryMappingAsync(bool trackChanges);
-        Task<MerchantCategoryCode?> GetCategoryMappingByMccCodeAsync(int mccCode);
-        Task UpdateMccCategoryMappingAsync(MerchantCategoryCode mcc);
-        Task DeleteMccCategoryMappingAsync(MerchantCategoryCode mcc);
+        Task CreateMccCategoryMappingAsync(MccCategoryMapping mcc);
+        Task<IEnumerable<MccCategoryMapping>> GetAllMccsCategoryMappingAsync(bool trackChanges);
+        Task<MccCategoryMapping?> GetCategoryMappingByMccCodeAsync(int mccCode);
+        Task UpdateMccCategoryMappingAsync(MccCategoryMapping mcc);
+        Task DeleteMccCategoryMappingAsync(MccCategoryMapping mcc);
     }
 }

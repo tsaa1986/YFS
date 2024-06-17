@@ -26,7 +26,10 @@ namespace YFS.Repo.Data
                 new Category { Id = 13, RootId = 0, Note = "" },
                 new Category { Id = 14, RootId = 13, Note = "" },
                 new Category { Id = 15, RootId = 13, Note = "" },
-                new Category { Id = 16, RootId = 13, Note = "" });
+                new Category { Id = 16, RootId = 13, Note = "" },
+                new Category { Id = 17, RootId = 0, Note = "Mobile Expenses" }
+                );
+
 
             builder.OwnsMany(c => c.Translations, t =>
             {
@@ -81,7 +84,10 @@ namespace YFS.Repo.Data
                     new CategoryTranslation { Id = 48, CategoryId = 15, LanguageCode = "ru", Name = "Мебель" },
                     new CategoryTranslation { Id = 49, CategoryId = 16, LanguageCode = "ua", Name = "Електроніка" },
                     new CategoryTranslation { Id = 50, CategoryId = 16, LanguageCode = "en", Name = "Electronics" },
-                    new CategoryTranslation { Id = 51, CategoryId = 16, LanguageCode = "ru", Name = "Електроника" }
+                    new CategoryTranslation { Id = 51, CategoryId = 16, LanguageCode = "ru", Name = "Електроника" },
+                    new CategoryTranslation { Id = 52, CategoryId = 17, LanguageCode = "ua", Name = "Мобільні витрати" },
+                    new CategoryTranslation { Id = 53, CategoryId = 17, LanguageCode = "en", Name = "Mobile Expenses" },
+                    new CategoryTranslation { Id = 54, CategoryId = 17, LanguageCode = "ru", Name = "Мобильне затраты" }
                 );
             });
         }

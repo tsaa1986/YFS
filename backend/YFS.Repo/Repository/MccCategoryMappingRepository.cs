@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AutoMapper.Execution;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.Diagnostics.Metrics;
 using YFS.Core.Models;
 using YFS.Repo.Data;
 using YFS.Repo.GenericRepository.Services;
@@ -13,27 +15,25 @@ namespace YFS.Service.Services
         {
         }
 
-        public Task CreateMccCategoryMappingAsync(MerchantCategoryCode mcc)
+        public Task CreateMccCategoryMappingAsync(MccCategoryMapping mcc)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteMccCategoryMappingAsync(MerchantCategoryCode mcc)
+        public Task DeleteMccCategoryMappingAsync(MccCategoryMapping mcc)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<MerchantCategoryCode>> GetAllMccsCategoryMappingAsync(bool trackChanges)
+        public Task<IEnumerable<MccCategoryMapping>> GetAllMccsCategoryMappingAsync(bool trackChanges)
         {
             throw new NotImplementedException();
         }
 
-        public Task<MerchantCategoryCode?> GetCategoryMappingByMccCodeAsync(int mccCode)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<MccCategoryMapping?> GetCategoryMappingByMccCodeAsync(int mccCode) =>
+            await(await FindByConditionAsync(m => m.MccCode == mccCode, false)).SingleOrDefaultAsync();
 
-        public Task UpdateMccCategoryMappingAsync(MerchantCategoryCode mcc)
+        public Task UpdateMccCategoryMappingAsync(MccCategoryMapping mcc)
         {
             throw new NotImplementedException();
         }

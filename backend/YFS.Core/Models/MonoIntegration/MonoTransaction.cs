@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using static YFS.Core.Utilities.UnixTimeExtension;
 
 namespace YFS.Core.Models.MonoIntegration
 {
@@ -30,5 +26,8 @@ namespace YFS.Core.Models.MonoIntegration
         public decimal OperationAmountCalculated => OperationAmount == 0 ? 0 : OperationAmount / 100.0m;
         public decimal CashbackAmountCalculated => CashbackAmount == 0 ? 0 : CashbackAmount / 100.0m;
         public decimal BalanceCalculated => Balance == 0 ? 0 : Balance / 100.0m;
+        public DateTime OperationDate => UnixTimeExtensions.FromUnixTimeSecondsToDateTimeUtc(Time);
+        public bool ImportSuccessful { get; set; }  // Flag indicating if import was successful
+        public List<Operation> OperationList { get; set; } = new List<Operation>();  // List to save successful operations
     }
 }

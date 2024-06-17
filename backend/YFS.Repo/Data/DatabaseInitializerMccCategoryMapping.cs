@@ -51,7 +51,10 @@ namespace YFS.Repo.Data
                 new MccCategoryMapping { MccCode = 5661, CategoryId = 11, Description = "Monobank" },
                 new MccCategoryMapping { MccCode = 5449, CategoryId = 11, Description = "Monobank" },
                 new MccCategoryMapping { MccCode = 5631, CategoryId = 11, Description = "Monobank" },
-                new MccCategoryMapping { MccCode = 5131, CategoryId = 11, Description = "Monobank" }
+                new MccCategoryMapping { MccCode = 5131, CategoryId = 11, Description = "Monobank" },
+                //mobile phone
+                new MccCategoryMapping { MccCode = 4814, CategoryId = 17, Description = "Monobank" },
+
             };
 
                 context.MccCategoryMappings.AddRange(mccCategoryMappings);

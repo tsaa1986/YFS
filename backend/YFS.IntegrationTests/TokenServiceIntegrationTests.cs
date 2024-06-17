@@ -156,7 +156,7 @@ namespace YFS.IntegrationTests
                 Assert.Equal("Set Category for MCC 4829", rule.RuleName);
                 Assert.Equal("{\"Mcc\": 4378}", rule.Condition);
                 Assert.Equal("{\"CategoryId\": -1}", rule.Action);
-                Assert.Equal(1, rule.Priority);
+                Assert.Equal(100, rule.Priority);
                 Assert.True(rule.IsActive);
             }
         }
