@@ -11,6 +11,7 @@ using Newtonsoft.Json;
 using Microsoft.Extensions.Http;
 using Newtonsoft.Json.Linq;
 using YFS.Core.Models;
+using System.Transactions;
 
 namespace YFS.Service.Services
 {
@@ -20,13 +21,13 @@ namespace YFS.Service.Services
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IAccountService _accountService;
         private readonly IAccountGroupsService _accountGroupService;
-        private readonly IBankService _bankService; 
+        private readonly IBankService _bankService;
         private readonly ICurrencyService _currencyService;
         private readonly IOperationsService _operationsService;
         private readonly ITokenService _tokenService;
-        public MonoIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository, 
-            IMapper mapper, 
-            ILogger<BaseService> logger, 
+        public MonoIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository,
+            IMapper mapper,
+            ILogger<BaseService> logger,
             HttpClient httpClient,
             IAccountService accountService,
             IAccountGroupsService accountGroupService,
@@ -52,7 +53,7 @@ namespace YFS.Service.Services
         public async Task<ServiceResult<MonoClientInfoResponse>> GetClientInfo(string xToken)
         {
             try
-            {               
+            {
                 _httpClient.DefaultRequestHeaders.Add("X-Token", xToken);
                 HttpResponseMessage response = await _httpClient.GetAsync("client-info");
 
@@ -79,7 +80,7 @@ namespace YFS.Service.Services
                     return ServiceResult<MonoClientInfoResponse>.NotFound($"Failed to retrieve client info: {response.StatusCode}");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 _logger.LogError($"Something went wrong in the {nameof(GetClientInfo)} action {ex}");
 
@@ -128,12 +129,12 @@ namespace YFS.Service.Services
                 _logger.LogError($"Error in GetStatementsBetweenDates method: {ex.Message}");
                 return ServiceResult<IEnumerable<MonoTransaction>>.Error($"Error: {ex.Message}");
             }
-        }        
+        }
         public async Task<ServiceResult<IEnumerable<AccountDto>>> SyncAccounts(string xToken, string userId, MonoClientInfoResponse clientInfoResponse)
         {
             try
             {
-                if ((clientInfoResponse == null) || (clientInfoResponse.accounts == null) 
+                if ((clientInfoResponse == null) || (clientInfoResponse.accounts == null)
                     || clientInfoResponse.accounts.Count == 0) {
                     return ServiceResult<IEnumerable<AccountDto>>.NotFound("Accounts from monobank not found");
                 }
@@ -265,13 +266,38 @@ namespace YFS.Service.Services
                 Note = monoAccount.type
             };
         }
+        private async Task<ServiceResult<bool>> InitializeCurrencyIdForMonoStatement(IEnumerable<MonoTransaction> transactions)
+        {
+            int currencyCode = 0;
+            if (transactions.Count() == 0) return ServiceResult<bool>.NotFound("No transactions to sync.");
+            currencyCode = transactions.First().CurrencyCode;
+            var resultCurrency = await GetCurrency(currencyCode);
+            if (resultCurrency == null || resultCurrency.IsNotFound) return ServiceResult<bool>.NotFound("CurrencyId not found!");
 
+            int currencyId = resultCurrency.Data.CurrencyId;
+
+            if (currencyId <= 0) return ServiceResult<bool>.NotFound("CurrencyId not found!");
+
+            foreach (MonoTransaction tr in transactions){
+                tr.CurrencyId = currencyId;
+            }
+
+            return ServiceResult<bool>.Success(true);
+        }
         public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, string externalIdAccount,
             IEnumerable<MonoTransaction> transactions)
         {
             if (transactions == null)
             {
                 return ServiceResult<bool>.Error("No transactions to sync.");
+            }
+
+            //find currenciId by CurrencyCode
+            var resultSetCurencyId = await InitializeCurrencyIdForMonoStatement(transactions);
+
+            if (resultSetCurencyId.IsSuccess == false)
+            {
+                return ServiceResult<bool>.Error("Can't find currency id for statements");
             }
 
             //find account? if not exist return error
@@ -301,12 +327,25 @@ namespace YFS.Service.Services
 
                 if (existingTransaction == true)
                 {
+                    transaction.ImportSuccessful = true;
                     continue; // Skip already synced transactions
                 }
 
                 // Apply sync rules and create operations
-                var operations = ApplySyncRules(transaction, apiToken.Data.Id, account, userId);
-                var operationsDto = _mapper.Map<List<OperationDto>>(operations);
+                var operations = await ApplySyncRules(transaction, apiToken.Data.Id, account, userId);
+
+                if (operations.IsSuccess == false) {
+                    transaction.ImportSuccessful = false;
+                    continue;
+                }
+                var operationsDto = new List<OperationDto>();
+
+                if (operations != null)
+                    operationsDto = _mapper.Map<List<OperationDto>>(operations.Data);
+                else {
+                    transaction.ImportSuccessful = false;
+                    continue;
+                }
 
                 int? operationId = null;
                 int? transferFromOperationId = null;
@@ -366,7 +405,7 @@ namespace YFS.Service.Services
         }
 
         #region analyze transaction
-        private List<Operation> ApplySyncRules(MonoTransaction transaction, int apiTokenId, Account account, string userId)
+        private async Task<ServiceResult<List<Operation>>> ApplySyncRules(MonoTransaction transaction, int apiTokenId, Account account, string userId)
         {
             var activeRules = _repository.MonoSyncRule.GetActiveRulesByApiTokenIdAsync(apiTokenId).Result;
             var operations = new List<Operation>();
@@ -388,10 +427,18 @@ namespace YFS.Service.Services
             // Apply MccCategoryMapping if no rule was applied
             if (!ruleApplied)
             {
-                ApplyMccCategoryMapping(transaction, operations);
+                var result = await ApplyMccCategoryMapping(transaction, userId, account);
+                if (result.IsSuccess)
+                {
+                    operations.Add(result.Data);
+                }
+                else
+                {
+                    return ServiceResult<List<Operation>>.Error(result.ErrorMessage);
+                }
             }
 
-            return operations;
+            return ServiceResult<List<Operation>>.Success(operations);
         }
 
         private bool EvaluateCondition(MonoTransaction transaction, string condition)
@@ -431,26 +478,29 @@ namespace YFS.Service.Services
             return false;
         }
 
-        private async void ApplyMccCategoryMapping(MonoTransaction transaction, List<Operation> operations)
+        private async Task<ServiceResult<Operation>> ApplyMccCategoryMapping(MonoTransaction transaction, string userId, Account account)
         {
             // Get the MCC code from the transaction
             int mccCode = transaction.Mcc;
 
+            if (mccCode == 4814 ) {
+                mccCode = 4814;
+            }
+            if (mccCode == 5441)
+            {
+                mccCode = 5441;
+            }
+
             // Find the matching MccCategoryMapping
             var mapping = await _repository.MccCategoryMapping.GetCategoryMappingByMccCodeAsync(mccCode);
 
-            if (mapping != null)
-            {
-                // Update the CategoryId in each operation if a mapping is found
-                foreach (var operation in operations)
-                {
-                    // Assuming operation has an OperationItems collection
-                    foreach (var item in operation.OperationItems)
-                    {
-                        item.CategoryId = mapping.CategoryId;
-                    }
-                }
-            }
+            if (mapping == null) return ServiceResult<Operation>.NotFound("category id for mapping not found");
+
+            //create single operation with category
+            Operation operation = CreateOperationForMappingCategory(transaction, account, userId, mapping.CategoryId);
+            
+
+            return ServiceResult<Operation>.Success(operation);
         }
         private Operation ApplyAction(MonoTransaction transaction, string action, Account account, string userId)
         {
@@ -483,6 +533,35 @@ namespace YFS.Service.Services
                 operation.OperationItems.Add(item);
             }
 
+            return operation;
+        }
+        
+        private Operation CreateOperationForMappingCategory(MonoTransaction transaction, Account account, string userId, int categoryId)
+        {
+            var operation = new Operation
+            {
+                UserId = userId,
+                //1-income,2-expense,3-transfer
+                TypeOperation = transaction.OperationAmountCalculated < 0 ? 2: 1,
+                AccountId = account.Id,
+                OperationDate = transaction.OperationDate,
+                TotalCurrencyAmount = transaction.AmountCalculated,
+                OperationCurrencyId = transaction.CurrencyId,
+                ExchangeRate = 1, // Assuming a default exchange rate of 1
+                CashbackAmount = transaction.CashbackAmountCalculated,
+                MCC = transaction.Mcc,
+                Description = transaction.Description,
+                OperationItems = new List<OperationItem>
+                {
+                    new OperationItem
+                    {
+                        CategoryId = categoryId,
+                        CurrencyAmount = transaction.AmountCalculated,
+                        OperationAmount = transaction.AmountCalculated,
+                        Description = transaction.Description
+                    }
+                }
+            };
             return operation;
         }
         #endregion

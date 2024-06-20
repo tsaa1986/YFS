@@ -31,7 +31,7 @@ namespace YFS.Service.Services
                 await _repository.SaveAsync();
 
                 // Initialize default rules
-                await InitializeDefaultRules(tokenData.Id);
+                //await InitializeDefaultRules(tokenData.Id);
                 var resultToken = _mapper.Map<ApiTokenDto>(tokenData);
 
                 return ServiceResult<ApiTokenDto>.Success(resultToken);

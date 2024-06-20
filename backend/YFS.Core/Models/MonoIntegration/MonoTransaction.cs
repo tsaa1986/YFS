@@ -22,6 +22,8 @@ namespace YFS.Core.Models.MonoIntegration
         public string? CounterEdrpou { get; set; }   //ЄДРПОУ контрагента, присутній лише для елементів виписки рахунків ФОП
         public string? CounterIban { get; set; } //IBAN контрагента, присутній лише для елементів виписки рахунків ФОП
         public string? CounterName { get; set; }     //Найменування контрагента
+        //get from db table
+        public int CurrencyId { get; set; }
         public decimal AmountCalculated => Amount == 0 ? 0 : Amount / 100.0m;
         public decimal OperationAmountCalculated => OperationAmount == 0 ? 0 : OperationAmount / 100.0m;
         public decimal CashbackAmountCalculated => CashbackAmount == 0 ? 0 : CashbackAmount / 100.0m;

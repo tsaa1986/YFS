@@ -46,7 +46,7 @@ namespace YFS.IntegrationTests
                 _seedDataIntegrationTests.InitializeDatabaseAsync(_serviceProvider).Wait();
             }
 
-         }
+        }
         /*
         [Fact]
         public async Task GetClientInfoFromMono_ShouldReturnOk_ShouldReturn4Accounts()
@@ -140,7 +140,6 @@ namespace YFS.IntegrationTests
 
                 var result = await monoIntegrationApiService.SyncTransactionFromStatements(resultToken.Data.TokenValue,user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
                 
-
                 //savedToken = result.Data;
                 Assert.True(result.Data);
                 //var getResultToken = await tokenService.GetTokenByNameForUser(apiTokenMono.Name, user.Id);
