@@ -22,11 +22,11 @@ namespace YFS.Service.Services
             await RemoveAsync(operation);
         public async Task<IEnumerable<Operation>> GetOperationsForAccount(string languageCode, 
             int accountId, bool trackChanges) => 
-                await ( await FindByConditionAsync(op => ((op.AccountId == accountId)), trackChanges))
+                await FindByCondition(op => ((op.AccountId == accountId)), trackChanges)
                 .Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate).ToListAsync();
         public async Task<IEnumerable<Operation>> GetOperationsForAccountForPeriod(string languageCode, 
             int accountId, DateTime startDate, DateTime endDate, bool trackChanges) => 
-                await (await FindByConditionAsync(op => ((op.AccountId == accountId) && (op.OperationDate >= startDate && op.OperationDate <= endDate) ), trackChanges))
+                await FindByCondition(op => ((op.AccountId == accountId) && (op.OperationDate >= startDate && op.OperationDate <= endDate)), trackChanges)
                     .Include(p => p.Account.AccountBalance).OrderByDescending(op => op.OperationDate)
                     .Include(op => op.OperationItems)
                     .ThenInclude(oi => oi.Category.Translations.Where(t => t.LanguageCode == languageCode))
@@ -41,8 +41,8 @@ namespace YFS.Service.Services
         //    => await FindByConditionAsync(op => op.UserId.Equals(userId) && ((op.AccountId == accountId)), trackChanges).Result.OrderByDescending(op => op. OperationDate).Take(10).ToListAsync();
         public async Task<IEnumerable<Operation>> GetLast10OperationsForAccount(string languageCode, 
             int accountId, bool trackChanges)
-                => await (await FindByConditionAsync(op => ((op.AccountId == accountId)), trackChanges))
-                .Include(p => p.Account.AccountBalance).AsNoTracking()
+                => await FindByCondition(op => ((op.AccountId == accountId)), trackChanges)
+                .Include(p => p.Account.AccountBalance)
                 .Include(op => op.OperationItems)
                     .ThenInclude(oi => oi.Category.Translations.Where(t => t.LanguageCode == languageCode))
                         .OrderByDescending(op => op.OperationDate).Take(10).ToListAsync();
@@ -50,8 +50,7 @@ namespace YFS.Service.Services
             (string languageCode, 
             int operationId, 
             bool trackChanges) => 
-                await (await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges))
-                .AsNoTracking()
+                await FindByCondition(op => op.Id.Equals(operationId), trackChanges)
                 .Include(p => p.Account.AccountBalance)
                 .Include(op => op.OperationItems)
                     .ThenInclude(oi => oi.Category.Translations.Where(t => t.LanguageCode == languageCode))
@@ -61,7 +60,7 @@ namespace YFS.Service.Services
         public async Task<Operation?> GetTransferOperationById
             (string languageCode, 
             int transferOperationId) => 
-                await (await FindByConditionAsync(op => op.TransferOperationId.Equals(transferOperationId), false))
+                await FindByCondition(op => op.TransferOperationId.Equals(transferOperationId), false)
                     .Include(p => p.Account.AccountBalance)
                     .Include(op => op.OperationItems)
                         .ThenInclude(oi => oi.Category.Translations.Where(t => t.LanguageCode == languageCode))
@@ -70,8 +69,7 @@ namespace YFS.Service.Services
 
         public async Task<Operation?> GetOperationByIdWithoutCategory
             (int operationId, bool trackChanges) => 
-                await (await FindByConditionAsync(op => op.Id.Equals(operationId), trackChanges))
-                .AsNoTracking()
+                await FindByCondition(op => op.Id.Equals(operationId), trackChanges)
                 .Include(p => p.Account.AccountBalance)
                 .Include(op => op.OperationItems)
                 .SingleOrDefaultAsync();

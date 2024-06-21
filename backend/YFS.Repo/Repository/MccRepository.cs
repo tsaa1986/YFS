@@ -18,9 +18,9 @@ namespace YFS.Service.Services
         public async Task DeleteMccAsync(MerchantCategoryCode mcc) =>
             await RemoveAsync(mcc);
         public async Task<IEnumerable<MerchantCategoryCode>> GetAllMccsAsync(bool trackChanges) =>
-            await FindAllAsync(trackChanges).Result.OrderBy(m => m.Code).ToListAsync();
+            await FindAll(trackChanges).OrderBy(m => m.Code).ToListAsync();
         public async Task<MerchantCategoryCode?> GetMccByIdAsync(string code, bool trackChanges) =>
-            await FindByConditionAsync(m => m.Code.Equals(code), trackChanges).Result.SingleOrDefaultAsync();
+            await FindByCondition(m => m.Code.Equals(code), trackChanges).SingleOrDefaultAsync();
         public async Task UpdateMccAsync(MerchantCategoryCode mcc) =>
             await UpdateAsync(mcc);
     }

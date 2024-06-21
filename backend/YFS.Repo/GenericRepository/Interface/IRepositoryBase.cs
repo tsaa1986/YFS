@@ -4,8 +4,8 @@ namespace YFS.Repo.GenericRepository.Interfaces
 {
     public interface IRepositoryBase<T> where T: class
     {
-        Task<IQueryable<T>> FindAllAsync(bool trackChanges);
-        Task<IQueryable<T>> FindByConditionAsync(Expression<Func<T, bool>> expression, bool trackChanges);
+        IQueryable<T> FindAll(bool trackChanges);
+        IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges);
         //Task<T> GetOwnerByIdAsync(int _id);
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);

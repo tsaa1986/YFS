@@ -31,7 +31,7 @@ namespace YFS.Service.Services
         }
 
         public async Task<MccCategoryMapping?> GetCategoryMappingByMccCodeAsync(int mccCode) =>
-            await(await FindByConditionAsync(m => m.MccCode == mccCode, false)).SingleOrDefaultAsync();
+            await FindByCondition(m => m.MccCode == mccCode, false).SingleOrDefaultAsync();
 
         public Task UpdateMccCategoryMappingAsync(MccCategoryMapping mcc)
         {

@@ -49,7 +49,7 @@ namespace YFS.Service.Services
                 }
 
                 await _repository.SaveAsync();
-                var accountReturnData = await _repository.Account.GetAccountWithCurrency(accountData.Id);
+                var accountReturnData = await _repository.Account.GetAccountWithCurrency(accountData.Id, false);
                 var accountReturnDto = _mapper.Map<AccountDto>(accountReturnData);
                 return ServiceResult<AccountDto>.Success(accountReturnDto);
             }
@@ -64,7 +64,7 @@ namespace YFS.Service.Services
         {
             try
             {                
-                var account = await _repository.Account.GetAccount(accountId);
+                var account = await _repository.Account.GetAccount(accountId, false);
                 var accountDto = _mapper.Map<AccountDto>(account);
                 return ServiceResult<AccountDto>.Success(accountDto);
             }
@@ -143,7 +143,7 @@ namespace YFS.Service.Services
                 await _repository.Account.UpdateAccount(accountData);
                 await _repository.SaveAsync();
 
-                Account updatedAccount = await _repository.Account.GetAccount(accountData.Id);
+                Account updatedAccount = await _repository.Account.GetAccount(accountData.Id, true);
                 var accountDto = _mapper.Map<AccountDto>(updatedAccount);
                 return ServiceResult<AccountDto>.Success(accountDto);
             }

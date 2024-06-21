@@ -10,7 +10,7 @@ using YFS.Service.Interfaces;
 
 namespace YFS.Service.Services
 {
-    public class MonoSyncedTransactionService: BaseService
+    public class MonoSyncedTransactionService: BaseService, IMonoSyncedTransactionService
     {
         public MonoSyncedTransactionService(IRepositoryManager repository, 
             IMapper mapper, ILogger<BaseService> logger,
@@ -34,7 +34,7 @@ namespace YFS.Service.Services
 
                 // Check if the transaction already exists in the MonoSyncedTransaction table
                 //var existingTransaction = await _monoSyncedTransactionRepository.GetByTransactionIdAsync(transaction.Id);
-                var existingTransaction = await _repository.MonoSyncedTransaction.GetByTransactionIdAsync(transaction.Id);
+                var existingTransaction = _repository.MonoSyncedTransaction.GetByTransactionIdAsync(transaction.Id);
 
                 if (existingTransaction != null)
                 {
@@ -54,6 +54,22 @@ namespace YFS.Service.Services
                 await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction);
                 await _repository.SaveAsync();
             }
+
+            return ServiceResult<bool>.Success(true);
+        }
+        public async Task<ServiceResult<bool>> SaveSyncedTransaction(MonoTransaction mt, int operationId)
+        {
+            //var operation = await _repository.Operation.GetOperationById("en",operationId, false); // Get Operation entity
+
+            var syncedTransaction = new MonoSyncedTransaction
+            {
+                MonoTransactionId = mt.Id,
+                OperationId = operationId,
+                SyncedOn = DateTime.UtcNow
+            };
+
+            await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction); // Add to repository
+            await _repository.SaveAsync(); // Save changes
 
             return ServiceResult<bool>.Success(true);
         }

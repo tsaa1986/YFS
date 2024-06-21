@@ -35,7 +35,7 @@ namespace YFS.Service.Services
                 if ((operationData.AccountId == targetAccountId) && operationData.OperationItems.Any(item => item.CategoryId == -1))
                     return ServiceResult<IEnumerable<OperationDto>>.Error("Target Account must be not equal Withdraw Account");
 
-                account = await _repository.Account.GetAccount(operationData.AccountId);
+                account = await _repository.Account.GetAccount(operationData.AccountId, true);
 
                 foreach (var item in operationData.OperationItems)
                 {
@@ -45,7 +45,7 @@ namespace YFS.Service.Services
                         item.OperationAmount = Math.Abs(item.OperationAmount);
                     if ((OperationType)operationData.TypeOperation == OperationType.Transfer)
                     {
-                        accountTarget = await _repository.Account.GetAccount(targetAccountId);
+                        accountTarget = await _repository.Account.GetAccount(targetAccountId, true);
                         item.OperationAmount = -item.OperationAmount;
                         operationData.Description += " [to " + accountTarget.Name + "]";
                         transferWithdrawDescription = " [from " + account.Name + "]";
@@ -72,7 +72,7 @@ namespace YFS.Service.Services
                 }
 
                 ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
-
+                //lock?
                 account.AccountBalance.Balance += operationData.TotalCurrencyAmount;
 
                 await _repository.Operation.CreateOperation(operationData);

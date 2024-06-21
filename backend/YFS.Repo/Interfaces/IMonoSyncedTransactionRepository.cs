@@ -6,7 +6,7 @@ namespace YFS.Service.Interfaces
     public interface IMonoSyncedTransactionRepository
     {
         Task<MonoSyncedTransaction?> GetByTransactionIdAsync(string monobankTransactionId);
-        Task AddAsync(MonoSyncedTransaction monoSyncedTransaction);
+        Task AddAsync(MonoSyncedTransaction msc);
         Task<bool> ExistsAsync(string monobankTransactionId);
         Task<List<MonoSyncedTransaction>> GetAllSyncedTransactionsAsync();
         Task<MonoSyncedTransaction?> GetByIdAsync(int id);

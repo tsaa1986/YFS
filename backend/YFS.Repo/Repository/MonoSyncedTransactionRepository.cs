@@ -17,12 +17,11 @@ namespace YFS.Repo.Repository
         public MonoSyncedTransactionRepository(RepositoryContext repositoryContext) : base(repositoryContext)
         {
         }
-        public async Task AddAsync(MonoSyncedTransaction monoSyncedTransaction) =>
-            await CreateAsync(monoSyncedTransaction);
+        public async Task AddAsync(MonoSyncedTransaction mst) =>
+            await CreateAsync(mst);
         public async Task<bool> ExistsAsync(string monobankTransactionId)
         {
-            var result = await FindByConditionAsync(m => m.MonoTransactionId == monobankTransactionId, false)
-                .Result.SingleOrDefaultAsync();
+            var result = await FindByCondition(m => m.MonoTransactionId == monobankTransactionId, false).SingleOrDefaultAsync();
             if (result == null)
             {
                 return false;
@@ -31,15 +30,13 @@ namespace YFS.Repo.Repository
         }
 
         public async Task<List<MonoSyncedTransaction>> GetAllSyncedTransactionsAsync() =>
-            await FindAllAsync(false).Result.ToListAsync();
+            await FindAll(false).ToListAsync();
 
         public async Task<MonoSyncedTransaction?> GetByIdAsync(int id) =>
-                await FindByConditionAsync(m => m.Id == id, false)
-                    .Result.SingleOrDefaultAsync() ?? null;
+                await FindByCondition(m => m.Id == id, false).SingleOrDefaultAsync() ?? null;
 
         public async Task<MonoSyncedTransaction?> GetByTransactionIdAsync(string monobankTransactionId) =>
-                await FindByConditionAsync(m => m.MonoTransactionId == monobankTransactionId, false)
-                    .Result.SingleOrDefaultAsync() ?? null;
+                await FindByCondition(m => m.MonoTransactionId == monobankTransactionId, false).SingleOrDefaultAsync() ?? null;
 
     }
 }

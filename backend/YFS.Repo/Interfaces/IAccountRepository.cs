@@ -10,7 +10,7 @@ namespace YFS.Service.Interfaces
         Task<IEnumerable<Account>> GetOpenAccountsByUserId(string userId, bool trackChanges);
         Task<IEnumerable<Account>> GetAccountsByUserId(string userId, bool trackChanges);
         Task<Account?> GetExternalAccountById(string externalAccountId, string userId, bool trackChanges);
-        Task<Account> GetAccount(int _accountId);
-        Task<Account> GetAccountWithCurrency(int _accountId);
+        Task<Account> GetAccount(int _accountId, bool trackChanges);
+        Task<Account> GetAccountWithCurrency(int _accountId, bool trackChanges);
     }
 }

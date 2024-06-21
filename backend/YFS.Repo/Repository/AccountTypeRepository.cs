@@ -14,7 +14,7 @@ namespace YFS.Service.Services
         {
         }
         public async Task<IEnumerable<AccountType>> GetAllAccountTypes(bool trackChanges, string language) =>
-            await FindAllAsync(trackChanges).Result
+            await FindAll(trackChanges)
                     .Include(at => at.Translations)
                     .OrderBy(at => at.Translations.FirstOrDefault(t => t.Language == language).Name)
                     .ToListAsync();

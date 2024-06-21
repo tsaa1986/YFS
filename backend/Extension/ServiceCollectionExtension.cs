@@ -107,6 +107,7 @@ namespace YFS.Extension
             services.AddHttpClient();
             services.AddScoped<IMonoIntegrationApiService, MonoIntegrationApiService>();
             services.AddScoped<IMonoSyncedTransactionRepository, MonoSyncedTransactionRepository>();
+            services.AddScoped<IMonoSyncedTransactionService, MonoSyncedTransactionService>();
             services.AddScoped<LanguageScopedService>();
         }
     }

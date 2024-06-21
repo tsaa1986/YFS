@@ -41,12 +41,12 @@ namespace YFS.Service.Services
         }
         public async Task<AccountGroup> GetAccountGroup(int accountGroupId, bool trackChanges)
         {
-            var query = await FindByConditionAsync(c => c.AccountGroupId == accountGroupId, trackChanges);
+            var query = FindByCondition(c => c.AccountGroupId == accountGroupId, trackChanges);
             return await query.Include(c => c.Translations).SingleOrDefaultAsync();
         }
         public async Task<IEnumerable<AccountGroup>> GetAccountGroupsForUser(string userId, string languageCode, bool trackChanges)
         {
-            var accountGroupsQuery = await FindByConditionAsync(c => c.UserId.Equals(userId), trackChanges);
+            var accountGroupsQuery = FindByCondition(c => c.UserId.Equals(userId), trackChanges);
 
             // Include translations and filter by language
             var accountGroups = await accountGroupsQuery

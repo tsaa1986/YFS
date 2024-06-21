@@ -10,6 +10,7 @@ using YFS.Repo.Data;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using YFS.Middleware;
+using System;
 
 namespace YFS
 {
@@ -35,7 +36,9 @@ namespace YFS
             services.AddDbContext<RepositoryContext>(options =>
                 options.UseNpgsql(connectionString,
                         x => x.MigrationsAssembly("YFS.Repo"))
-                        .EnableSensitiveDataLogging(true));
+                        .EnableSensitiveDataLogging(true)
+                        .LogTo(Console.WriteLine, LogLevel.Information));
+
 
             ServiceExtension.ConfigureRepositoryManager(services);
             ServiceExtension.ConfigureIdentity(services);

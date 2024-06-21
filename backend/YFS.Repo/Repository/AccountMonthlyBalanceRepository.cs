@@ -25,9 +25,9 @@ namespace YFS.Service.Services
             DateTime dtSearchMonthUtc = new DateTime(nextMonthOperationDateUtc.Year, nextMonthOperationDateUtc.Month, 1, 0, 0, 0, DateTimeKind.Utc);
 
             // Find account monthly balances after the operation's next month in UTC
-            var res = await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
+            var res = await FindByCondition(amb => (amb.AccountId == _operation.AccountId) &&
                                                      (amb.StartDateOfMonth >= dtSearchMonthUtc), trackChanges)
-                                                .Result.OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
+                                                .OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
             return res;
             /*DateTime nextMonthOperationDate = _operation.OperationDate.AddMonths(1);
             DateTime dtSearchMonth = new DateTime(nextMonthOperationDate.Year, nextMonthOperationDate.Month, 1);
@@ -38,23 +38,22 @@ namespace YFS.Service.Services
         }
         public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges) 
         {
-            var res = await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
-               (amb.StartDateOfMonth < _operation.OperationDate), trackChanges).Result.FirstOrDefaultAsync();
+            var res = await FindByCondition(amb => (amb.AccountId == _operation.AccountId) &&
+               (amb.StartDateOfMonth < _operation.OperationDate), trackChanges).FirstOrDefaultAsync();
 
             return res;
         }
         public async Task<AccountMonthlyBalance?> CheckAccountMonthlyBalance(Operation _operation, bool trackChages) =>            
-            await FindByConditionAsync(amb => (amb.AccountId == _operation.AccountId) &&
+            await FindByCondition(amb => (amb.AccountId == _operation.AccountId) &&
             (amb.StartDateOfMonth.Month == _operation.OperationDate.Date.Month) && (amb.StartDateOfMonth.Year == _operation.OperationDate.Date.Year), trackChages)
-            .Result.SingleOrDefaultAsync();
+            .SingleOrDefaultAsync();
         public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceById(int _id) => 
-            await FindByConditionAsync(acb => acb.Id.Equals(_id), false)
-                .Result
+            await FindByCondition(acb => acb.Id.Equals(_id), false)                
                 .SingleOrDefaultAsync();
         public async Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceByAccountId(int _accountId, bool trackChanges)
         {
-            var res = await FindByConditionAsync(amb => (amb.AccountId == _accountId), trackChanges)
-                .Result.OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
+            var res = await FindByCondition(amb => (amb.AccountId == _accountId), trackChanges)
+                .OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
             return res;
         }
     }

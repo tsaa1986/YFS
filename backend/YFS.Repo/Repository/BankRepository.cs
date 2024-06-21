@@ -14,7 +14,7 @@ namespace YFS.Service.Services
         }
 
         public async Task<Bank?> GetBankByGLMFO(int kodGLMFO) =>
-            await (await FindByConditionAsync(b => b.GLMFO == kodGLMFO, false)).SingleOrDefaultAsync();
+            await FindByCondition(b => b.GLMFO == kodGLMFO, false).SingleOrDefaultAsync();
 
         public async Task UpdateBanksAsync(IEnumerable<Bank> updatedBanks)
         {

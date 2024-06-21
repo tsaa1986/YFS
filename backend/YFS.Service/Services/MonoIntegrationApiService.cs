@@ -12,6 +12,7 @@ using Microsoft.Extensions.Http;
 using Newtonsoft.Json.Linq;
 using YFS.Core.Models;
 using System.Transactions;
+using Microsoft.EntityFrameworkCore;
 
 namespace YFS.Service.Services
 {
@@ -25,6 +26,7 @@ namespace YFS.Service.Services
         private readonly ICurrencyService _currencyService;
         private readonly IOperationsService _operationsService;
         private readonly ITokenService _tokenService;
+        private readonly IMonoSyncedTransactionService _monoSyncedTransactionService;
         public MonoIntegrationApiService(IHttpClientFactory httpClientFactory, IRepositoryManager repository,
             IMapper mapper,
             ILogger<BaseService> logger,
@@ -35,7 +37,8 @@ namespace YFS.Service.Services
             ICurrencyService currencyService,
             IOperationsService operationsService,
             ITokenService tokenService,
-            LanguageScopedService languageService
+            IMonoSyncedTransactionService monoSyncedTransactionService,
+            LanguageScopedService languageService            
             ) : base(repository, mapper, logger, languageService)
         {
             _httpClientFactory = httpClientFactory;
@@ -48,7 +51,8 @@ namespace YFS.Service.Services
             _bankService = bankService;
             _currencyService = currencyService;
             _operationsService = operationsService;
-            _tokenService = tokenService;
+            _tokenService = tokenService;      
+            _monoSyncedTransactionService = monoSyncedTransactionService;
         }
         public async Task<ServiceResult<MonoClientInfoResponse>> GetClientInfo(string xToken)
         {
@@ -302,10 +306,14 @@ namespace YFS.Service.Services
 
             //find account? if not exist return error
             var account = await _repository.Account.GetExternalAccountById(externalIdAccount, userId, false);
-
+            int accountId;
             if (account == null)
             {
                 return ServiceResult<bool>.NotFound("account not found for import statement");
+            }
+            else
+            { 
+                accountId = account.Id;
             }
 
             // Retrieve the API token for the user
@@ -332,7 +340,7 @@ namespace YFS.Service.Services
                 }
 
                 // Apply sync rules and create operations
-                var operations = await ApplySyncRules(transaction, apiToken.Data.Id, account, userId);
+                var operations = await ApplySyncRules(transaction, apiToken.Data.Id, accountId, userId);
 
                 if (operations.IsSuccess == false) {
                     transaction.ImportSuccessful = false;
@@ -347,9 +355,9 @@ namespace YFS.Service.Services
                     continue;
                 }
 
-                int? operationId = null;
-                int? transferFromOperationId = null;
-                int? transferToOperationId = null;
+                int operationId = 0;
+                int transferFromOperationId = 0;
+                int transferToOperationId;
 
                 foreach (var operationDto in operationsDto)
                 {
@@ -372,7 +380,7 @@ namespace YFS.Service.Services
                         }
                         else if (createdOperation.TypeOperation == 3)
                         {
-                            if (transferFromOperationId == null)
+                            if (transferFromOperationId == 0)
                             {
                                 transferFromOperationId = createdOperation.Id;
                             }
@@ -382,30 +390,16 @@ namespace YFS.Service.Services
                             }
                         }
                     }
-                }
 
-
-                // Save the successful sync status in the MonoSyncedTransaction table
-                var syncedTransaction = new MonoSyncedTransaction
-                {
-                    MonoTransactionId = transaction.Id,
-                    //UserId = userId,
-                    //OperationId = operationId,
-                    //TransferFromOperationId = transferFromOperationId,
-                    //TransferToOperationId = transferToOperationId,
-                    //IsSynced = true,
-                    SyncedOn = DateTime.UtcNow
-                };
-
-                await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction);
-                await _repository.SaveAsync();
+                    await _monoSyncedTransactionService.SaveSyncedTransaction(transaction, operationId);
+                   }
             }
 
             return ServiceResult<bool>.Success(true);
         }
 
         #region analyze transaction
-        private async Task<ServiceResult<List<Operation>>> ApplySyncRules(MonoTransaction transaction, int apiTokenId, Account account, string userId)
+        private async Task<ServiceResult<List<Operation>>> ApplySyncRules(MonoTransaction transaction, int apiTokenId, int accountId, string userId)
         {
             var activeRules = _repository.MonoSyncRule.GetActiveRulesByApiTokenIdAsync(apiTokenId).Result;
             var operations = new List<Operation>();
@@ -416,7 +410,7 @@ namespace YFS.Service.Services
             {
                 if (EvaluateCondition(transaction, rule.Condition))
                 {
-                    var operation = ApplyAction(transaction, rule.Action, account, userId);
+                    var operation = ApplyAction(transaction, rule.Action, userId);
                     operations.Add(operation);
                     ruleApplied = true; // Set flag to true if rule applied
                                         // Assuming one rule per transaction
@@ -427,7 +421,7 @@ namespace YFS.Service.Services
             // Apply MccCategoryMapping if no rule was applied
             if (!ruleApplied)
             {
-                var result = await ApplyMccCategoryMapping(transaction, userId, account);
+                var result = await ApplyMccCategoryMapping(transaction, userId, accountId);
                 if (result.IsSuccess)
                 {
                     operations.Add(result.Data);
@@ -478,7 +472,7 @@ namespace YFS.Service.Services
             return false;
         }
 
-        private async Task<ServiceResult<Operation>> ApplyMccCategoryMapping(MonoTransaction transaction, string userId, Account account)
+        private async Task<ServiceResult<Operation>> ApplyMccCategoryMapping(MonoTransaction transaction, string userId, int accountId)
         {
             // Get the MCC code from the transaction
             int mccCode = transaction.Mcc;
@@ -497,12 +491,12 @@ namespace YFS.Service.Services
             if (mapping == null) return ServiceResult<Operation>.NotFound("category id for mapping not found");
 
             //create single operation with category
-            Operation operation = CreateOperationForMappingCategory(transaction, account, userId, mapping.CategoryId);
+            Operation operation = CreateOperationForMappingCategory(transaction, accountId, userId, mapping.CategoryId);
             
 
             return ServiceResult<Operation>.Success(operation);
         }
-        private Operation ApplyAction(MonoTransaction transaction, string action, Account account, string userId)
+        private Operation ApplyAction(MonoTransaction transaction, string action, string userId)
         {
             if (transaction == null || string.IsNullOrEmpty(action))
             {
@@ -536,16 +530,16 @@ namespace YFS.Service.Services
             return operation;
         }
         
-        private Operation CreateOperationForMappingCategory(MonoTransaction transaction, Account account, string userId, int categoryId)
+        private Operation CreateOperationForMappingCategory(MonoTransaction transaction, int accountId, string userId, int categoryId)
         {
             var operation = new Operation
             {
                 UserId = userId,
-                //1-income,2-expense,3-transfer
-                TypeOperation = transaction.OperationAmountCalculated < 0 ? 2: 1,
-                AccountId = account.Id,
+                //Expense = 1,Income = 2,Transfer = 3
+                TypeOperation = transaction.OperationAmountCalculated < 0 ? 1: 2,
+                AccountId = accountId,
                 OperationDate = transaction.OperationDate,
-                TotalCurrencyAmount = transaction.AmountCalculated,
+                TotalCurrencyAmount = Math.Abs(transaction.AmountCalculated),
                 OperationCurrencyId = transaction.CurrencyId,
                 ExchangeRate = 1, // Assuming a default exchange rate of 1
                 CashbackAmount = transaction.CashbackAmountCalculated,
@@ -556,8 +550,8 @@ namespace YFS.Service.Services
                     new OperationItem
                     {
                         CategoryId = categoryId,
-                        CurrencyAmount = transaction.AmountCalculated,
-                        OperationAmount = transaction.AmountCalculated,
+                        CurrencyAmount = Math.Abs(transaction.AmountCalculated),
+                        OperationAmount = Math.Abs(transaction.AmountCalculated),
                         Description = transaction.Description
                     }
                 }

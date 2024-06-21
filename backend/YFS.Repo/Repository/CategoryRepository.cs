@@ -51,7 +51,7 @@ namespace YFS.Service.Services
         }
         public async Task<IEnumerable<Category>> GetCategoryForUser(string userId, string languageCode, bool trackChanges)
         {
-            var categoriesQuery = await FindByConditionAsync(c => (c.UserId.Equals(userId)) || (c.UserId == null), trackChanges);
+            var categoriesQuery = FindByCondition(c => (c.UserId.Equals(userId)) || (c.UserId == null), trackChanges);
             var categories = await categoriesQuery
                 .Include(c => c.Translations)
                 .ToListAsync();

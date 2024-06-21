@@ -15,8 +15,8 @@ namespace YFS.Service.Services
         public async Task AddToken(ApiToken newToken) =>
             await CreateAsync(newToken);
         public async Task<ApiToken?> GetApiToken(string tokenName, string userId) => 
-            await FindByConditionAsync(a => a.Name.Equals(tokenName) && a.UserId.Equals(userId), false)
-                .Result.SingleOrDefaultAsync() ?? throw new InvalidOperationException("ApiToken not found");
+            await FindByCondition(a => a.Name.Equals(tokenName) && a.UserId.Equals(userId), false)
+                .SingleOrDefaultAsync() ?? throw new InvalidOperationException("ApiToken not found");
         public async Task UpdateToken(ApiToken newToken) => await UpdateAsync(newToken);
     }
 }

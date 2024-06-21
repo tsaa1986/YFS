@@ -17,7 +17,7 @@ namespace YFS.Service.Services
         public async Task UpdateAccountBalance(AccountBalance accountBalance) => 
             await UpdateAsync(accountBalance);
         public async Task<AccountBalance?> GetAccountBalance(int _accountId) =>
-            await (await FindByConditionAsync(c => c.Id.Equals(_accountId), false))
+            await FindByCondition(c => c.Id.Equals(_accountId), false)
                 .SingleOrDefaultAsync();
     }
 }
