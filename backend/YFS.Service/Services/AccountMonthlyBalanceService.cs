@@ -17,7 +17,7 @@ namespace YFS.Service.Services
         {
             try
             {
-                var balances = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceByAccountId(accountId, false);
+                 var balances = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceByAccountId(accountId, false);
                 var accountMonthlyBalancesDto = _mapper.Map<IEnumerable<AccountMonthlyBalanceDto>>(balances);
                 return ServiceResult<IEnumerable<AccountMonthlyBalanceDto>>.Success(accountMonthlyBalancesDto);
             }

@@ -42,13 +42,13 @@ namespace YFS.Service.Services
         public async Task<AccountMonthlyBalance?> CheckAccountMonthlyBalance(Operation _operation, bool trackChages) =>            
             await FindByCondition(amb => (amb.AccountId == _operation.AccountId) &&
             (amb.StartDateOfMonth.Month == _operation.OperationDate.Date.Month) && (amb.StartDateOfMonth.Year == _operation.OperationDate.Date.Year), trackChages)
-            .SingleOrDefaultAsync();
+                .SingleOrDefaultAsync();
         public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceById(int _id) => 
             await FindByCondition(acb => acb.Id.Equals(_id), false)                
                 .SingleOrDefaultAsync();
         public async Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceByAccountId(int _accountId, bool trackChanges) =>
             await FindByCondition(amb => (amb.AccountId == _accountId), trackChanges)
-                            .OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
+                .OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
 
     }
 }

@@ -61,24 +61,43 @@ namespace YFS.Service.Services
 
                 if (accountMonthlyBalance == null)
                 {
-                    await AddAccountMonthlyBalance(account, operationData);
+                    accountMonthlyBalance = await AddAccountMonthlyBalance(account, operationData);
                 }
                 else
                 {
                     List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>();
                     listAccountMonthly.Add(accountMonthlyBalance);
 
-                    ChangeAccountMonthlyBalance(operationData, listAccountMonthly, false);
+                    var ambList = ChangeAccountMonthlyBalance(operationData, listAccountMonthly, false);
+                    foreach (AccountMonthlyBalance amb in ambList)
+                    {
+                        await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
+                        await _repository.SaveAsync();
+                    }
                 }
 
-                ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
+                if (listAccountMonthlyBalanceAfterOperationMonth.Count() > 0)
+                {
+                    var ambList = ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalanceAfterOperationMonth, false);
+
+                    foreach (AccountMonthlyBalance amb in ambList)
+                    {
+                        await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
+                        await _repository.SaveAsync();
+                    }
+                }
 
                 account.AccountBalance.Balance += operationData.TotalCurrencyAmount;
 
+                //await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountMonthlyBalance);
                 await _repository.Account.UpdateAccount(account);
-                await _repository.Operation.CreateOperation(operationData);
-                
+                await _repository.Operation.CreateOperation(operationData);            
                 await _repository.SaveAsync();
+
+                if (operationData.Id == 0)
+                {
+                    return ServiceResult<IEnumerable<OperationDto>>.Error("Failed to generate operation ID");
+                }
 
                 var operationReturnData = await _repository.Operation.GetOperationById(LanguageCode, operationData.Id, false);
                 var operationDataReturnDto = _mapper.Map<OperationDto>(operationReturnData);
@@ -195,7 +214,7 @@ namespace YFS.Service.Services
 
                 Account account = operationData.Account;
 
-                AccountMonthlyBalance accountCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
+                var accountCurrentMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
                 if (accountCurrentMonthlyBalance == null)
                 {
                     if (accountCurrentMonthlyBalance == null) 
@@ -214,6 +233,14 @@ namespace YFS.Service.Services
                 List<AccountMonthlyBalance> listAccountMonthlyBalance = new List<AccountMonthlyBalance>();
                 listAccountMonthlyBalance.Add(accountCurrentMonthlyBalance);
                 updatedAccountCurrentMonthlyBalance = ChangeAccountMonthlyBalance(operationData, listAccountMonthlyBalance, true);
+
+                if (updatedAccountCurrentMonthlyBalance.Count() > 0)
+                {
+                    foreach (AccountMonthlyBalance amb in updatedAccountCurrentMonthlyBalance)
+                    {
+                        await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
+                    }
+                }
 
                 await _repository.Operation.RemoveOperation(operationData);
                 await _repository.AccountBalance.UpdateAccountBalance(account.AccountBalance);
@@ -415,7 +442,7 @@ namespace YFS.Service.Services
                         amb.OpeningMonthBalance = amb.OpeningMonthBalance + MonthDebit + MonthCreadit;
                     }
 
-                    _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
+                    //_repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
                 }
             }
 
