@@ -10,6 +10,7 @@ namespace YFS.Repo.GenericRepository.Interfaces
         Task CreateAsync(T entity);
         Task UpdateAsync(T entity);
         Task RemoveAsync(T entity);
+        Task SaveAsync();
         /*
         IEnumerable<T> All { get; }
         Task<T> FindById(int id);

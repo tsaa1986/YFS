@@ -36,13 +36,9 @@ namespace YFS.Service.Services
                 .Result.OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
             return res;*/
         }
-        public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges) 
-        {
-            var res = await FindByCondition(amb => (amb.AccountId == _operation.AccountId) &&
+        public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceBeforeOperation(Operation _operation, bool trackChanges) =>
+            await FindByCondition(amb => (amb.AccountId == _operation.AccountId) &&
                (amb.StartDateOfMonth < _operation.OperationDate), trackChanges).FirstOrDefaultAsync();
-
-            return res;
-        }
         public async Task<AccountMonthlyBalance?> CheckAccountMonthlyBalance(Operation _operation, bool trackChages) =>            
             await FindByCondition(amb => (amb.AccountId == _operation.AccountId) &&
             (amb.StartDateOfMonth.Month == _operation.OperationDate.Date.Month) && (amb.StartDateOfMonth.Year == _operation.OperationDate.Date.Year), trackChages)
@@ -50,11 +46,9 @@ namespace YFS.Service.Services
         public async Task<AccountMonthlyBalance?> GetAccountMonthlyBalanceById(int _id) => 
             await FindByCondition(acb => acb.Id.Equals(_id), false)                
                 .SingleOrDefaultAsync();
-        public async Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceByAccountId(int _accountId, bool trackChanges)
-        {
-            var res = await FindByCondition(amb => (amb.AccountId == _accountId), trackChanges)
-                .OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
-            return res;
-        }
+        public async Task<IEnumerable<AccountMonthlyBalance?>> GetAccountMonthlyBalanceByAccountId(int _accountId, bool trackChanges) =>
+            await FindByCondition(amb => (amb.AccountId == _accountId), trackChanges)
+                            .OrderByDescending(amb => amb.StartDateOfMonth).ToListAsync();
+
     }
 }

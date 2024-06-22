@@ -16,9 +16,24 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
         !trackChanges ? RepositoryContext.Set<T>().AsNoTracking() : RepositoryContext.Set<T>();
     public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges) =>
     !trackChanges ? RepositoryContext.Set<T>().Where(expression).AsNoTracking() : RepositoryContext.Set<T>().Where(expression);
-    public async Task CreateAsync(T entity) => await Task.Run(() => RepositoryContext.Set<T>().Add(entity));
+    public async Task CreateAsync(T entity) => await RepositoryContext.Set<T>().AddAsync(entity);
     //public async Task UpdateAsync(T entity) => await Task.Run(() => RepositoryContext.Set<T>().Update(entity));
     public async Task UpdateAsync(T entity)
+    {
+        DetachLocalEntityIfTracked(entity);
+        RepositoryContext.Set<T>().Update(entity);
+        await Task.CompletedTask;
+    }
+    public async Task RemoveAsync(T entity)
+    {
+        RepositoryContext.Set<T>().Remove(entity);
+        await Task.CompletedTask;
+    }
+    public async Task SaveAsync()
+    {
+        await RepositoryContext.SaveChangesAsync();
+    }
+    private void DetachLocalEntityIfTracked(T entity)
     {
         var keyProperty = GetKeyProperty();
         if (keyProperty != null)
@@ -30,14 +45,6 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
                 RepositoryContext.Entry(existingEntity).State = EntityState.Detached;
             }
         }
-
-        RepositoryContext.Set<T>().Update(entity);
-        await Task.CompletedTask;
-    }
-    public async Task RemoveAsync(T entity)
-    {
-        RepositoryContext.Set<T>().Remove(entity);
-        await Task.CompletedTask;
     }
     private PropertyInfo GetKeyProperty()
     {
