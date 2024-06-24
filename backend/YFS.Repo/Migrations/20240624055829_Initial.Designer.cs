@@ -12,7 +12,7 @@ using YFS.Repo.Data;
 namespace YFS.Repo.Migrations
 {
     [DbContext(typeof(RepositoryContext))]
-    [Migration("20240611054530_Initial")]
+    [Migration("20240624055829_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -970,6 +970,12 @@ namespace YFS.Repo.Migrations
                             Id = 16,
                             Note = "",
                             RootId = 13
+                        },
+                        new
+                        {
+                            Id = 17,
+                            Note = "Mobile Expenses",
+                            RootId = 0
                         });
                 });
 
@@ -1883,6 +1889,27 @@ namespace YFS.Repo.Migrations
                                     CategoryId = 16,
                                     LanguageCode = "ru",
                                     Name = "Електроника"
+                                },
+                                new
+                                {
+                                    Id = 52,
+                                    CategoryId = 17,
+                                    LanguageCode = "ua",
+                                    Name = "Мобільні витрати"
+                                },
+                                new
+                                {
+                                    Id = 53,
+                                    CategoryId = 17,
+                                    LanguageCode = "en",
+                                    Name = "Mobile Expenses"
+                                },
+                                new
+                                {
+                                    Id = 54,
+                                    CategoryId = 17,
+                                    LanguageCode = "ru",
+                                    Name = "Мобильне затраты"
                                 });
                         });
 

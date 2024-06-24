@@ -35,7 +35,7 @@ namespace YFS.Service.Services
                 if ((operationData.AccountId == targetAccountId) && operationData.OperationItems.Any(item => item.CategoryId == -1))
                     return ServiceResult<IEnumerable<OperationDto>>.Error("Target Account must be not equal Withdraw Account");
 
-                account = await _repository.Account.GetAccount(operationData.AccountId, false);
+                account = await _repository.Account.GetAccount(operationData.AccountId, true);
 
                 foreach (var item in operationData.OperationItems)
                 {
@@ -56,7 +56,7 @@ namespace YFS.Service.Services
 
                 operationData.TotalCurrencyAmount = operationData.OperationItems.Sum(item => item.CurrencyAmount);
 
-                accountMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, false);
+                accountMonthlyBalance = await _repository.AccountMonthlyBalance.CheckAccountMonthlyBalance(operationData, true);
                 var listAccountMonthlyBalanceAfterOperationMonth = await _repository.AccountMonthlyBalance.GetAccountMonthlyBalanceAfterOperation(operationData, false);
 
                 if (accountMonthlyBalance == null)
@@ -68,11 +68,12 @@ namespace YFS.Service.Services
                     List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>();
                     listAccountMonthly.Add(accountMonthlyBalance);
 
-                    var ambList = ChangeAccountMonthlyBalance(operationData, listAccountMonthly, false);
+                    var ambList = ChangeAccountMonthlyBalance(operationData, listAccountMonthly, true);
                     foreach (AccountMonthlyBalance amb in ambList)
                     {
+                        
                         await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
-                        await _repository.SaveAsync();
+                        //await _repository.SaveAsync();
                     }
                 }
 
@@ -83,13 +84,12 @@ namespace YFS.Service.Services
                     foreach (AccountMonthlyBalance amb in ambList)
                     {
                         await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
-                        await _repository.SaveAsync();
+                        //await _repository.SaveAsync();
                     }
                 }
 
                 account.AccountBalance.Balance += operationData.TotalCurrencyAmount;
 
-                //await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(accountMonthlyBalance);
                 await _repository.Account.UpdateAccount(account);
                 await _repository.Operation.CreateOperation(operationData);            
                 await _repository.SaveAsync();

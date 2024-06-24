@@ -17,13 +17,13 @@ public abstract class RepositoryBase<T> : IRepositoryBase<T> where T : class
     public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression, bool trackChanges) =>
     !trackChanges ? RepositoryContext.Set<T>().Where(expression).AsNoTracking() : RepositoryContext.Set<T>().Where(expression);
     public async Task CreateAsync(T entity) => await RepositoryContext.Set<T>().AddAsync(entity);
-    //public async Task UpdateAsync(T entity) => await Task.Run(() => RepositoryContext.Set<T>().Update(entity));
-    public async Task UpdateAsync(T entity)
+    public async Task UpdateAsync(T entity) => await Task.Run(() => RepositoryContext.Set<T>().Update(entity));
+    /*public async Task UpdateAsync(T entity)
     {
         DetachLocalEntityIfTracked(entity);
         RepositoryContext.Set<T>().Update(entity);
         await Task.CompletedTask;
-    }
+    }*/
     public async Task RemoveAsync(T entity)
     {
         RepositoryContext.Set<T>().Remove(entity);

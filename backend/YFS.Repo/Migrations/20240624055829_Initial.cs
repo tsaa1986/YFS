@@ -695,7 +695,8 @@ namespace YFS.Repo.Migrations
                     { 13, "", 0, null },
                     { 14, "", 13, null },
                     { 15, "", 13, null },
-                    { 16, "", 13, null }
+                    { 16, "", 13, null },
+                    { 17, "Mobile Expenses", 0, null }
                 });
 
             migrationBuilder.InsertData(
@@ -753,7 +754,10 @@ namespace YFS.Repo.Migrations
                     { 48, 15, "ru", "Мебель" },
                     { 49, 16, "ua", "Електроніка" },
                     { 50, 16, "en", "Electronics" },
-                    { 51, 16, "ru", "Електроника" }
+                    { 51, 16, "ru", "Електроника" },
+                    { 52, 17, "ua", "Мобільні витрати" },
+                    { 53, 17, "en", "Mobile Expenses" },
+                    { 54, 17, "ru", "Мобильне затраты" }
                 });
 
             migrationBuilder.CreateIndex(
