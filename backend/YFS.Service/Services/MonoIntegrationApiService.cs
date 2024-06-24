@@ -331,7 +331,7 @@ namespace YFS.Service.Services
                 }
 
                 // Check if the transaction already exists in the MonoSyncedTransaction table
-                var existingTransaction = await _repository.MonoSyncedTransaction.ExistsAsync(transaction.Id);
+                var existingTransaction = await _repository.MonoSyncedTransaction.ExistsAsync(transaction.Id, accountId);
 
                 if (existingTransaction == true)
                 {
@@ -391,7 +391,7 @@ namespace YFS.Service.Services
                         }
                     }
 
-                    await _monoSyncedTransactionService.SaveSyncedTransaction(transaction, operationId);
+                    await _monoSyncedTransactionService.SaveSyncedTransaction(transaction, accountId, operationId);
                    }
             }
 

@@ -590,6 +590,7 @@ namespace YFS.Repo.Migrations
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    AccountId = table.Column<int>(type: "integer", nullable: false),
                     MonoTransactionId = table.Column<string>(type: "text", nullable: false),
                     OperationId = table.Column<int>(type: "integer", nullable: false),
                     TransferOperationId = table.Column<int>(type: "integer", nullable: false),

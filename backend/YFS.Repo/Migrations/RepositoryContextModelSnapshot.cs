@@ -1079,6 +1079,9 @@ namespace YFS.Repo.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AccountId")
+                        .HasColumnType("integer");
+
                     b.Property<string>("MonoTransactionId")
                         .IsRequired()
                         .HasColumnType("text");

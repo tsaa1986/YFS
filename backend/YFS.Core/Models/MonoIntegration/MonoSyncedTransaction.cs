@@ -11,7 +11,8 @@ namespace YFS.Core.Models.MonoIntegration
     {
         [Key]
         public int Id { get; set; }
-
+        [Required]
+        public int AccountId { get; set; }
         [Required]
         public string MonoTransactionId { get; set; } = null!;
 

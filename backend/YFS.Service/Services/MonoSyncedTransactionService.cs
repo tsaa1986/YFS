@@ -18,7 +18,7 @@ namespace YFS.Service.Services
             : base(repository, mapper, logger, languageService)
         {
         }
-        public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction>? transactions)
+        public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, int accountId, IEnumerable<MonoTransaction>? transactions)
         {
             if (transactions == null)
             {
@@ -34,7 +34,7 @@ namespace YFS.Service.Services
 
                 // Check if the transaction already exists in the MonoSyncedTransaction table
                 //var existingTransaction = await _monoSyncedTransactionRepository.GetByTransactionIdAsync(transaction.Id);
-                var existingTransaction = _repository.MonoSyncedTransaction.GetByTransactionIdAsync(transaction.Id);
+                var existingTransaction = _repository.MonoSyncedTransaction.GetByTransactionIdAsync(transaction.Id, accountId);
 
                 if (existingTransaction != null)
                 {
@@ -51,19 +51,20 @@ namespace YFS.Service.Services
                     // other fields
                 };
 
-                await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction);
-                await _repository.SaveAsync();
+                //await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction);
+                //await _repository.SaveAsync();
             }
 
             return ServiceResult<bool>.Success(true);
         }
-        public async Task<ServiceResult<bool>> SaveSyncedTransaction(MonoTransaction mt, int operationId)
+        public async Task<ServiceResult<bool>> SaveSyncedTransaction(MonoTransaction mt, int accountId, int operationId)
         {
             //var operation = await _repository.Operation.GetOperationById("en",operationId, false); // Get Operation entity
 
             var syncedTransaction = new MonoSyncedTransaction
             {
                 MonoTransactionId = mt.Id,
+                AccountId = accountId,
                 OperationId = operationId,
                 SyncedOn = DateTime.UtcNow
             };

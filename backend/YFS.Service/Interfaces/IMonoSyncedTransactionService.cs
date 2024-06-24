@@ -10,8 +10,8 @@ namespace YFS.Service.Interfaces
 {
     public interface IMonoSyncedTransactionService
     {
-        Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, IEnumerable<MonoTransaction>? transactions);
+        Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, int accountId, IEnumerable<MonoTransaction>? transactions);
 
-        Task<ServiceResult<bool>> SaveSyncedTransaction(MonoTransaction mt, int operationId);
+        Task<ServiceResult<bool>> SaveSyncedTransaction(MonoTransaction mt, int accountId, int operationId);
     }
 }
