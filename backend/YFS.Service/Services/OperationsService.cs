@@ -73,7 +73,6 @@ namespace YFS.Service.Services
                     {
                         
                         await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
-                        //await _repository.SaveAsync();
                     }
                 }
 
@@ -84,7 +83,6 @@ namespace YFS.Service.Services
                     foreach (AccountMonthlyBalance amb in ambList)
                     {
                         await _repository.AccountMonthlyBalance.UpdateAccountMonthlyBalance(amb);
-                        //await _repository.SaveAsync();
                     }
                 }
 
