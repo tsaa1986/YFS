@@ -42,7 +42,7 @@ namespace YFS.Service.Services
                     if ((OperationType)operationData.TypeOperation == OperationType.Expense)
                         item.OperationAmount = -item.OperationAmount;
                     if ((OperationType)operationData.TypeOperation == OperationType.Income)
-                        item.OperationAmount = Math.Abs(item.OperationAmount);
+                        item.OperationAmount = item.OperationAmount;
                     if ((OperationType)operationData.TypeOperation == OperationType.Transfer)
                     {
                         accountTarget = await _repository.Account.GetAccount(targetAccountId, true);
@@ -51,7 +51,7 @@ namespace YFS.Service.Services
                         transferWithdrawDescription = " [from " + account.Name + "]";
                     }
 
-                    item.CurrencyAmount = item.OperationAmount;
+                    item.CurrencyAmount = item.OperationAmount;                    
                 }
 
                 operationData.TotalCurrencyAmount = operationData.OperationItems.Sum(item => item.CurrencyAmount);
@@ -68,7 +68,7 @@ namespace YFS.Service.Services
                     List<AccountMonthlyBalance> listAccountMonthly = new List<AccountMonthlyBalance>();
                     listAccountMonthly.Add(accountMonthlyBalance);
 
-                    var ambList = ChangeAccountMonthlyBalance(operationData, listAccountMonthly, true);
+                    var ambList = ChangeAccountMonthlyBalance(operationData, listAccountMonthly, false);
                     foreach (AccountMonthlyBalance amb in ambList)
                     {
                         

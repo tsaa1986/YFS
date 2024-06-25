@@ -22,7 +22,46 @@ namespace YFS.IntegrationTests
             _client = _factory.CreateClient();
             _seedData = SeedDataIntegrationTests.Instance;
         }
+        [Fact]
+        public async Task Get_Returns_AccountMonthlyBalance_CurrentMonth_ByAccountId_Income_Expense_Success()
+        {
+            //Arrange
+            int _accountId = await _seedData.CreateAccountUAH();
+            var operationIncome = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow,
+                OperationDto.OperationType.Income, 2, 50000.23M);
+            var operationExpense = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow,
+                OperationDto.OperationType.Expense, 5, 1000.13M);
+            var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            var requestAccount = new HttpRequestMessage(HttpMethod.Get, $"/api/Accounts/byId/{_accountId}");
+            requestAccount.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
+            //Act
+            var response = await _client.SendAsync(request);
+            var responseAccount = await _client.SendAsync(requestAccount);
+            var content = await response.Content.ReadAsStringAsync();
+            var contentAccount = await responseAccount.Content.ReadAsStringAsync();
+            var accountMonthlyBalances = JsonConvert.DeserializeObject<AccountMonthlyBalanceDto[]>(content);
+            var accountBalance = JsonConvert.DeserializeObject<AccountDto>(contentAccount);
+
+
+            //Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.OK, responseAccount.StatusCode);
+            Assert.NotNull(accountMonthlyBalances);
+            Assert.True(accountMonthlyBalances.Length == 1);
+            Assert.NotNull(accountBalance);
+            decimal balance = accountBalance.Balance;
+            decimal balanceCalculateOperation = operationIncome.First().TotalCurrencyAmount + operationExpense.First().TotalCurrencyAmount;
+            Assert.True(balance == balanceCalculateOperation);
+            Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == 0);
+            Assert.True(accountMonthlyBalances[0].ClosingMonthBalance == operationIncome.First().TotalCurrencyAmount 
+                + operationExpense.First().TotalCurrencyAmount);
+            Assert.True(accountMonthlyBalances[0].MonthCredit == operationExpense.First().TotalCurrencyAmount);
+            Assert.True(accountMonthlyBalances[0].MonthDebit == operationIncome.First().TotalCurrencyAmount);
+            Assert.True(accountMonthlyBalances[0].StartDateOfMonth.Month == operationIncome.First().OperationDate.Month
+                && accountMonthlyBalances[0].StartDateOfMonth.Year == operationIncome.First().OperationDate.Year);
+        }
         [Fact]
         public async Task Get_Returns_AccountMonthlyBalance_CurrentMonth_ByAccountId_Income_Success()
         {
@@ -51,7 +90,7 @@ namespace YFS.IntegrationTests
                 && accountMonthlyBalances[0].StartDateOfMonth.Year == operationIncome.First().OperationDate.Year);
         }
         [Fact]
-        public async Task Get_Returns_AccountMonthlyBalance_Last2Month_ByAccountId_Success()
+        public async Task Get_Returns_AccountMonthlyBalance_Last2Month_ByAccountId_Income_Success()
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
@@ -88,7 +127,7 @@ namespace YFS.IntegrationTests
                 && accountMonthlyBalances[1].StartDateOfMonth.Year == operationIncomePreviousMonth.First().OperationDate.Year);
         }
         [Fact]
-        public async Task Get_Returns_AccountMonthlyBalance_Last3Month_ByAccountId_Success()
+        public async Task Get_Returns_AccountMonthlyBalance_Last3Month_ByAccountId_Income_Success()
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
@@ -136,7 +175,7 @@ namespace YFS.IntegrationTests
                 && accountMonthlyBalances[2].StartDateOfMonth.Year == operationIncomePreviousMonth.First().OperationDate.Year);
         }
         [Fact]
-        public async Task Get_Returns_AccountMonthlyBalance_FutureMonth_ByAccountId_Success()
+        public async Task Get_Returns_AccountMonthlyBalance_FutureMonth_ByAccountId_Income_Success()
         {
             //Arrange
             int _accountId = await _seedData.CreateAccountUAH();
