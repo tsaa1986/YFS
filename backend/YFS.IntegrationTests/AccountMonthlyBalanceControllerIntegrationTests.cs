@@ -324,23 +324,25 @@ namespace YFS.IntegrationTests
         public async Task Get_Returns_AccountMonthlyBalance_FutureMonth_ByAccountId_Income_Expense_Success()
         {
             //Arrange
+            int currentMonth = DateTime.UtcNow.Month;
+            int currentYear = DateTime.UtcNow.Year;
             int _accountId = await _seedData.CreateAccountUAH();
-            var operationIncome = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow,
+            var operationIncomeCurrent = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow,
                 OperationDto.OperationType.Income, 2, 100000.23M);
-            var operationExpense = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow,
+            var operationExpenseCurrent = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow,
                 OperationDto.OperationType.Expense, 5, 100.53M);
             var operationIncomePreviousMonth = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-1),
                 OperationDto.OperationType.Income, 2, 100000.21M);
             var operationExpensePreviousMonth = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-1),
-                OperationDto.OperationType.Expense, 5, 100000.21M);
+                OperationDto.OperationType.Expense, 5, 1000.21M);
             var operationIncome2MonthAgo = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-2),
                 OperationDto.OperationType.Income, 2, 100000.11M);
             var operationExpense2MonthAgo = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(-2),
-                OperationDto.OperationType.Expense, 5, 100000.11M);
+                OperationDto.OperationType.Expense, 5, 1050.11M);
             var operationIncome2MonthAfterCurrent = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(2),
                 OperationDto.OperationType.Income, 2, 100000.36M);
             var operationExpense2MonthAfterCurrent = await _seedData.CreateOperationUAH(_accountId, DateTime.UtcNow.AddMonths(2),
-                OperationDto.OperationType.Expense, 5, 100000.36M);
+                OperationDto.OperationType.Expense, 5, 1659.36M);
             var request = new HttpRequestMessage(HttpMethod.Get, $"/api/AccountMonthlyBalance/{_accountId}");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
 
@@ -348,27 +350,26 @@ namespace YFS.IntegrationTests
             var response = await _client.SendAsync(request);
             var content = await response.Content.ReadAsStringAsync();
             var accountMonthlyBalances = JsonConvert.DeserializeObject<AccountMonthlyBalanceDto[]>(content);
-            //var openAccounts = accounts.Where(a => a.AccountStatus.Equals(1));
 
             //Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.True(accountMonthlyBalances.Length == 4);
             Assert.NotNull(accountMonthlyBalances);
-            decimal openningBalance = 
-                operationIncome.First().TotalCurrencyAmount
-                + operationExpense.First().TotalCurrencyAmount
+            Assert.True(accountMonthlyBalances.Length == 4);            
+            AccountMonthlyBalanceDto ambCurrent = accountMonthlyBalances.Where(a => a.MonthNumber == currentMonth && a.YearNumber == currentYear).FirstOrDefault();
+            Assert.NotNull(ambCurrent);
+            decimal openningBalanceCurrent =
                 + operationIncome2MonthAgo.First().TotalCurrencyAmount
                 + operationExpense2MonthAgo.First().TotalCurrencyAmount
                 + operationIncomePreviousMonth.First().TotalCurrencyAmount
                 + operationExpensePreviousMonth.First().TotalCurrencyAmount;
-            Assert.True(accountMonthlyBalances[0].OpeningMonthBalance == openningBalance
-                && accountMonthlyBalances[0].ClosingMonthBalance == openningBalance 
-                + operationIncome2MonthAfterCurrent.First().TotalCurrencyAmount
-                + operationExpense2MonthAfterCurrent.First().TotalCurrencyAmount);
-            Assert.True(accountMonthlyBalances[0].MonthCredit == operationExpense2MonthAfterCurrent.First().TotalCurrencyAmount
-                && accountMonthlyBalances[0].MonthDebit == operationIncome2MonthAfterCurrent.First().TotalCurrencyAmount);
-            Assert.True(accountMonthlyBalances[0].StartDateOfMonth.Month == operationIncome2MonthAfterCurrent.First().OperationDate.Month
-                && accountMonthlyBalances[0].StartDateOfMonth.Year == operationIncome2MonthAfterCurrent.First().OperationDate.Year);
+            Assert.True(ambCurrent.OpeningMonthBalance == openningBalanceCurrent);
+            Assert.True(ambCurrent.ClosingMonthBalance == openningBalanceCurrent
+                + operationIncomeCurrent.First().TotalCurrencyAmount
+                + operationExpenseCurrent.First().TotalCurrencyAmount);
+            Assert.True(ambCurrent.MonthCredit == operationExpenseCurrent.First().TotalCurrencyAmount
+                && ambCurrent.MonthDebit == operationIncomeCurrent.First().TotalCurrencyAmount);
+            Assert.True(ambCurrent.StartDateOfMonth.Month == operationIncomeCurrent.First().OperationDate.Month
+                && ambCurrent.StartDateOfMonth.Year == operationIncomeCurrent.First().OperationDate.Year);
         }
         [Fact]
         public async Task Get_Returns_AccountMonthlyBalance_CurrentMonth_ByAccountId_Expense_Success()
