@@ -251,7 +251,6 @@ namespace YFS.Service.Services
             var currency = await _currencyService.GetCurrencyByCodeAndCountry(currencyCode, currencyCountry);
             return currency.IsSuccess ? ServiceResult<CurrencyDto>.Success(currency.Data) : ServiceResult<CurrencyDto>.NotFound("Monobank from UniversalBank not found"); ;
         }
-
         private AccountDto CreateAccountDto(MonoAccount monoAccount, int accountGroupId, int monoBankId, CurrencyDto currency)
         {
             return new AccountDto
@@ -288,12 +287,12 @@ namespace YFS.Service.Services
 
             return ServiceResult<bool>.Success(true);
         }
-        public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, string externalIdAccount,
+        public async Task<ServiceResult<IEnumerable<MonoTransaction>>> SyncTransactionFromStatements(string xToken, string userId, string externalIdAccount,
             IEnumerable<MonoTransaction> transactions)
         {
             if (transactions == null)
             {
-                return ServiceResult<bool>.Error("No transactions to sync.");
+                return ServiceResult<IEnumerable<MonoTransaction>>.Error("No transactions to sync.");
             }
 
             //find currenciId by CurrencyCode
@@ -301,7 +300,7 @@ namespace YFS.Service.Services
 
             if (resultSetCurencyId.IsSuccess == false)
             {
-                return ServiceResult<bool>.Error("Can't find currency id for statements");
+                return ServiceResult<IEnumerable<MonoTransaction>>.Error("Can't find currency id for statements");
             }
 
             //find account? if not exist return error
@@ -309,7 +308,7 @@ namespace YFS.Service.Services
             int accountId;
             if (account == null)
             {
-                return ServiceResult<bool>.NotFound("account not found for import statement");
+                return ServiceResult<IEnumerable<MonoTransaction>>.NotFound("account not found for import statement");
             }
             else
             { 
@@ -320,9 +319,10 @@ namespace YFS.Service.Services
             var apiToken = await _tokenService.GetTokenByNameForUser("apiMonoBank", userId);
             if (apiToken == null)
             {
-                return ServiceResult<bool>.Error("Invalid token.");
+                return ServiceResult<IEnumerable<MonoTransaction>>.Error("Invalid token.");
             }
 
+            List<MonoTransaction> syncedTransactions = new List<MonoTransaction>();
             foreach (var transaction in transactions)
             {
                 if (transaction == null)
@@ -333,9 +333,11 @@ namespace YFS.Service.Services
                 // Check if the transaction already exists in the MonoSyncedTransaction table
                 var existingTransaction = await _repository.MonoSyncedTransaction.ExistsAsync(transaction.Id, accountId);
 
-                if (existingTransaction == true)
+                if (existingTransaction != null)
                 {
                     transaction.ImportSuccessful = true;
+                    transaction.monoSyncedTransaction = existingTransaction;
+                    syncedTransactions.Add(transaction);
                     continue; // Skip already synced transactions
                 }
 
@@ -389,13 +391,20 @@ namespace YFS.Service.Services
                                 transferToOperationId = createdOperation.Id;
                             }
                         }
-                    }
 
-                    await _monoSyncedTransactionService.SaveSyncedTransaction(transaction, accountId, operationId);
-                   }
+                        var operation = _mapper.Map<Operation>(createdOperation);
+
+                        transaction.OperationList.Add(operation);
+                    }
+                    
+                    var monoSyncedTransaction = await _monoSyncedTransactionService.SaveSyncedTransaction(transaction, accountId, operationId);
+                    transaction.monoSyncedTransaction = monoSyncedTransaction.Data;
+                }
+                syncedTransactions.Add(transaction);
             }
 
-            return ServiceResult<bool>.Success(true);
+            IEnumerable<MonoTransaction> returnTransactions = syncedTransactions;
+            return ServiceResult<IEnumerable<MonoTransaction>>.Success(returnTransactions);
         }
 
         #region analyze transaction
@@ -434,7 +443,6 @@ namespace YFS.Service.Services
 
             return ServiceResult<List<Operation>>.Success(operations);
         }
-
         private bool EvaluateCondition(MonoTransaction transaction, string condition)
         {
             if (transaction == null || string.IsNullOrEmpty(condition))
@@ -471,7 +479,6 @@ namespace YFS.Service.Services
             }
             return false;
         }
-
         private async Task<ServiceResult<Operation>> ApplyMccCategoryMapping(MonoTransaction transaction, string userId, int accountId)
         {
             // Get the MCC code from the transaction
@@ -528,8 +535,7 @@ namespace YFS.Service.Services
             }
 
             return operation;
-        }
-        
+        }      
         private Operation CreateOperationForMappingCategory(MonoTransaction transaction, int accountId, string userId, int categoryId)
         {
             var operation = new Operation

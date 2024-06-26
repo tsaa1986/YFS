@@ -108,7 +108,7 @@ namespace YFS.IntegrationTests
         }
 
         [Fact]
-        public async Task SyncTransactionFromStatementsMonoBlackUAH_ShouldReturnO() {
+        public async Task SyncTransactionFromStatementsMonoBlackUAH_ShouldReturnSumCategoriesCalculatedOk() {
            //arrange
             var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
             ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
@@ -138,20 +138,42 @@ namespace YFS.IntegrationTests
                         .SingleOrDefault();
 
 
-                var result = await monoIntegrationApiService.SyncTransactionFromStatements(resultToken.Data.TokenValue,user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
-                
-                //savedToken = result.Data;
-                Assert.True(result.Data);
-                //var getResultToken = await tokenService.GetTokenByNameForUser(apiTokenMono.Name, user.Id);
+            var result = await monoIntegrationApiService.SyncTransactionFromStatements(resultToken.Data.TokenValue,user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
+            
+             //Assert
+             Assert.NotNull(result);
 
-                // Act
+                //mobile expense = 6
+                var mobileExpense = result.Data
+                    .SelectMany(d => d.OperationList)
+                    .SelectMany(ol => ol.OperationItems)
+                    .Where(oi => oi.CategoryId == 17).ToList();
+                Assert.NotNull(mobileExpense);
+                Assert.True(mobileExpense.Count == 6);
+                decimal sumMobileExpense = mobileExpense.Sum(m => m.OperationAmount);
+                Assert.True(sumMobileExpense == -765M);
 
-                //Assert.True(getResultToken.IsSuccess);
-                //Assert.NotNull(getResultToken.Data);
+                //food expense = 
+                var foodExpense = result.Data
+                    .SelectMany(d => d.OperationList)
+                    .SelectMany(ol => ol.OperationItems)
+                    .Where(oi => oi.CategoryId == 5).ToList();
+                Assert.NotNull(foodExpense);
+                Assert.True(foodExpense.Count == 18);
+                decimal sumFoodExpense = foodExpense.Sum(m => m.OperationAmount);
+                Assert.True(sumFoodExpense == -10198.25M);
+
+                //clothes
+                var clothesExpense = result.Data
+                    .SelectMany(d => d.OperationList)
+                    .SelectMany(ol => ol.OperationItems)
+                    .Where(oi => oi.CategoryId == 11).ToList();
+                Assert.NotNull(clothesExpense);
+                Assert.True(clothesExpense.Count == 2);
+                decimal sumclothesExpense = clothesExpense.Sum(m => m.OperationAmount);
+                Assert.True(sumclothesExpense == -728M);
+
             }
-
-
-            //assert
         }
 
         /*

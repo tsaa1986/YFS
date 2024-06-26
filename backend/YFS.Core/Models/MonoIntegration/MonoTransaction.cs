@@ -30,6 +30,7 @@ namespace YFS.Core.Models.MonoIntegration
         public decimal BalanceCalculated => Balance == 0 ? 0 : Balance / 100.0m;
         public DateTime OperationDate => UnixTimeExtensions.FromUnixTimeSecondsToDateTimeUtc(Time);
         public bool ImportSuccessful { get; set; }  // Flag indicating if import was successful
+        public MonoSyncedTransaction monoSyncedTransaction { get; set; } = new MonoSyncedTransaction();
         public List<Operation> OperationList { get; set; } = new List<Operation>();  // List to save successful operations
     }
 }

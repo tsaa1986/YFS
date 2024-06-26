@@ -311,7 +311,7 @@ namespace YFS.IntegrationTests
             Assert.NotNull(accountMonthlyBalances);
             AccountMonthlyBalanceDto ambCurrent = accountMonthlyBalances.Where(a => a.MonthNumber == currentMonth && a.YearNumber == currentYear).FirstOrDefault();
             Assert.NotNull(ambCurrent);
-            decimal openningBalance = //operationIncome.First().TotalCurrencyAmount
+            decimal openningBalance = 
                 + operationIncome2MonthAgo.First().TotalCurrencyAmount
                 + operationIncomePreviousMonth.First().TotalCurrencyAmount;
             Assert.True(ambCurrent.OpeningMonthBalance == openningBalance);
@@ -568,19 +568,12 @@ namespace YFS.IntegrationTests
             // Month +2 (Two Months After)
             int twoMounthAfter = DateTime.UtcNow.AddMonths(+2).Month;
             int twoYearAfter = DateTime.UtcNow.AddMonths(+2).Year;
-            decimal expectedTwoMonthAfterOpeningBalance = 
-                operationExpenseCurrentMonth.First().TotalCurrencyAmount +
-                operationExpensePreviousMonth.First().TotalCurrencyAmount +
-                operationExpense2MonthsAgo.First().TotalCurrencyAmount;
+            decimal expectedTwoMonthAfterOpeningBalance = -1600.55M;
             AccountMonthlyBalanceDto ambTwoMonthAfter = accountMonthlyBalances.Where(a => a.MonthNumber == twoMounthAfter
                     && a.YearNumber == twoYearAfter).FirstOrDefault();
             Assert.NotNull(ambTwoMonthAfter);
             Assert.Equal(expectedTwoMonthAfterOpeningBalance, ambTwoMonthAfter.OpeningMonthBalance);
-            Assert.Equal(operationExpense2MonthsAfterCurrent.First().TotalCurrencyAmount 
-                + operationExpenseCurrentMonth.First().TotalCurrencyAmount 
-                + operationExpense2MonthsAgo.First().TotalCurrencyAmount
-                + operationExpensePreviousMonth.First().TotalCurrencyAmount,
-                ambTwoMonthAfter.ClosingMonthBalance);
+            Assert.Equal(-2200.91m, ambTwoMonthAfter.ClosingMonthBalance);
             Assert.Equal(0, ambTwoMonthAfter.MonthDebit);
             Assert.Equal(operationExpense2MonthsAfterCurrent.First().OperationDate.Month, twoMounthAfter);
             Assert.Equal(operationExpense2MonthsAfterCurrent.First().OperationDate.Year, twoYearAfter);

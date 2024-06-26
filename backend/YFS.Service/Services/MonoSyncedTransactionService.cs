@@ -18,46 +18,7 @@ namespace YFS.Service.Services
             : base(repository, mapper, logger, languageService)
         {
         }
-        public async Task<ServiceResult<bool>> SyncTransactionFromStatements(string xToken, string userId, int accountId, IEnumerable<MonoTransaction>? transactions)
-        {
-            if (transactions == null)
-            {
-                return ServiceResult<bool>.Error("No transactions to sync.");
-            }
-
-            foreach (var transaction in transactions)
-            {
-                if (transaction == null)
-                {
-                    continue; // Skip null transactions
-                }
-
-                // Check if the transaction already exists in the MonoSyncedTransaction table
-                //var existingTransaction = await _monoSyncedTransactionRepository.GetByTransactionIdAsync(transaction.Id);
-                var existingTransaction = _repository.MonoSyncedTransaction.GetByTransactionIdAsync(transaction.Id, accountId);
-
-                if (existingTransaction != null)
-                {
-                    continue; // Skip already synced transactions
-                }
-
-                // Your logic to process the transaction
-
-                // Save the successful sync status in the MonoSyncedTransaction table
-                var syncedTransaction = new MonoSyncedTransaction
-                {
-                    //MonobankTransactionId = transaction.Id,
-                    //UserId = userId,
-                    // other fields
-                };
-
-                //await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction);
-                //await _repository.SaveAsync();
-            }
-
-            return ServiceResult<bool>.Success(true);
-        }
-        public async Task<ServiceResult<bool>> SaveSyncedTransaction(MonoTransaction mt, int accountId, int operationId)
+        public async Task<ServiceResult<MonoSyncedTransaction>> SaveSyncedTransaction(MonoTransaction mt, int accountId, int operationId)
         {
             //var operation = await _repository.Operation.GetOperationById("en",operationId, false); // Get Operation entity
 
@@ -72,7 +33,7 @@ namespace YFS.Service.Services
             await _repository.MonoSyncedTransaction.AddAsync(syncedTransaction); // Add to repository
             await _repository.SaveAsync(); // Save changes
 
-            return ServiceResult<bool>.Success(true);
+            return ServiceResult<MonoSyncedTransaction>.Success(syncedTransaction);
         }
     }
 }
