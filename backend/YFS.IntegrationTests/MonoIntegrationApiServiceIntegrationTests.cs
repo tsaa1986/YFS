@@ -22,6 +22,8 @@ using Microsoft.AspNetCore.Http;
 using System.Security.Claims;
 using Newtonsoft.Json.Linq;
 using Xunit.Sdk;
+using System.Text.Json;
+using FluentAssertions;
 
 namespace YFS.IntegrationTests
 {
@@ -47,16 +49,6 @@ namespace YFS.IntegrationTests
             }
 
         }
-        /*
-        [Fact]
-        public async Task GetClientInfoFromMono_ShouldReturnOk_ShouldReturn4Accounts()
-        {
-            //Arrange
-            var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
-
-
-        }*/
-
         [Fact]
         public async Task SyncAllAccountsFromMono_ShouldReturnOk_Return4Accounts()
         {
@@ -106,6 +98,66 @@ namespace YFS.IntegrationTests
 
             //<IEnumerable<MonoSyncRule>>> AddRulesAsync
         }
+        [Fact]
+        public async Task Post_Create_Rules_ShouldReturnOk_ReturnRule()
+        {
+            //Arrange
+            var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
+            ApiTokenDto savedToken = null;
+            Assert.NotNull(user);
+            ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var tokenService = serviceProvider.GetRequiredService<ITokenService>();
+                var result = await tokenService.CreateToken(apiTokenMono);
+                Assert.NotNull(result.Data);
+                savedToken = result.Data;          
+            }
+
+            var newRule = new MonoSyncRule
+            {
+                RuleName = "Test Rule",
+                Description = "This is a test rule",
+                Condition = "{\"Mcc\": 4378}",
+                Action = "{\"CategoryId\": 5}",
+                Priority = 1,
+                IsActive = true,
+                ApiTokenId = savedToken.Id
+            };
+
+            var requestRule = new HttpRequestMessage(HttpMethod.Post, "/api/MonobankIntegrationApi/rules")
+            {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(newRule), Encoding.UTF8, "application/json")
+            };
+            requestRule.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _seedDataIntegrationTests.GetJwtTokenForUser(user.UserName));
+
+            // Act
+            var responseRule = await _client.SendAsync(requestRule);
+
+
+            // Assert
+            responseRule.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseContent = await responseRule.Content.ReadAsStringAsync();
+
+            // Ensure responseContent is not null or empty before deserialization
+            responseContent.Should().NotBeNullOrEmpty();
+
+            var createdRule = System.Text.Json.JsonSerializer.Deserialize<MonoSyncRule>(responseContent, 
+                new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+            createdRule.Should().NotBeNull();
+            createdRule.RuleName.Should().Be(newRule.RuleName);
+            createdRule.Description.Should().Be(newRule.Description);
+            createdRule.Condition.Should().Be(newRule.Condition);
+            createdRule.Action.Should().Be(newRule.Action);
+            createdRule.Priority.Should().Be(newRule.Priority);
+            createdRule.IsActive.Should().Be(newRule.IsActive);
+            createdRule.ApiTokenId.Should().Be(newRule.ApiTokenId);
+        }
+
+        //GetActiveRulesByApiTokenIdAsync should 1 rule
+
+        //<IEnumerable<MonoSyncRule>>> AddRulesAsync
 
         [Fact]
         public async Task SyncTransactionFromStatementsMonoBlackUAH_ShouldReturnSumCategoriesCalculatedOk() {
@@ -175,75 +227,92 @@ namespace YFS.IntegrationTests
 
             }
         }
-
-        /*
         [Fact]
-        public async Task GetClientInfo_ShouldReturnOk_WhenValidTokenProvided()
+        public async Task SyncTransactionFromStatementsMonoBlackUAH_ShouldReturnRules_SumCategoriesCalculatedOk()
         {
-            //Arrange
+            //arrange
             var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
-            var userSignIn = new UserLoginDto { UserName = user.UserName, Password = "demo123$qweR" }; // Provide valid credentials
-
-            var authenticationRequest = new HttpRequestMessage(HttpMethod.Post, "/api/Authentication/sign-in")
-            {
-                Content = new StringContent(JsonConvert.SerializeObject(userSignIn), Encoding.UTF8, "application/json")
-            };
-            var authenticationResponse = await _client.SendAsync(authenticationRequest);
-            authenticationResponse.EnsureSuccessStatusCode();
-            var authenticationContent = await authenticationResponse.Content.ReadAsStringAsync();
-            var token = JObject.Parse(authenticationContent)["token"].ToString();
-
-
             ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
-            ApiTokenDto savedToken;
+            List<MonoTransaction> monoTransactionsUAH = _seedDataIntegrationTests.MonoStatementBlackUAH;
+            MonoClientInfoResponse monoClientResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
+            Assert.NotNull(monoClientResponse);
+            Assert.NotNull(monoTransactionsUAH);
+            if (monoClientResponse == null)
+            {
+                throw new Exception("monClientResponse is empty! Check SeedData json files");
+            }
+            var requestRule = new HttpRequestMessage(HttpMethod.Post, $"/api/MonobankIntegrationApi/rules");
+            requestRule.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+
+            /*
+             {
+  "ruleId": 0,
+  "ruleName": "string",
+  "description": "string",
+  "condition": "string",
+  "action": "string",
+  "priority": 0,
+  "isActive": true,
+  "createdOn": "2024-06-27T05:27:16.898Z",
+  "apiTokenId": 0
+}
+             */
+
+
+            //act
             using (var scope = _factory.Services.CreateScope())
             {
                 var serviceProvider = scope.ServiceProvider;
+                var monoIntegrationApiService = serviceProvider.GetRequiredService<IMonoIntegrationApiService>();
                 var tokenService = serviceProvider.GetRequiredService<ITokenService>();
-                var result = await tokenService.CreateToken(apiTokenMono);
-                savedToken = result.Data;
-                Assert.NotNull(result.Data);
-                var getResultToken = await tokenService.GetTokenByNameForUser(apiTokenMono.Name, user.Id);
+                var resultToken = await tokenService.CreateToken(apiTokenMono);
 
-                // Act
-
-                Assert.True(getResultToken.IsSuccess);
-                Assert.NotNull(getResultToken.Data);
-            }
-
-            // Include token in request headers
-            var controllerContext = new ControllerContext
-            {
-                HttpContext = new DefaultHttpContext
+                var syncAccountsResult = await monoIntegrationApiService.SyncAccounts(resultToken.Data.TokenValue, user.Id, monoClientResponse);
+                if (syncAccountsResult.Data == null)
                 {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new Claim[]
-                    {
-                        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                        new Claim(ClaimTypes.Name, user.UserName),
-                        // Add any other claims if necessary
-                    }, "mock")),
-                    Request = { Headers = { ["Authorization"] = $"Bearer {token}" } }
+                    throw new Exception("moon account is not found! Check SeedData json files");
                 }
-            };
-            _controller.ControllerContext = controllerContext;
-
-            // Load expected client info from JSON file
-            var expectedClientInfoJson = await File.ReadAllTextAsync("MonoIntegrationTestJson/expectedClientInfo.json");
-            var expectedClientInfo = JsonConvert.DeserializeObject<MonoClientInfoResponse>(expectedClientInfoJson);
-
-            // Setup mock for IMonoIntegrationApiService
-            _mockMonobankIntegrationApiService.Setup(s => s.GetClientInfo(savedToken.TokenValue))
-                                              .ReturnsAsync(ServiceResult<MonoClientInfoResponse>.Success(expectedClientInfo));
-
-            // Act
-            var resultAction = await _controller.GetClientInfo();
-            var okResult = Assert.IsType<OkObjectResult>(resultAction);
-            var returnValue = Assert.IsType<MonoClientInfoResponse>(okResult.Value);
-
-            //Assert.Equal(expectedClientInfo.Property1, returnValue.Property1);
-            //Assert.Equal(expectedClientInfo.Property2, returnValue.Property2);
-        }*/
+                var accountsBlackUAH = syncAccountsResult.Data
+                    .Where(account => account.Name.Equals("Mono | black card | [UAH]"))
+                        .SingleOrDefault();
 
 
+                var result = await monoIntegrationApiService.SyncTransactionFromStatements(resultToken.Data.TokenValue, user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
+
+                //Assert
+                Assert.NotNull(result);
+
+                //mobile expense = 6
+                var mobileExpense = result.Data
+                    .SelectMany(d => d.OperationList)
+                    .SelectMany(ol => ol.OperationItems)
+                    .Where(oi => oi.CategoryId == 17).ToList();
+                Assert.NotNull(mobileExpense);
+                Assert.True(mobileExpense.Count == 6);
+                decimal sumMobileExpense = mobileExpense.Sum(m => m.OperationAmount);
+                Assert.True(sumMobileExpense == -765M);
+
+                //food expense = 
+                var foodExpense = result.Data
+                    .SelectMany(d => d.OperationList)
+                    .SelectMany(ol => ol.OperationItems)
+                    .Where(oi => oi.CategoryId == 5).ToList();
+                Assert.NotNull(foodExpense);
+                Assert.True(foodExpense.Count == 18);
+                decimal sumFoodExpense = foodExpense.Sum(m => m.OperationAmount);
+                Assert.True(sumFoodExpense == -10198.25M);
+
+                //clothes
+                var clothesExpense = result.Data
+                    .SelectMany(d => d.OperationList)
+                    .SelectMany(ol => ol.OperationItems)
+                    .Where(oi => oi.CategoryId == 11).ToList();
+                Assert.NotNull(clothesExpense);
+                Assert.True(clothesExpense.Count == 2);
+                decimal sumclothesExpense = clothesExpense.Sum(m => m.OperationAmount);
+                Assert.True(sumclothesExpense == -728M);
+
+            }
+        }
     }
 }

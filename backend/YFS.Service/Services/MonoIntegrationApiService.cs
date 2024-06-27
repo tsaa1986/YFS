@@ -586,6 +586,7 @@ namespace YFS.Service.Services
             try
             {
                 await _repository.MonoSyncRule.AddRule(newRule);
+                await _repository.SaveAsync();
                 return ServiceResult<MonoSyncRule>.Success(newRule);
             }
             catch (Exception ex)
@@ -600,6 +601,7 @@ namespace YFS.Service.Services
             try
             {
                 await _repository.MonoSyncRule.AddRange(rules);
+                await _repository.SaveAsync();
                 return ServiceResult<IEnumerable<MonoSyncRule>>.Success(rules);
             }
             catch (Exception ex)
@@ -614,6 +616,7 @@ namespace YFS.Service.Services
             try
             {
                 await _repository.MonoSyncRule.UpdateRule(updatedRule);
+                await _repository.SaveAsync();
                 return ServiceResult<MonoSyncRule>.Success(updatedRule);
             }
             catch (Exception ex)

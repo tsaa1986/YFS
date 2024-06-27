@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -56,6 +57,34 @@ namespace YFS.IntegrationTests
         public List<MonoTransaction> MonoStatementBlackUSD => _transactionsFromBlackUSD;
         public List<MonoTransaction> MonoStatementBlackEURO => _transactionsFromBlackEURO;
 
+        public string GetJwtTokenForUser(string userName)
+        {
+            string _jwtTokenForUser = GetJwtTokenForUserAsync(userName).GetAwaiter().GetResult();
+            return _jwtTokenForUser;
+        }
+        private async Task<string> GetJwtTokenForUserAsync(string userName)
+        {
+            string password = "demo123$qweR";
+
+            // Prepare the request payload (if required)
+            var requestContent = new StringContent(
+                $"{{\"username\":\"{userName}\",\"password\":\"{password}\"}}",
+                Encoding.UTF8,
+                "application/json"
+            );
+
+            // Make the request to the authentication endpoint
+            var response = await _client.PostAsync("/api/Authentication/sign-in", requestContent);
+
+            // Ensure the request was successful
+            response.EnsureSuccessStatusCode();
+
+            // Extract the JWT token from the response
+            var content = await response.Content.ReadAsStringAsync();
+            var token = JObject.Parse(content)["token"].ToString();
+
+            return token;
+        }
         public async Task<int> GetCurrencyIdByCodeAndCountry(int code, string country)
         {
             using (var scope = _serviceProvider.CreateScope())
