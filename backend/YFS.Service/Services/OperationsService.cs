@@ -40,18 +40,26 @@ namespace YFS.Service.Services
                 foreach (var item in operationData.OperationItems)
                 {
                     if ((OperationType)operationData.TypeOperation == OperationType.Expense)
+                    {
                         item.OperationAmount = -item.OperationAmount;
+                        item.CurrencyAmount  = -item.CurrencyAmount;
+                    }
                     if ((OperationType)operationData.TypeOperation == OperationType.Income)
+                    {
                         item.OperationAmount = item.OperationAmount;
+                        item.CurrencyAmount = item.CurrencyAmount;
+                    }
                     if ((OperationType)operationData.TypeOperation == OperationType.Transfer)
                     {
                         accountTarget = await _repository.Account.GetAccount(targetAccountId, true);
+                        item.CurrencyAmount = -item.CurrencyAmount;
                         item.OperationAmount = -item.OperationAmount;
                         operationData.Description += " [to " + accountTarget.Name + "]";
                         transferWithdrawDescription = " [from " + account.Name + "]";
                     }
 
-                    item.CurrencyAmount = item.OperationAmount;                    
+                    //сделать проверку на совпадение каренси ид
+                    //item.CurrencyAmount = item.OperationAmount;                    
                 }
 
                 operationData.TotalCurrencyAmount = operationData.OperationItems.Sum(item => item.CurrencyAmount);

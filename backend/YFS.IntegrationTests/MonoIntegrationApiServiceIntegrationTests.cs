@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq.Protected;
@@ -119,8 +119,8 @@ namespace YFS.IntegrationTests
             {
                 RuleName = "Test Rule",
                 Description = "This is a test rule",
-                Condition = "{\"Mcc\": 4378}",
-                Action = "{\"CategoryId\": 5}",
+                Condition = "{\"Mcc\": 3049}",
+                Action = "{\"CategoryId\": 3}",
                 Priority = 1,
                 IsActive = true,
                 ApiTokenId = savedToken.Id
@@ -169,7 +169,7 @@ namespace YFS.IntegrationTests
             Assert.NotNull(monoClientResponse);
             if (monoClientResponse == null)
             {
-                throw new Exception("monClientResponse is empty! Check SeedData json files");
+                throw new Exception("monoClientResponse is empty! Check SeedData json files");
             }            
 
             //act
@@ -202,7 +202,7 @@ namespace YFS.IntegrationTests
                     .Where(oi => oi.CategoryId == 17).ToList();
                 Assert.NotNull(mobileExpense);
                 Assert.True(mobileExpense.Count == 6);
-                decimal sumMobileExpense = mobileExpense.Sum(m => m.OperationAmount);
+                decimal sumMobileExpense = mobileExpense.Sum(m => m.CurrencyAmount);
                 Assert.True(sumMobileExpense == -765M);
 
                 //food expense = 
@@ -212,7 +212,7 @@ namespace YFS.IntegrationTests
                     .Where(oi => oi.CategoryId == 5).ToList();
                 Assert.NotNull(foodExpense);
                 Assert.True(foodExpense.Count == 18);
-                decimal sumFoodExpense = foodExpense.Sum(m => m.OperationAmount);
+                decimal sumFoodExpense = foodExpense.Sum(m => m.CurrencyAmount);
                 Assert.True(sumFoodExpense == -10198.25M);
 
                 //clothes
@@ -222,7 +222,7 @@ namespace YFS.IntegrationTests
                     .Where(oi => oi.CategoryId == 11).ToList();
                 Assert.NotNull(clothesExpense);
                 Assert.True(clothesExpense.Count == 2);
-                decimal sumclothesExpense = clothesExpense.Sum(m => m.OperationAmount);
+                decimal sumclothesExpense = clothesExpense.Sum(m => m.CurrencyAmount);
                 Assert.True(sumclothesExpense == -728M);
 
             }
@@ -232,6 +232,7 @@ namespace YFS.IntegrationTests
         {
             //arrange
             var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
+            Assert.NotNull(user);
             ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
             List<MonoTransaction> monoTransactionsUAH = _seedDataIntegrationTests.MonoStatementBlackUAH;
             MonoClientInfoResponse monoClientResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
@@ -241,22 +242,55 @@ namespace YFS.IntegrationTests
             {
                 throw new Exception("monClientResponse is empty! Check SeedData json files");
             }
-            var requestRule = new HttpRequestMessage(HttpMethod.Post, $"/api/MonobankIntegrationApi/rules");
-            requestRule.Headers.Authorization = new AuthenticationHeaderValue("Bearer", TestingWebAppFactory<Program>.GetJwtTokenForDemoUser());
+            ApiTokenDto savedToken;
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var tokenService = serviceProvider.GetRequiredService<ITokenService>();
+                var result = await tokenService.CreateToken(apiTokenMono);
+                Assert.NotNull(result.Data);
+                savedToken = result.Data;
+            }
+            #region create rules
+            var newRule = new MonoSyncRule
+            {
+                RuleName = "Test Rule Description",
+                Description = "This is a test rule",
+                Condition = "{\"DescriptionEquals\": \"Sinsay\"}",
+                Action = "{\"CategoryId\": 11}",
+                Priority = 1,
+                IsActive = true,
+                ApiTokenId = savedToken.Id
+            };
+            var requestRule = new HttpRequestMessage(HttpMethod.Post, "/api/MonobankIntegrationApi/rules")
+            {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(newRule), Encoding.UTF8, "application/json")
+            };
+            requestRule.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _seedDataIntegrationTests.GetJwtTokenForUser(user.UserName));
+            var responseRule = await _client.SendAsync(requestRule);
+            responseRule.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseContent = await responseRule.Content.ReadAsStringAsync();
 
-            /*
-             {
-  "ruleId": 0,
-  "ruleName": "string",
-  "description": "string",
-  "condition": "string",
-  "action": "string",
-  "priority": 0,
-  "isActive": true,
-  "createdOn": "2024-06-27T05:27:16.898Z",
-  "apiTokenId": 0
-}
-             */
+            var newRuleAli = new MonoSyncRule
+            {
+                RuleName = "Test Rule Description AliExpress",
+                Description = "This is a test rule AliExpress",
+                Condition = "{\"DescriptionContains\": \"AliExpress\"}",
+                Action = "{\"CategoryId\": 13}",
+                Priority = 1,
+                IsActive = true,
+                ApiTokenId = savedToken.Id
+            };
+
+            var requestRuleAli = new HttpRequestMessage(HttpMethod.Post, "/api/MonobankIntegrationApi/rules")
+            {
+                Content = new StringContent(System.Text.Json.JsonSerializer.Serialize(newRuleAli), Encoding.UTF8, "application/json")
+            };
+            requestRuleAli.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _seedDataIntegrationTests.GetJwtTokenForUser(user.UserName));
+            var responseRuleAli = await _client.SendAsync(requestRuleAli);
+            responseRuleAli.StatusCode.Should().Be(HttpStatusCode.OK);
+            var responseContentAli = await responseRuleAli.Content.ReadAsStringAsync();
+            #endregion
 
 
             //act
@@ -265,9 +299,8 @@ namespace YFS.IntegrationTests
                 var serviceProvider = scope.ServiceProvider;
                 var monoIntegrationApiService = serviceProvider.GetRequiredService<IMonoIntegrationApiService>();
                 var tokenService = serviceProvider.GetRequiredService<ITokenService>();
-                var resultToken = await tokenService.CreateToken(apiTokenMono);
 
-                var syncAccountsResult = await monoIntegrationApiService.SyncAccounts(resultToken.Data.TokenValue, user.Id, monoClientResponse);
+                var syncAccountsResult = await monoIntegrationApiService.SyncAccounts(savedToken.TokenValue, user.Id, monoClientResponse);
                 if (syncAccountsResult.Data == null)
                 {
                     throw new Exception("moon account is not found! Check SeedData json files");
@@ -277,7 +310,7 @@ namespace YFS.IntegrationTests
                         .SingleOrDefault();
 
 
-                var result = await monoIntegrationApiService.SyncTransactionFromStatements(resultToken.Data.TokenValue, user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
+                var result = await monoIntegrationApiService.SyncTransactionFromStatements(savedToken.TokenValue, user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
 
                 //Assert
                 Assert.NotNull(result);
@@ -289,7 +322,7 @@ namespace YFS.IntegrationTests
                     .Where(oi => oi.CategoryId == 17).ToList();
                 Assert.NotNull(mobileExpense);
                 Assert.True(mobileExpense.Count == 6);
-                decimal sumMobileExpense = mobileExpense.Sum(m => m.OperationAmount);
+                decimal sumMobileExpense = mobileExpense.Sum(m => m.CurrencyAmount);
                 Assert.True(sumMobileExpense == -765M);
 
                 //food expense = 
@@ -298,9 +331,10 @@ namespace YFS.IntegrationTests
                     .SelectMany(ol => ol.OperationItems)
                     .Where(oi => oi.CategoryId == 5).ToList();
                 Assert.NotNull(foodExpense);
-                Assert.True(foodExpense.Count == 18);
-                decimal sumFoodExpense = foodExpense.Sum(m => m.OperationAmount);
-                Assert.True(sumFoodExpense == -10198.25M);
+                Assert.True(foodExpense.Count == 16);
+                decimal sumFoodExpense = foodExpense.Sum(m => m.CurrencyAmount);
+                //сумму исправить минус синсей
+                Assert.True(sumFoodExpense == -8405.9M);
 
                 //clothes
                 var clothesExpense = result.Data
@@ -309,7 +343,7 @@ namespace YFS.IntegrationTests
                     .Where(oi => oi.CategoryId == 11).ToList();
                 Assert.NotNull(clothesExpense);
                 Assert.True(clothesExpense.Count == 2);
-                decimal sumclothesExpense = clothesExpense.Sum(m => m.OperationAmount);
+                decimal sumclothesExpense = clothesExpense.Sum(m => m.CurrencyAmount);
                 Assert.True(sumclothesExpense == -728M);
 
             }

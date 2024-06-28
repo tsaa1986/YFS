@@ -13,6 +13,7 @@ namespace YFS.Core.Dtos
         public int OperationId { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; } = null!;
+        public string? Description { get; set; }
         public int OperationCurrencyId { get; set; }
         public decimal CurrencyAmount { get; set; }
         public decimal OperationAmount { get; set; }

@@ -368,6 +368,7 @@ namespace YFS.Service.Services
                     if (!result.IsSuccess)
                     {
                         // Log the error and continue with the next transaction
+                        transaction.ImportSuccessful = false;
                         continue;
                     }
 
@@ -384,16 +385,18 @@ namespace YFS.Service.Services
                         {
                             if (transferFromOperationId == 0)
                             {
+                                //
                                 transferFromOperationId = createdOperation.Id;
                             }
                             else
                             {
+                                //
                                 transferToOperationId = createdOperation.Id;
                             }
                         }
 
                         var operation = _mapper.Map<Operation>(createdOperation);
-
+                        transaction.ImportSuccessful = true;
                         transaction.OperationList.Add(operation);
                     }
                     
@@ -419,7 +422,7 @@ namespace YFS.Service.Services
             {
                 if (EvaluateCondition(transaction, rule.Condition))
                 {
-                    var operation = ApplyAction(transaction, rule.Action, userId);
+                    var operation = ApplyAction(transaction, rule.Action, userId, accountId);
                     operations.Add(operation);
                     ruleApplied = true; // Set flag to true if rule applied
                                         // Assuming one rule per transaction
@@ -503,7 +506,7 @@ namespace YFS.Service.Services
 
             return ServiceResult<Operation>.Success(operation);
         }
-        private Operation ApplyAction(MonoTransaction transaction, string action, string userId)
+        private Operation ApplyAction(MonoTransaction transaction, string action, string userId, int accountId)
         {
             if (transaction == null || string.IsNullOrEmpty(action))
             {
@@ -514,11 +517,14 @@ namespace YFS.Service.Services
             var operation = new Operation
             {
                 //UserId = transaction.UserId,
-                TypeOperation = actionDict.TryGetValue("TypeOperation", out var typeOperationValue) ? (int)typeOperationValue : 0,
-                AccountId = actionDict.TryGetValue("AccountId", out var accountIdValue) ? (int)accountIdValue : 0,
+                TypeOperation = actionDict.TryGetValue("TypeOperation", out var typeOperationValue) ? (int)typeOperationValue : transaction.AmountCalculated > 0 ? 2 : 1,
+                //1-expense, 2-income
+                //TypeOperation = transaction.OperationAmountCalculated < 0 ? 1 : 2,
+                AccountId = actionDict.TryGetValue("AccountId", out var accountIdValue) ? (int)accountIdValue : accountId,
                 OperationDate = transaction.OperationDate,
-                TotalCurrencyAmount = transaction.AmountCalculated,
-                OperationCurrencyId = actionDict.TryGetValue("OperationCurrencyId", out var operationCurrencyIdValue) ? (int)operationCurrencyIdValue : 0,
+                TotalCurrencyAmount = Math.Abs(transaction.AmountCalculated),
+                //OperationCurrencyId = actionDict.TryGetValue("OperationCurrencyId", out var operationCurrencyIdValue) ? (int)operationCurrencyIdValue : 0,
+                OperationCurrencyId = transaction.CurrencyId,
                 ExchangeRate = 1, // Assuming a default exchange rate of 1
                 CashbackAmount = transaction.CashbackAmountCalculated,
                 MCC = transaction.Mcc,
@@ -529,7 +535,10 @@ namespace YFS.Service.Services
             {
                 var item = new OperationItem
                 {
-                    CategoryId = (int)categoryIdValue
+                    CategoryId = Convert.ToInt32(categoryIdValue),
+                    CurrencyAmount = Math.Abs(transaction.AmountCalculated),
+                    OperationAmount = Math.Abs(transaction.OperationAmountCalculated),
+                    Description = transaction.Description
                 };
                 operation.OperationItems.Add(item);
             }
@@ -542,10 +551,10 @@ namespace YFS.Service.Services
             {
                 UserId = userId,
                 //Expense = 1,Income = 2,Transfer = 3
-                TypeOperation = transaction.OperationAmountCalculated < 0 ? 1: 2,
+                TypeOperation = transaction.OperationAmountCalculated > 0 ? 2 : 1,
                 AccountId = accountId,
                 OperationDate = transaction.OperationDate,
-                TotalCurrencyAmount = Math.Abs(transaction.AmountCalculated),
+                TotalCurrencyAmount = transaction.AmountCalculated,
                 OperationCurrencyId = transaction.CurrencyId,
                 ExchangeRate = 1, // Assuming a default exchange rate of 1
                 CashbackAmount = transaction.CashbackAmountCalculated,
@@ -557,7 +566,7 @@ namespace YFS.Service.Services
                     {
                         CategoryId = categoryId,
                         CurrencyAmount = Math.Abs(transaction.AmountCalculated),
-                        OperationAmount = Math.Abs(transaction.AmountCalculated),
+                        OperationAmount = Math.Abs(transaction.OperationAmountCalculated),
                         Description = transaction.Description
                     }
                 }
