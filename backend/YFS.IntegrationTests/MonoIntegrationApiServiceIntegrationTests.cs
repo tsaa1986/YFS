@@ -24,6 +24,9 @@ using Newtonsoft.Json.Linq;
 using Xunit.Sdk;
 using System.Text.Json;
 using FluentAssertions;
+using System.Diagnostics;
+using Xunit.Abstractions;
+using Microsoft.VisualStudio.TestPlatform.Utilities;
 
 namespace YFS.IntegrationTests
 {
@@ -34,9 +37,11 @@ namespace YFS.IntegrationTests
         private readonly TestingWebAppFactory<Program> _factory;
         private readonly IServiceProvider _serviceProvider;
         private readonly SeedDataIntegrationTests _seedDataIntegrationTests;
+        private readonly ITestOutputHelper _output;
 
-        public MonoIntegrationApiServiceIntegrationTests(TestingWebAppFactory<Program> factory)
+        public MonoIntegrationApiServiceIntegrationTests(ITestOutputHelper output, TestingWebAppFactory<Program> factory)
         {
+            _output = output;
             _factory = factory;
             _serviceProvider = _factory.Services;
             _seedDataIntegrationTests = SeedDataIntegrationTests.Instance;
@@ -103,7 +108,7 @@ namespace YFS.IntegrationTests
         {
             //Arrange
             var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
-            ApiTokenDto savedToken = null;
+            ApiTokenDto savedToken;
             Assert.NotNull(user);
             ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
             using (var scope = _factory.Services.CreateScope())
@@ -154,9 +159,7 @@ namespace YFS.IntegrationTests
             createdRule.IsActive.Should().Be(newRule.IsActive);
             createdRule.ApiTokenId.Should().Be(newRule.ApiTokenId);
         }
-
         //GetActiveRulesByApiTokenIdAsync should 1 rule
-
         //<IEnumerable<MonoSyncRule>>> AddRulesAsync
 
         [Fact]
@@ -164,69 +167,93 @@ namespace YFS.IntegrationTests
            //arrange
             var user = await _seedDataIntegrationTests.CreateUserSignUpAsync(_client);
             ApiTokenDto apiTokenMono = _seedDataIntegrationTests.CreateApiTokenMonobank(user.Id);
+            ApiTokenDto savedToken;
+            using (var scope = _factory.Services.CreateScope())
+            {
+                var serviceProvider = scope.ServiceProvider;
+                var tokenService = serviceProvider.GetRequiredService<ITokenService>();
+                var result = await tokenService.CreateToken(apiTokenMono);
+                Assert.NotNull(result.Data);
+                savedToken = result.Data;
+            }
             List<MonoTransaction> monoTransactionsUAH = _seedDataIntegrationTests.MonoStatementBlackUAH;
+            _output.WriteLine($"Expected monoTransactionsUAH Count: ***, Actual: {monoTransactionsUAH.Count}");
             MonoClientInfoResponse monoClientResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
-            Assert.NotNull(monoClientResponse);
             if (monoClientResponse == null)
             {
                 throw new Exception("monoClientResponse is empty! Check SeedData json files");
-            }            
+            }                
 
             //act
             using (var scope = _factory.Services.CreateScope())
             {
                 var serviceProvider = scope.ServiceProvider;
                 var monoIntegrationApiService = serviceProvider.GetRequiredService<IMonoIntegrationApiService>();
-                var tokenService = serviceProvider.GetRequiredService<ITokenService>();
-                var resultToken = await tokenService.CreateToken(apiTokenMono);
 
-                var syncAccountsResult = await monoIntegrationApiService.SyncAccounts(resultToken.Data.TokenValue, user.Id, monoClientResponse);
+
+                var syncAccountsResult = await monoIntegrationApiService.SyncAccounts(savedToken.TokenValue, user.Id, monoClientResponse);
                 if (syncAccountsResult.Data == null)
                 {
                     throw new Exception("moon account is not found! Check SeedData json files");
                 }
                 var accountsBlackUAH = syncAccountsResult.Data
-                    .Where(account => account.Name.Equals("Mono | black card | [UAH]"))
+                        .Where(account => account.Name.Equals("Mono | black card | [UAH]"))
                         .SingleOrDefault();
+                Assert.NotNull(accountsBlackUAH);
+
+                var resultSync = await monoIntegrationApiService.SyncTransactionFromStatements(savedToken.TokenValue, user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
+
+                
+                 //Assert
+                 Assert.NotNull(resultSync);
+                _output.WriteLine($"Result Count: {monoTransactionsUAH.Count}, Actual: {resultSync.Data.Count()}");
 
 
-            var result = await monoIntegrationApiService.SyncTransactionFromStatements(resultToken.Data.TokenValue,user.Id, accountsBlackUAH.ExternalId, monoTransactionsUAH);
-            
-             //Assert
-             Assert.NotNull(result);
+                var mobileExpense = resultSync.Data
+                        .SelectMany(d => d.OperationList)
+                        .SelectMany(ol => ol.OperationItems)
+                        .Where(oi => oi.CategoryId == 17).ToList();
+                 decimal sumMobileExpense = mobileExpense.Sum(m => m.CurrencyAmount);
+                 _output.WriteLine($"Expected Mobile Expense Count: 6, Actual: {mobileExpense.Count}");
+                 _output.WriteLine($"Expected Mobile Expense Sum: -765, Actual: {sumMobileExpense}");
 
-                //mobile expense = 6
-                var mobileExpense = result.Data
-                    .SelectMany(d => d.OperationList)
-                    .SelectMany(ol => ol.OperationItems)
-                    .Where(oi => oi.CategoryId == 17).ToList();
-                Assert.NotNull(mobileExpense);
-                Assert.True(mobileExpense.Count == 6);
-                decimal sumMobileExpense = mobileExpense.Sum(m => m.CurrencyAmount);
-                Assert.True(sumMobileExpense == -765M);
 
-                //food expense = 
-                var foodExpense = result.Data
-                    .SelectMany(d => d.OperationList)
-                    .SelectMany(ol => ol.OperationItems)
-                    .Where(oi => oi.CategoryId == 5).ToList();
-                Assert.NotNull(foodExpense);
-                Assert.True(foodExpense.Count == 18);
+
+                var foodExpense = resultSync.Data
+                            .SelectMany(d => d.OperationList)
+                            .SelectMany(ol => ol.OperationItems)
+                            .Where(oi => oi.CategoryId == 5).ToList();
                 decimal sumFoodExpense = foodExpense.Sum(m => m.CurrencyAmount);
-                Assert.True(sumFoodExpense == -10198.25M);
+                _output.WriteLine($"Expected Food Expense Count: 18, Actual: {foodExpense.Count}");
+                _output.WriteLine($"Expected Food Expense Sum: -10198.25, Actual: {sumFoodExpense}");
 
-                //clothes
-                var clothesExpense = result.Data
-                    .SelectMany(d => d.OperationList)
-                    .SelectMany(ol => ol.OperationItems)
-                    .Where(oi => oi.CategoryId == 11).ToList();
+
+                 var clothesExpense = resultSync.Data
+                                .SelectMany(d => d.OperationList)
+                                .SelectMany(ol => ol.OperationItems)
+                                .Where(oi => oi.CategoryId == 11).ToList();
+                 decimal sumClothesExpense = clothesExpense.Sum(m => m.CurrencyAmount);
+                _output.WriteLine($"Expected Clothes Expense Count: 2, Actual: {clothesExpense.Count}");
+                _output.WriteLine($"Expected Clothes Expense Sum: -728, Actual: {sumClothesExpense}");
+
+
+                // Mobile expense assertions
+                Assert.NotNull(mobileExpense);
+                Assert.True(mobileExpense.Count == 6, $"Expected 6 mobile expenses, but found {mobileExpense.Count}");
+                Assert.True(sumMobileExpense == -765M, $"Expected mobile expense sum to be -765M, but found {sumMobileExpense}");
+
+                // Food expense assertions
+                Assert.NotNull(foodExpense);
+                Assert.True(foodExpense.Count == 18, $"Expected 18 food expenses, but found {foodExpense.Count}");
+                Assert.True(sumFoodExpense == -10198.25M, $"Expected food expense sum to be -10198.25M, but found {sumFoodExpense}");
+
+                // Clothes expense assertions
                 Assert.NotNull(clothesExpense);
-                Assert.True(clothesExpense.Count == 2);
-                decimal sumclothesExpense = clothesExpense.Sum(m => m.CurrencyAmount);
-                Assert.True(sumclothesExpense == -728M);
-
+                Assert.True(clothesExpense.Count == 2, $"Expected 2 clothes expenses, but found {clothesExpense.Count}");
+                Assert.True(sumClothesExpense == -728M, $"Expected clothes expense sum to be -728M, but found {sumClothesExpense}");
             }
         }
+        
         [Fact]
         public async Task SyncTransactionFromStatementsMonoBlackUAH_ShouldReturnRules_SumCategoriesCalculatedOk()
         {
@@ -237,6 +264,10 @@ namespace YFS.IntegrationTests
             List<MonoTransaction> monoTransactionsUAH = _seedDataIntegrationTests.MonoStatementBlackUAH;
             MonoClientInfoResponse monoClientResponse = _seedDataIntegrationTests.MonoClientInfoResponse;
             Assert.NotNull(monoClientResponse);
+            if (monoClientResponse == null)
+            {
+                throw new Exception("monoClientResponse is empty! Check SeedData json files");
+            }
             Assert.NotNull(monoTransactionsUAH);
             if (monoClientResponse == null)
             {
@@ -251,6 +282,7 @@ namespace YFS.IntegrationTests
                 Assert.NotNull(result.Data);
                 savedToken = result.Data;
             }
+
             #region create rules
             var newRule = new MonoSyncRule
             {
@@ -323,6 +355,8 @@ namespace YFS.IntegrationTests
                 Assert.NotNull(mobileExpense);
                 Assert.True(mobileExpense.Count == 6);
                 decimal sumMobileExpense = mobileExpense.Sum(m => m.CurrencyAmount);
+                Console.WriteLine($"Expected Mobile Expense Count: 6, Actual: {mobileExpense.Count}");
+                Console.WriteLine($"Expected Mobile Expense Sum: -765, Actual: {sumMobileExpense}");
                 Assert.True(sumMobileExpense == -765M);
 
                 //food expense = 
@@ -333,6 +367,8 @@ namespace YFS.IntegrationTests
                 Assert.NotNull(foodExpense);
                 Assert.True(foodExpense.Count == 16);
                 decimal sumFoodExpense = foodExpense.Sum(m => m.CurrencyAmount);
+                Console.WriteLine($"Expected Food Expense Count: 18, Actual: {foodExpense.Count}");
+                Console.WriteLine($"Expected Food Expense Sum: -10198.25, Actual: {sumFoodExpense}");
                 //сумму исправить минус синсей
                 Assert.True(sumFoodExpense == -8405.9M);
 
@@ -343,9 +379,11 @@ namespace YFS.IntegrationTests
                     .Where(oi => oi.CategoryId == 11).ToList();
                 Assert.NotNull(clothesExpense);
                 Assert.True(clothesExpense.Count == 2);
-                decimal sumclothesExpense = clothesExpense.Sum(m => m.CurrencyAmount);
-                Assert.True(sumclothesExpense == -728M);
+                decimal sumClothesExpense = clothesExpense.Sum(m => m.CurrencyAmount);
 
+                Console.WriteLine($"Expected Clothes Expense Count: 2, Actual: {clothesExpense.Count}");
+                Console.WriteLine($"Expected Clothes Expense Sum: -728, Actual: {sumClothesExpense}");
+                Assert.True(sumClothesExpense == -728M);
             }
         }
     }

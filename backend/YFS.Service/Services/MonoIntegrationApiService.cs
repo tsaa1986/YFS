@@ -323,6 +323,7 @@ namespace YFS.Service.Services
             }
 
             List<MonoTransaction> syncedTransactions = new List<MonoTransaction>();
+
             foreach (var transaction in transactions)
             {
                 if (transaction == null)
@@ -349,6 +350,8 @@ namespace YFS.Service.Services
                     continue;
                 }
                 var operationsDto = new List<OperationDto>();
+
+                transaction.OperationList.Clear();
 
                 if (operations != null)
                     operationsDto = _mapper.Map<List<OperationDto>>(operations.Data);

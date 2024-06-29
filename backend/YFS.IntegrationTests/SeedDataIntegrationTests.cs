@@ -43,6 +43,7 @@ namespace YFS.IntegrationTests
             _serviceProvider = _factory.Services;
 
             _monoClientInfoResponse = GetClientInfoFromJsonAsync("../../../MonoIntegrationTestJson/expectedClientInfo.json").GetAwaiter().GetResult();
+
             // Initialize statement
             _transactionsFromWhiteUAH = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementWhiteUAH.json").GetAwaiter().GetResult();
             _transactionsFromBlackUAH = InitializeTransactionsAsync("../../../MonoIntegrationTestJson/expectedStatementBlackUAH.json").GetAwaiter().GetResult();
@@ -51,11 +52,29 @@ namespace YFS.IntegrationTests
         }
         public static SeedDataIntegrationTests Instance => _instance;
 
-        public MonoClientInfoResponse MonoClientInfoResponse => _monoClientInfoResponse;
+        //public MonoClientInfoResponse MonoClientInfoResponse => _monoClientInfoResponse;
+        public MonoClientInfoResponse MonoClientInfoResponse
+        {
+            get
+            {
+                UpdateExternalIds(_monoClientInfoResponse);
+                return _monoClientInfoResponse;
+            }
+        }
         public List<MonoTransaction> MonoStatementWhiteUAH => _transactionsFromWhiteUAH;
         public List<MonoTransaction> MonoStatementBlackUAH => _transactionsFromBlackUAH;
+        /*public List<MonoTransaction> MonoStatementBlackUAH
+        {
+            get
+            {
+                UpdateTransactionsBlackUAHIds(_transactionsFromBlackUAH);
+                return _transactionsFromBlackUAH;
+            }
+        }*/
         public List<MonoTransaction> MonoStatementBlackUSD => _transactionsFromBlackUSD;
         public List<MonoTransaction> MonoStatementBlackEURO => _transactionsFromBlackEURO;
+
+
 
         public string GetJwtTokenForUser(string userName)
         {
@@ -361,5 +380,20 @@ namespace YFS.IntegrationTests
 
             return transactions;
         }
+        private void UpdateExternalIds(MonoClientInfoResponse monoClientInfoResponse)
+        {
+            foreach (var account in monoClientInfoResponse.accounts)
+            {
+                account.id = Guid.NewGuid().ToString();
+            }
+        }
+        /*
+        private void UpdateTransactionsBlackUAHIds(List<MonoTransaction> monoTransaction)
+        {
+            foreach (var tr in monoTransaction)
+            {
+                tr.Id = Guid.NewGuid().ToString();
+            }
+        }*/
     }
 }
